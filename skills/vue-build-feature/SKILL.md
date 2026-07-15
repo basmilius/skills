@@ -29,8 +29,11 @@ components (if the project uses Flux) use `flux-ui`; project-specific rules
 - **The view (page) owns data, state and handlers** and composes the feature.
 - **Presentational components are props-in / events-out:** `defineProps`,
   `defineEmits`, `defineModel` only, and no data fetching of their own.
-- The view stays the single source of truth: hold state up in the view and pass
-  it down via props / `v-model`; children ask for change by emitting.
+- **The view is the single orchestrator:** it instantiates the feature
+  composable (section 5) and wires that state to the children via props /
+  `v-model`. The composable is where the state physically lives; "the view owns
+  state" means the view is the only place that holds and passes it. Children
+  never own canonical state - they emit or write a model to ask for change.
 - **Decompose, do not dump.** A feature is not one giant `.vue`. Split each
   markup-heavy block (toolbar, filter bar, card, list, totals, empty state) into
   its own component as soon as it stands on its own.
@@ -70,21 +73,43 @@ against the one below:
 - Group a feature's components in one folder, e.g.
   `component/<domain>/<feature>/`, with a `types.ts` for shared shapes and an
   `index.ts` **barrel** that re-exports the folder.
+- **Domain-shared components sit directly in `component/<domain>/`,** next to
+  the feature sub-folders, not in a `common/` sub-bucket. Keep feature-specific
+  pieces in their `component/<domain>/<feature>/` sub-folder, and put truly
+  app-generic components in a top-level `component/common/`. Import all of them
+  through their barrel like any other.
 - **Import through the path alias** (`@/component/...`, `@/composable`, ...),
   never through deep relative paths. Use relative imports only for co-located
   children of the same feature.
 - **Wire every new file into its barrel** the moment you create it, so the rest
   of the app imports from one stable place.
 
+```
+component/
+  common/                 app-generic components (AppIcon, layout, ...)
+  <domain>/
+    <Domain>Badge.vue     shared directly across the domain's features
+    index.ts              barrel: shared pieces + the feature barrels
+    <feature>/            one feature's presentational pieces
+      types.ts            shapes shared within the feature
+      index.ts            barrel: re-exports the folder
+```
+
 ## 5. Load data in a composable, not in the view
 
 - Put fetch + loading/error + debounce/race-guarding inside a `use<Feature>`
-  composable; the view consumes `{ data, isLoading, reload }` and stays about
-  composition, not plumbing.
+  composable; the view consumes it (`{ data, isLoading, isEmpty, error, reload }`)
+  and stays about composition, not plumbing.
+- **Expose empty and error, not just loading.** Derive `isEmpty` so it cannot
+  flash mid-fetch (`loaded && !isLoading && count === 0`) and render the states
+  in order: skeleton while loading, then error, then empty, then data.
 - Do not hand-roll a `watch` + `fetch` + manual debounce inside a view. Reach
   first for the project's existing data helper (a list/table composable, a
   report composable, or a data-fetching library); model a new one on the closest
-  existing one rather than inventing a parallel pattern.
+  existing one rather than inventing a parallel pattern. **If none exists**
+  (greenfield), write one small race-guarded primitive - fetch + loading + error
+  + a request token that discards stale responses - and model each feature
+  composable on it, so the plumbing lives in one place.
 
 ## 6. Reset shared / module-level state
 
@@ -93,6 +118,10 @@ against the one below:
   view's `onUnmounted` (or `watch` a context key and reset on change).
 - Otherwise revisiting the page re-renders stale, possibly heavy state
   synchronously before it reloads, which can freeze the UI with no spinner.
+- **`reset()` must not trigger a refetch.** If the composable refetches by
+  watching its filter inputs, clearing them in `reset()` during teardown
+  schedules a stale fetch; reset the inputs and cached data together without
+  re-firing the fetch.
 
 ## 7. Router and routes
 
@@ -100,7 +129,12 @@ against the one below:
 - Put cross-cutting concerns in route `meta` (guards, permissions, title) and
   read them in a navigation guard, rather than checking inside each view.
 - Model modal/overlay screens as routes when the UI needs deep-linking or a back
-  action, so the same view can open both inline and as an overlay.
+  action. Make the overlay a **child route** of the list so the list stays
+  mounted underneath (this is also why its `reset()` fires only on leaving the
+  feature, section 6) and render it through a nested `<RouterView>`. Pass route
+  params as **props** (`props: true`) instead of reading `useRoute()` in the
+  view, and **close by navigating to the parent route**, not `router.back()`, so
+  a cold deep link still has a defined exit.
 - **Permission and guard specifics are project-specific** - follow the repo's
   `CLAUDE.md`; this skill only prescribes the pattern (declare in `meta`, enforce
   in a guard).

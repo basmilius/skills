@@ -69,6 +69,8 @@ Order the body top to bottom so state is declared before it is used:
 
 - **Template refs use `useTemplateRef('name')`** (Vue 3.5+) and sit with the
   reactive state; the string argument matches the `ref="name"` in the template.
+- **Import style (alias vs relative)** follows `vue-build-feature`: the path
+  alias (`@/...`) across layers, relative paths only for same-feature siblings.
 - Keep side effects (kick-off fetches, title setters) in the lifecycle step, not
   scattered between declarations.
 
