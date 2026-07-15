@@ -17,26 +17,24 @@ description: >-
 # Vue build feature
 
 How to build a Vue 3 feature that does not fit in one component: a page and the
-components, composables, data access and route behind it. This is about
-decomposition and wiring across files. It is library-neutral. For how each
-individual `.vue` file is built use `vue-component-anatomy`; for picking UI
+components, composables, data access and route behind it, and how they wire
+together across files. It is library-neutral. For how each individual `.vue` file
+is built use `vue-component-anatomy`; for picking UI
 components (if the project uses Flux) use `flux-ui`; project-specific rules
 (state library, permissions, i18n location) live in the repo's `CLAUDE.md` /
 `AGENTS.md`.
 
 ## 1. Core principle: views orchestrate, components present
 
-- **The view (page) owns data, state and handlers** and composes the feature.
+- **The view (page) is the single orchestrator:** it owns the data, state and
+  handlers by instantiating the feature composable (section 5). The state lives
+  in the composable; the view is the only place that wires it to children via
+  props / `v-model`. Children never own canonical state - they emit or write a
+  model to ask for change.
 - **Presentational components are props-in / events-out:** `defineProps`,
   `defineEmits`, `defineModel` only, and no data fetching of their own.
-- **The view is the single orchestrator:** it instantiates the feature
-  composable (section 5) and wires that state to the children via props /
-  `v-model`. The composable is where the state physically lives; "the view owns
-  state" means the view is the only place that holds and passes it. Children
-  never own canonical state - they emit or write a model to ask for change.
-- **Decompose, do not dump.** A feature is not one giant `.vue`. Split each
-  markup-heavy block (toolbar, filter bar, card, list, totals, empty state) into
-  its own component as soon as it stands on its own.
+- **Decompose, do not dump.** Split each markup-heavy block (toolbar, filter,
+  card, list, totals, empty state) into its own component once it stands alone.
 
 ## 2. The layers of one feature
 
@@ -51,10 +49,8 @@ A non-trivial feature usually touches these layers. Keep them separate:
 | Route | Router entry (lazy import, guards, meta) |
 | Cross-cutting | Shared utils/formatters, icons, user-facing text (i18n) |
 
-*Where* each layer physically lives (an in-repo package, `src/service`, an
-external client library) differs per project; the *separation of layers* is the
-constant. Do not fetch directly from a component - go through the data layer and
-a composable.
+*Where* each layer lives differs per project; the *separation* is the constant.
+Never fetch inside a component - go through the data layer and a composable.
 
 ## 3. Build sequence (bottom-up)
 
@@ -76,8 +72,11 @@ against the one below:
 - **Domain-shared components sit directly in `component/<domain>/`,** next to
   the feature sub-folders, not in a `common/` sub-bucket. Keep feature-specific
   pieces in their `component/<domain>/<feature>/` sub-folder, and put truly
-  app-generic components in a top-level `component/common/`. Import all of them
-  through their barrel like any other.
+  app-generic components in a top-level `component/common/`.
+- **Import a domain-shared component by its own path**
+  (`@/component/<domain>/<Name>.vue`), not through the domain barrel: the barrel
+  re-exports the feature that imports it, so routing through it creates an import
+  cycle.
 - **Import through the path alias** (`@/component/...`, `@/composable`, ...),
   never through deep relative paths. Use relative imports only for co-located
   children of the same feature.
@@ -103,13 +102,15 @@ component/
 - **Expose empty and error, not just loading.** Derive `isEmpty` so it cannot
   flash mid-fetch (`loaded && !isLoading && count === 0`) and render the states
   in order: skeleton while loading, then error, then empty, then data.
-- Do not hand-roll a `watch` + `fetch` + manual debounce inside a view. Reach
-  first for the project's existing data helper (a list/table composable, a
-  report composable, or a data-fetching library); model a new one on the closest
-  existing one rather than inventing a parallel pattern. **If none exists**
-  (greenfield), write one small race-guarded primitive - fetch + loading + error
-  + a request token that discards stale responses - and model each feature
-  composable on it, so the plumbing lives in one place.
+- Do not hand-roll a `watch` + `fetch` + manual debounce in a view. Reach first
+  for the project's existing data helper (a list/table or report composable, or a
+  data-fetching library) and model a new one on the closest match. **If none
+  exists** (greenfield), write one small race-guarded primitive (fetch + loading +
+  error + a request token that drops stale responses) and model each feature
+  composable on it.
+- **If the project uses `@basmilius/common`,** its `useDataTable` /
+  `useDataReport` are that data helper (see `basmilius-common`), backed by
+  `@basmilius/http-client` services and DTOs (see `basmilius-http-client`).
 
 ## 6. Reset shared / module-level state
 
@@ -118,6 +119,9 @@ component/
   view's `onUnmounted` (or `watch` a context key and reset on change).
 - Otherwise revisiting the page re-renders stale, possibly heavy state
   synchronously before it reloads, which can freeze the UI with no spinner.
+- **Component-scoped composable state needs no `reset()`.** State created inside
+  a composable the view instantiates is torn down with the view; only
+  module-level (singleton) or store state that outlives the view does.
 - **`reset()` must not trigger a refetch.** If the composable refetches by
   watching its filter inputs, clearing them in `reset()` during teardown
   schedules a stale fetch; reset the inputs and cached data together without
@@ -128,16 +132,14 @@ component/
 - One route per screen; **lazy-load the view** with a dynamic `import()`.
 - Put cross-cutting concerns in route `meta` (guards, permissions, title) and
   read them in a navigation guard, rather than checking inside each view.
-- Model modal/overlay screens as routes when the UI needs deep-linking or a back
-  action. Make the overlay a **child route** of the list so the list stays
-  mounted underneath (this is also why its `reset()` fires only on leaving the
-  feature, section 6) and render it through a nested `<RouterView>`. Pass route
-  params as **props** (`props: true`) instead of reading `useRoute()` in the
-  view, and **close by navigating to the parent route**, not `router.back()`, so
-  a cold deep link still has a defined exit.
-- **Permission and guard specifics are project-specific** - follow the repo's
-  `CLAUDE.md`; this skill only prescribes the pattern (declare in `meta`, enforce
-  in a guard).
+- Model modal/overlay screens as routes for deep-linking or a back action. Make
+  the overlay a **child route** of the list so the list stays mounted underneath
+  (also why its `reset()` fires only on leaving the feature, section 6), rendered
+  through a nested `<RouterView>`. Pass route params as **props** (`props: true`),
+  not `useRoute()`, and **close by navigating to the parent route**, not
+  `router.back()`, so a cold deep link still has an exit.
+- **Permission/guard specifics are project-specific** (follow the repo's
+  `CLAUDE.md`); the pattern is: declare in `meta`, enforce in a guard.
 
 ## 8. Cross-cutting
 
@@ -145,12 +147,14 @@ component/
   as the project's icon-name type, not `string`.
 - Put shared formatters in `util/` (barrel-exported), reusing the project's
   utility library instead of inlining `Intl`/formatting logic in templates.
-- Route all user-facing text through the project's i18n layer, and add keys for
-  every locale the project ships.
+- Route user-facing text through the project's i18n layer, with keys for every locale it ships.
 
 ## Related skills
 
 - **`vue-component-anatomy`** - how to build each `.vue` file this feature adds.
 - **`flux-ui`** - selecting and composing components when the project uses Flux.
+- **`basmilius-http-client`** / **`basmilius-common`** - if the project uses these
+  (by Bas Milius), the concrete data layer (DTO services) and the state/composable
+  layer (`useDataTable`, stores) this skill leaves project-specific.
 - The repo's **`CLAUDE.md` / `AGENTS.md`** - the state/data library, permission
   model, i18n location and other project-specific rules.
