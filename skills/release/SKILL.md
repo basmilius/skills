@@ -195,6 +195,69 @@ with these release-specific settings:
   `https://github.com/<slug>/compare/<base>...<version>`; that tag exists right
   after step 6 and points at the target SHA.
 
+### House format (embedded, so it holds without `release-notes` in context)
+
+Classify each entry (split concatenated squash subjects first, then dedupe) into an
+**emoji-prefixed** section. The emoji is fixed; the noun after `✨` adapts to the
+repo domain (`New components` for a component library, `New packages` for a package
+workspace, `New modules` otherwise):
+
+| Signal | Section |
+|---|---|
+| `feat!:`/`fix!:`, `BREAKING CHANGE:`, removed/renamed public API, prop, param or response field | **⚠️ Breaking changes** |
+| An added component/module/package/public file | **✨ New components / packages / modules** |
+| `feat(scope): ...` adding features, props, slots, methods, behaviour | **🚀 Features** (grouped by scope) |
+| a11y (aria, role, keyboard, focus, roving tabindex, screen reader) | **♿ Accessibility** |
+| `fix: ...` | **🐛 Fixes** |
+| `perf: ...` | **⚡ Performance** |
+| `style(...)`, styling/token/`.scss`/`.css`-only | **🎨 Styles** |
+| a notable dependency bump the repo wants listed | **🧹 Chores** (single line) |
+
+Render the body with these headers, in this order, using only sections that have
+content:
+
+```markdown
+> Pre-release. Install the `next` / `@<version>` build.
+> <one-sentence theme>. **Contains breaking changes** (see below).
+
+## ⚠️ Breaking changes
+- **<Area>** <what changed>. <Migration in one sentence>.
+
+## ✨ New components
+- **`ThingX`** <one-line purpose>.
+
+## 🚀 Features
+**<Area>**
+- <change>.
+
+## ♿ Accessibility
+- **<Component>** now <change>.
+
+## 🐛 Fixes
+- <fixed behaviour>, now <correct behaviour>.
+
+## ⚡ Performance
+- <change>.
+
+## 🎨 Styles
+- <change>.
+
+**Full Changelog:** https://github.com/<slug>/compare/<base>...<version>
+```
+
+**The emoji format is mandatory, not a style choice:**
+
+- Every `##` header MUST start with its house emoji. A header without one is wrong.
+- **Never** emit the generic GitHub / Keep-a-Changelog style: no `What's Changed`,
+  no `What's new`, no bare `### Added` / `### Changed` / `### Removed` /
+  `### Features` / `### Fixes` / `### Chores` without the emoji.
+- **Never** append PR or commit numbers (`(#26)`, `(#5389625)`); rewrite each
+  commit subject as a complete sentence.
+- **Never** use em dashes or en dashes; do not separate a name from its
+  description with a dash.
+- Do **not** mirror a previous release that lacks emoji; this format is
+  authoritative, so bring such a repo up to it.
+
 Write the **raw changelog markdown** (the section content, not wrapped in a
 ```` ```markdown ```` fence, and without the release-notes "after the block"
 summary) to a temporary file in the scratchpad, e.g.

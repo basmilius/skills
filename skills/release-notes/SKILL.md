@@ -107,7 +107,7 @@ Map each entry to a section by its type and content:
 | Signal | Section |
 |---|---|
 | `!` after type (`feat!:`, `fix!:`), a `BREAKING CHANGE:` footer, a deleted exported/component file, or a removed/renamed public API, prop, param or response field | **⚠️ Breaking changes** |
-| An added component/module/public file | **✨ New components** |
+| An added component/module/public file/package | **✨ New components** (see the domain-label note below) |
 | `feat(scope): ...` adding features, props, slots, methods, behaviour | **🚀 Features** (grouped by scope/area) |
 | Any entry about a11y (scope or text mentions accessibility, aria, role, keyboard, focus, roving tabindex, screen reader) | **♿ Accessibility** |
 | `fix: ...` | **🐛 Fixes** |
@@ -115,9 +115,15 @@ Map each entry to a section by its type and content:
 | `style(...)`, styling/token/`.scss`- or `.css`-only changes | **🎨 Styles** |
 
 Rules:
+- **The emoji in each section header is mandatory and fixed**; the noun after it
+  adapts to the repo's domain. `✨ New components` for a component library,
+  `✨ New packages` for a package workspace, `✨ New modules` otherwise. Same idea
+  for any domain section: keep the emoji, fit the label.
 - An a11y-flavoured `feat` goes under **Accessibility**, not Features.
 - Omit pure docs/examples/test/CI/dep-bump churn (`docs:`, `test:`, `ci:`,
-  `chore: bump deps`) unless it is user-facing.
+  `chore: bump deps`) unless it is user-facing. If a repo does want a notable
+  dependency bump or maintenance line in its notes, put it under a house
+  emoji section (`## 🧹 Chores`) as a single line, never as a bare `### Chores`.
 - Lead the **Breaking changes** section with the highest-impact items (removed
   public API / components first) and state the migration as a short follow-up
   sentence.
@@ -133,6 +139,22 @@ Output **one fenced ` ```markdown ` code block** so it is copy-pasteable, in
 **English**. Use only the sections that have content, in this order. Include the
 pre-release banner line only when the target is a pre-release.
 
+**The house format is emoji-prefixed. This is mandatory, not a style choice:**
+
+- Every `##` section header MUST start with its house emoji (`⚠️`, `✨`, `🚀`,
+  `♿`, `🐛`, `⚡`, `🎨`, `🧹`). A header without an emoji is wrong.
+- **Never** emit the generic GitHub / Keep-a-Changelog style. These headings are
+  forbidden: `What's Changed`, `What's new`, and any bare `### Added`,
+  `### Changed`, `### Removed`, `### Fixed`, `### Features`, `### Fixes`,
+  `### Chores` **without** the house emoji.
+- **Never** append PR or commit numbers to an entry (`(#26)`, `(#5389625)`); the
+  house format does not carry them. Only keep them if the repo's own emoji
+  releases demonstrably do.
+- **Never** copy a commit subject verbatim (`feat(form): add ...`); rewrite it as
+  a complete sentence, per the em/en-dash rule below.
+- Do **not** mirror a previous release that happens to lack emoji: this template
+  is authoritative, so bring such a repo up to the emoji format.
+
 ````markdown
 > Pre-release. Install the `next` / `@<version>` build.
 > <one-sentence summary of the release's theme>. **Contains breaking changes** (see below).
@@ -143,6 +165,7 @@ pre-release banner line only when the target is a pre-release.
 
 ## ✨ New components
 
+<!-- noun adapts to the repo: "New components" | "New packages" | "New modules" -->
 - **`ThingX`** <one-line purpose as a predicate>.
 
 ## 🚀 Features
