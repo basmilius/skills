@@ -1,9 +1,11 @@
 # Forms
 
-Flux forms are **compositional**: a `FluxForm` wraps the form, each control is
-wrapped in a `FluxFormField` that supplies the label/hint/error, and the control
-itself (`FluxFormInput`, `FluxFormSelect`, …) goes in the field's default slot.
-Content usually sits inside a `FluxPaneBody`.
+Flux forms are **compositional**: a `FluxForm` wraps the form, each control is wrapped
+in a `FluxFormField` that supplies the label/hint/error, and the control itself
+(`FluxFormInput`, `FluxFormSelect`, ...) goes in the field's default slot. Content
+usually sits inside a `FluxPaneBody`. Watch the naming traps (`FluxToggle`,
+`FluxQuantitySelector`, `FluxFormRangeSlider`, the `Flux…Input` dates): SKILL.md §3
+and `references/component-index.md`.
 
 ## Canonical structure (verified)
 
@@ -26,21 +28,16 @@ Content usually sits inside a `FluxPaneBody`.
 </script>
 ```
 
-## FluxFormField props
+## FluxFormField
 
-- `label: string` — the field label.
-- `error?: string` — error message shown after the input.
-- `hint?: string` — hint message shown after the input.
-- `is-optional?: boolean` — marks the field optional.
-- `max-length?: number` / `current-length?: number` — character counter.
+Props: `label`, `error?`, `hint?`, `is-optional?`, and `max-length?` /
+`current-length?` (character counter). Slots: `default ({ id })` (the control; `id`
+wires the label), `addition` (extra rows, below), `value` (a value shown next to the
+label).
 
-Slots: `default ({ id })` (the control — `id` is provided for wiring the label),
-`addition` (extra rows, see below), `value` (a value shown next to the label).
-
-## Multiple hints / errors
-
-For more than one message, use the field's `#addition` slot and one
-`FluxFormFieldAddition` per message:
+For **more than one** hint/error, use the `#addition` slot with one
+`FluxFormFieldAddition` per message (props: `icon`, `mode: "hint" | "error"`,
+`message`):
 
 ```vue
 <FluxFormField label="Label">
@@ -54,49 +51,37 @@ For more than one message, use the field's `#addition` slot and one
 </FluxFormField>
 ```
 
-`FluxFormFieldAddition` props: `icon` (FA name), `mode: "hint" | "error"`,
-`message`. Register `circle-info` and `circle-exclamation` for the default look.
-
 ## Controls (wrap each in a FluxFormField)
-
-**Note the naming traps** (`FluxToggle`, `FluxQuantitySelector`,
-`FluxFormRangeSlider`, `Flux…Input` dates).
 
 - Text: `FluxFormInput` (+ `FluxFormInputGroup`, `FluxFormInputAddition`).
 - Numeric: `FluxFormNumberInput`, `FluxQuantitySelector`.
 - Long text: `FluxFormTextArea`.
-- Choice: `FluxFormSelect`, `FluxFormSelectAsync` (async-loaded options),
-  `FluxFormCombobox` (input + filtered options).
-- Boolean: `FluxToggle`, `FluxFormCheckbox` (+ `FluxFormCheckboxGroup`). Bind a
-  plain boolean `v-model` (real apps use `<FluxToggle v-model />` with no extra props).
+- Choice: `FluxFormSelect`, `FluxFormSelectAsync` (async options), `FluxFormCombobox`
+  (input + filtered options).
+- Boolean: `FluxToggle`, `FluxFormCheckbox` (+ `FluxFormCheckboxGroup`). Bind a plain
+  boolean `v-model` (`<FluxToggle v-model />`, no extra props).
 - Pick-one: `FluxFormRadioGroup` wrapping `FluxFormRadio` items.
 - Range: `FluxFormSlider`, `FluxFormRangeSlider`; inline labeled variants
-  `FluxFormFader`, `FluxFormRangeFader` (whole row is the track, label left +
-  value right). Note `FluxFormFader` ≠ `FluxFader` (the fade carousel).
-- Date/time: `FluxFormDateInput`, `FluxFormDateRangeInput`,
-  `FluxFormDateTimeInput`, `FluxFormTimeZonePicker`. (A time-only field is
-  documented as "coming soon".)
-- Tags: `FluxFormTagsInput` (tag/token entry).
-- Rating: `FluxFormRating` (star/rating input).
+  `FluxFormFader`, `FluxFormRangeFader` (whole row is the track, label left + value
+  right). Note `FluxFormFader` ≠ `FluxFader` (the fade carousel).
+- Date/time: `FluxFormDateInput`, `FluxFormDateRangeInput`, `FluxFormDateTimeInput`,
+  `FluxFormTimeZonePicker`. (A time-only field is "coming soon".)
+- Tags: `FluxFormTagsInput`. Rating: `FluxFormRating`.
 - Specialised: `FluxFormPinInput`, `FluxFormTreeViewSelect`, `FluxColorPicker`,
   `FluxColorSelect`.
 
-### Select options
-
-`FluxFormSelect` options use the `FluxFormSelectEntry` shape; the type guards
-`isFluxFormSelectOption` and `isFluxFormSelectGroup` are exported for narrowing
-option vs group entries.
+`FluxFormSelect` options use the `FluxFormSelectEntry` shape; `isFluxFormSelectOption`
+and `isFluxFormSelectGroup` are exported to narrow option vs group entries.
 
 ## Form layout helpers
 
-`FluxFormSection` (titled section), `FluxFormRow`, `FluxFormColumn`,
-`FluxFormGrid` arrange multiple fields. For overall page layout use the layout
-primitives instead (`references/layout.md`).
+`FluxFormSection` (titled section), `FluxFormRow`, `FluxFormColumn`, `FluxFormGrid`
+arrange multiple fields. For overall page layout use the layout primitives instead
+(`references/components.md`).
 
-> **`FluxFormColumn` has no `span` prop** — it's a plain cell. Column widths come
-> from `FluxFormGrid`'s `:columns="n"`, which lays out its `FluxFormColumn`
-> children in **n equal tracks**. For uneven widths, use `FluxFormRow` (or a
-> different column count), not a `span`.
+> **`FluxFormColumn` has no `span` prop** (it's a plain cell). Column widths come from
+> `FluxFormGrid`'s `:columns="n"`, which lays its `FluxFormColumn` children out in **n
+> equal tracks**. For uneven widths use `FluxFormRow` (or a different column count).
 
 ## Submit
 
@@ -105,9 +90,7 @@ The submit button uses `is-submit`; a primary submit is typically a
 
 ## Pattern: CRUD form
 
-The docs include a worked **CRUD form** pattern at
-`https://flux-ui.dev/guide/patterns/crud-form` — read it before building a
-create/edit form; it shows the idiomatic wiring of fields, validation messages,
-and submit/cancel actions. A real-app skeleton (page wrapper, `FluxFormSection` /
-`FluxFormRow` grouping, `is-submit`, `FluxDropZone` upload) is in
-`references/patterns.md` §2.
+The docs include a worked **CRUD form** at
+`https://flux-ui.dev/guide/patterns/crud-form`; read it before building a create/edit
+form. A real-app skeleton (page wrapper, `FluxFormSection` / `FluxFormRow` grouping,
+`is-submit`, `FluxDropZone` upload) is in `references/patterns.md` §2.

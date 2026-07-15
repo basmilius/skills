@@ -5,13 +5,13 @@ docs. Doc URLs follow `https://flux-ui.dev/components/<path>`.
 
 > **Two global rules for this whole skill** (stated here, not repeated per
 > section): (1) **Every export name is build-verified** against the package's
-> build entry (`src/component/index.ts`) — exact named exports, not guesses.
-> (2) Names are stable, but the library evolves — assume the **latest** 3.x
+> build entry (`src/component/index.ts`) - exact named exports, not guesses.
+> (2) Names are stable, but the library evolves - assume the **latest** 3.x
 > (installed via `@latest`) and for exact **props/emits/slots/`v-model`** always
 > read the component's doc page (each has the same `Props` / `Emits` / `Slots` /
 > `Examples` layout).
 
-Names look mechanical but several groups deviate from their doc path — those are
+Names look mechanical but several groups deviate from their doc path - those are
 called out in SKILL.md §3 and marked **⚠** below.
 
 ## Actions
@@ -95,7 +95,7 @@ internal to `FluxRoot`. See `references/dialogs-and-feedback.md`.
 | `form/date`               | `FluxFormDateInput` ⚠ | Date picker field |
 | `form/date-range`         | `FluxFormDateRangeInput` ⚠ | Date range field |
 | `form/date-time`          | `FluxFormDateTimeInput` ⚠ | Date + time field |
-| `form/time`               | — (coming soon) | Time-only field not yet shipped |
+| `form/time`               | - (coming soon) | Time-only field not yet shipped |
 | `form/time-zone-picker`   | `FluxFormTimeZonePicker` | Time-zone picker |
 | `form/tree-view-select`   | `FluxFormTreeViewSelect` | Tree-structured select |
 | `color/picker`            | `FluxColorPicker` | Color picker |
@@ -148,7 +148,7 @@ Flex "stack" helpers live under `layout/flex/*` but export as `Flux*Stack` (⚠)
 | `root`               | `FluxRoot` | App-level wrapper (required for dialogs/tooltips) |
 
 `FluxRoot` internally renders `FluxOverlayProvider`, `FluxSnackbarProvider`,
-`FluxTooltipProvider` — these are exported but **not used directly**.
+`FluxTooltipProvider` - these are exported but **not used directly**.
 
 ## Data display
 
@@ -228,7 +228,7 @@ Flex "stack" helpers live under `layout/flex/*` but export as `Flux*Stack` (⚠)
 | `slide-over` | `FluxSlideOver` | Slide-over panel |
 | `flyout`     | `FluxFlyout` | Anchored popover/flyout |
 | `tooltip`    | `FluxTooltip` | Tooltip |
-| `window`     | `FluxWindow` | Multi-level popover/menu container — `#default="{ navigate }"` root + named sub-view slots (`#x="{ back }"`); used inside a `FluxFlyout` for drill-in menus (e.g. a profile menu) |
+| `window`     | `FluxWindow` | Multi-level popover/menu container - `#default="{ navigate }"` root + named sub-view slots (`#x="{ back }"`); used inside a `FluxFlyout` for drill-in menus (e.g. a profile menu) |
 | `tour`       | `FluxTour` / `FluxTourItem` | Guided product tour; each step is a `FluxTourItem` (targets an element via `target`, optional `title`, step content in the default slot) |
 
 ## Small UI bits
@@ -240,7 +240,7 @@ Flex "stack" helpers live under `layout/flex/*` but export as `Flux*Stack` (⚠)
 | `chip`         | `FluxChip` | Chip |
 | `tag`          | `FluxTag` / `FluxTagStack` ⚠ | Tag (+ stack) |
 | `info`         | `FluxInfo` / `FluxInfoStack` ⚠ | Info text (+ stack) |
-| `text`         | `FluxText` | Typography primitive — Flux type scale (size/weight/color/tabular/truncate) |
+| `text`         | `FluxText` | Typography primitive - Flux type scale (size/weight/color/tabular/truncate) |
 | `icon`         | `FluxIcon` | Icon (Font Awesome name) |
 | `boxed-icon`   | `FluxBoxedIcon` | Icon in a box |
 | `disabled`     | `FluxDisabled` | Disabled-state wrapper |
@@ -276,7 +276,7 @@ filters with `defineFilter` (and the `defineFilterMacro` compile macro from the
 `@flux-ui/components/vite` subpath). Root-exported helpers: `pickFilterCommon`,
 `isFluxFilterOptionHeader`, `isFluxFilterOptionItem`.
 
-## Visual (decorative — never load-bearing UI)
+## Visual (decorative - never load-bearing UI)
 
 These live in the separate **`@flux-ui/visuals`** package, not `@flux-ui/components`. Import them from `@flux-ui/visuals`; they reuse the `@flux-ui/components` theme tokens, so load its stylesheet alongside `@flux-ui/visuals/style.css`.
 
@@ -301,8 +301,8 @@ Base URL `https://flux-ui.dev/components/transitions/<name>`.
 
 | Export | Notes |
 | ------ | ----- |
-| `FluxAutoHeightTransition` | Animate height changes (no doc page — internal helper) |
-| `FluxAutoWidthTransition`  | Animate width changes (no doc page — internal helper) |
+| `FluxAutoHeightTransition` | Animate height changes (no doc page - internal helper) |
+| `FluxAutoWidthTransition`  | Animate width changes (no doc page - internal helper) |
 | `FluxBreakthroughTransition` | `transitions/breakthrough` |
 | `FluxFadeTransition`         | `transitions/fade` |
 | `FluxOverlayTransition`      | `transitions/overlay` |
