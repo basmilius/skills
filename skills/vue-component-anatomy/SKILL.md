@@ -5,8 +5,8 @@ description: >-
   (a `.vue` file with `<script setup lang="ts">`). Covers one component's
   internal anatomy: block order and template root, the compiler-macro order
   (defineEmits -> defineModel -> defineProps -> defineSlots, with defineExpose
-  last), the ordering inside `<script setup>` (imports -> macros -> state -> composables
-  -> computed -> watch -> lifecycle -> functions), function-vs-arrow style, prop
+  last), the ordering inside `<script setup>` (imports -> macros -> constants ->
+  state -> composables -> computed -> watch -> lifecycle -> functions), function-vs-arrow style, prop
   and emit typing, v-model via defineModel, and scoped/module styling. Triggers
   on editing any `.vue` file, on defineProps/defineEmits/defineModel/defineSlots,
   on script-setup ordering questions, and on prop typing. For splitting a feature
@@ -28,7 +28,12 @@ Assume `<script setup lang="ts">` and Vue 3.5+ unless the repo says otherwise.
 ## 1. SFC skeleton and template root
 
 - **Block order:** `<template>` first, then `<script setup lang="ts">`, then
-  `<style>`. Keep it consistent across the codebase.
+  `<style>`, then an optional `<i18n>` block last. Keep it consistent across
+  the codebase.
+- **`<i18n>` blocks** (projects with vue-i18n SFC messages) always come after
+  `<style>`. Match the format of existing components: check whether the
+  codebase uses `<i18n lang="yaml">` or JSON before writing one, and use the
+  same `lang` attribute everywhere.
 - **Prefer a single root element** in the template: it gives predictable
   attribute fallthrough (`class`, `@click`, `v-bind="$attrs"` land on one node)
   and is required by many `<Transition>` setups. Vue 3 allows fragments
@@ -59,14 +64,19 @@ Order the body top to bottom so state is declared before it is used:
 
 1. **imports**
 2. **macros** (emits / models / props / slots) - see section 2
-3. **reactive state** (`ref`, `reactive`, `shallowRef`, and template refs)
-4. **composables** (`useRouter`, `useI18n`, `use*` - data/state helpers)
-5. **computed**
-6. **watch / watchEffect**
-7. **lifecycle hooks** (`onMounted`, `onUnmounted`, ...)
-8. **function declarations** (event handlers and helpers)
-9. **`defineExpose`** last of all, only if a parent needs a ref handle
+3. **module constants** (`ALL_CAPS`: config values, option lists, lookup maps)
+4. **reactive state** (`ref`, `reactive`, `shallowRef`, and template refs)
+5. **composables** (`useRouter`, `useI18n`, `use*` - data/state helpers)
+6. **computed**
+7. **watch / watchEffect**
+8. **lifecycle hooks** (`onMounted`, `onUnmounted`, ...)
+9. **function declarations** (event handlers and helpers)
+10. **`defineExpose`** last of all, only if a parent needs a ref handle
 
+- **Module constants go below the macros, not above them.** The macros are the
+  component's public contract and read first; constants are implementation
+  detail. A constant that needs `t()` or other reactive input is not a constant:
+  make it a `computed` in step 6.
 - **Template refs use `useTemplateRef('name')`** (Vue 3.5+) and sit with the
   reactive state; the string argument matches the `ref="name"` in the template.
 - **Import style (alias vs relative)** follows `vue-build-feature`: the path
@@ -139,14 +149,15 @@ Order the body top to bottom so state is declared before it is used:
 ## 9. Whitespace
 
 - **One blank line between the top-level groups** in `<script setup>` (imports,
-  each macro block, state, composables, computed, watch, lifecycle) and between
-  every `function` declaration.
+  each macro block, constants, state, composables, computed, watch, lifecycle)
+  and between every `function` declaration.
 - **No blank line between adjacent single-line declarations** in the same group
   (a run of refs or composables stays together).
 - **Inside a function, one blank line separates logical steps:** after a
   guard/early-return block, and between setup and the action that follows.
 - **In the template, one blank line between logically separate element groups.**
-- One blank line between the `<template>`, `<script>`, and `<style>` blocks.
+- One blank line between the `<template>`, `<script>`, `<style>`, and `<i18n>`
+  blocks.
 
 ## Related skills
 
