@@ -4,7 +4,7 @@ Flux forms are **compositional**: a `FluxForm` wraps the form, each control is w
 in a `FluxFormField` that supplies the label/hint/error, and the control itself
 (`FluxFormInput`, `FluxFormSelect`, ...) goes in the field's default slot. Content
 usually sits inside a `FluxPaneBody`. Watch the naming traps (`FluxToggle`,
-`FluxQuantitySelector`, `FluxFormRangeSlider`, the `Flux…Input` dates): SKILL.md §3
+`FluxQuantitySelector`, `FluxFormRangeSlider`, the `Flux...Input` dates): SKILL.md §3
 and `references/component-index.md`.
 
 ## Canonical structure (verified)

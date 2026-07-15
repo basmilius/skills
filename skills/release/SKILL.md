@@ -49,35 +49,17 @@ This skill mutates remote state in exactly one place: `gh release create` in ste
 
 ## 0. Resolve the target repo
 
-Decide which repository this release targets, then derive its slug. From here on,
-`<dir>` is that repo's directory and `<slug>` is its `owner/name` on GitHub. Run
-**every** git command with `git -C <dir> …` and **every** GitHub command with
-`--repo <slug>`, so the same steps work whether `<dir>` is the current repo or a
-sibling.
+Resolve `<dir>` (the target repo's directory) and `<slug>` (its `owner/name` on
+GitHub) exactly as the **release-notes** skill's step 0 does: single repo vs
+sibling-repo workspace, dynamic candidate discovery, slug derived from the
+`origin` remote. Run **every** git command with `git -C <dir> ...` and **every**
+GitHub command with `--repo <slug>`, so the same steps work whether `<dir>` is the
+current repo or a sibling.
 
-1. **Single repo**: if the current directory is inside a git repo
-   (`git rev-parse --show-toplevel` succeeds) and that repo has an `origin`, that
-   is the target. `<dir>` is its toplevel. Skip to deriving the slug, **unless**
-   the first argument names a sibling folder (then treat it as a workspace, below).
-2. **Sibling-repo workspace**: if the current directory is not itself a repo (or
-   the first argument names a sibling), discover the **candidate repos**
-   dynamically, do not hardcode them: every direct subdirectory with an `origin`
-   remote. A `## Releasing` section may narrow this (an org filter or an explicit
-   folder list); otherwise take all of them.
-   ```bash
-   for sub in */; do
-       slug=$(git -C "$sub" remote get-url origin 2>/dev/null | sed -E 's#(git@github.com:|https://github.com/)##; s/\.git$//')
-       [ -n "$slug" ] && echo "${sub%/}  ->  $slug"
-   done
-   ```
-   If the first argument matches a candidate folder name, that is the
-   **`<project>`** and `<dir>` is that folder; the remaining tokens are the version
-   **spec**. Otherwise show the candidate list and **ask which single project** to
-   release. Never release more than one project in a run.
-3. **Derive the slug** from the target's remote:
-   ```bash
-   git -C <dir> remote get-url origin | sed -E 's#(git@github.com:|https://github.com/)##; s/\.git$//'
-   ```
+Release-specific argument parsing: if the first argument matches a candidate
+folder name, that is the **`<project>`** and the remaining tokens are the version
+**spec** (step 1); otherwise all arguments form the spec. Never release more than
+one project in a run.
 
 ## 1. Resolve the target version
 
@@ -208,13 +190,10 @@ with these release-specific settings:
     For the first beta of a new line this falls back to the latest stable
     automatically (no newer pre-release exists).
 - **Head** = `origin/main` (the target SHA from step 2).
-- **Banner**: include the pre-release install banner **only** when this version is
-  a pre-release (step 1). Drop it for stable.
 - **Version in the body**: write `<version>` wherever the notes reference the
   release. The compare link is
   `https://github.com/<slug>/compare/<base>...<version>`; that tag exists right
   after step 6 and points at the target SHA.
-- **No em/en dashes** in the body; phrase each entry as a complete sentence.
 
 Write the **raw changelog markdown** (the section content, not wrapped in a
 ```` ```markdown ```` fence, and without the release-notes "after the block"
@@ -236,25 +215,19 @@ revise the notes file and show it again. If they decline, stop; nothing is creat
 
 ## 6. Create the release
 
-Only after approval. Pick the flag from step 1's pre-release status:
+Only after approval:
 
 ```bash
-# pre-release:
 gh release create "<version>" --repo <slug> \
     --target "<target-sha>" \
     --title "Release <version>" \
     --notes-file "<scratchpad>/release-<slug-basename>-<version>.md" \
-    --prerelease
-
-# stable:
-gh release create "<version>" --repo <slug> \
-    --target "<target-sha>" \
-    --title "Release <version>" \
-    --notes-file "<scratchpad>/release-<slug-basename>-<version>.md" \
-    --latest
+    <flag>
 ```
 
 Notes:
+- `<flag>` is `--prerelease` when step 1 marked the version a pre-release, else
+  `--latest`.
 - `--target <sha>` pins the tag to the exact commit the notes were diffed against
   (the `origin/main` SHA from step 2), avoiding a race with new pushes.
 - Title format is `Release <version>`, matching existing releases.

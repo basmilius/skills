@@ -30,9 +30,8 @@ Icons come from Font Awesome, added **separately** (see Icons below).
 
 Add `preset()` **plus one plugin per Flux package you use** to the Vite config:
 `flux()` for `@flux-ui/components`, `fluxApplication()` for `@flux-ui/application`,
-`fluxStatistics()` for `@flux-ui/statistics` (and `fluxDashboard()` for
-`@flux-ui/dashboard`). Each aliases its package to source (`~flux/<pkg>`) and wires
-the tsconfig path.
+`fluxStatistics()` for `@flux-ui/statistics`. Each aliases its package to source
+(`~flux/<pkg>`) and wires the tsconfig path.
 
 > **This matters:** if you use `@flux-ui/application` or `@flux-ui/statistics` but only
 > add `flux()`, those packages resolve to their **dist** build, whose CSS is a
@@ -230,7 +229,7 @@ the `guide/composables/*` and `guide/api/*` pages are authoritative.
 ```ts
 import { useBreakpoints } from '@flux-ui/components';
 const { currentBreakpoint, xs, sm, md, lg, xl } = useBreakpoints();
-// each ref is true when the viewport is at least that wide; if (md.value) { … }
+// each ref is true when the viewport is at least that wide; if (md.value) { ... }
 ```
 
 Floors: `xs` 0px, `sm` 640px, `md` 768px, `lg` 1024px, `xl` 1280px. Prefer this over
@@ -259,9 +258,10 @@ a `FluxFormField`), `useFormRadioGroupInjection`, `useKanbanInjection`,
   state and the dialog/snackbar machinery; also exposes `addSnackbar(spec) → id`,
   `updateSnackbar(id, partial)` and `removeSnackbar(id)` for live-updating snackbars
   (see `references/dialogs-and-feedback.md`). For dialogs prefer the `show*` functions.
-- **Filter helpers** - `defineFilter`, `pickFilterCommon`, and the type guards
-  `isFluxFilterOptionHeader` / `isFluxFilterOptionItem`; the `defineFilterMacro` macro
-  is at the `@flux-ui/components/vite` subpath.
+- **Filter helpers** - author reusable filters with `defineFilter` (the
+  `defineFilterMacro` compile macro is at the `@flux-ui/components/vite` subpath);
+  custom controls read context via `useFilterInjection`. Also `pickFilterCommon` and
+  the type guards `isFluxFilterOptionHeader` / `isFluxFilterOptionItem`.
 - **Select type guards** - `isFluxFormSelectOption` / `isFluxFormSelectGroup`.
 - ⚠ **Not on the package root.** Several source utilities are **not** re-exported from
   `@flux-ui/components`: `generateMultiOptionsLabel`, `isResettable`, `sanitizeUrl`,

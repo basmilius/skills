@@ -8,7 +8,9 @@ description: >-
   `@adapter` class. Trigger on `@dto` / `@adapter`, on `HttpClient`,
   `RequestBuilder`, `BaseService`, `BaseResponse`, `Paginated`, `ForeignData`,
   `QueryString`, on `.runAdapter` / `.runPaginatedAdapter`, on `RequestError` /
-  `ValidationError`, or the `dtoNames` Vite plugin. This is the concrete data
+  `ValidationError`, on `serialize` / `deserialize` / `cloneDto`, on the tsconfig
+  pair `experimentalDecorators` + `useDefineForClassFields`, or the `dtoNames`
+  Vite plugin. This is the concrete data
   layer that `vue-build-feature` defers to. For app/state primitives (useService,
   useDataTable, stores) see `basmilius-common`; for standalone helpers see
   `basmilius-utils`.

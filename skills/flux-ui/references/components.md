@@ -6,8 +6,8 @@ colors, design tokens) live in `references/conventions.md`.
 
 ## Layout primitives
 
-Compose structure with components, not raw CSS. Naming quirk: the `Layout` path
-segment is **dropped** from the export (`layout/flex` → `FluxFlex`).
+Compose structure with components, not raw CSS. (Naming traps for this group:
+SKILL.md §3 and the component index.)
 
 - **Flex** - `FluxFlex` (`direction="horizontal|vertical"`, `:gap` a number in px,
   plus `align`, `justify`, `wrap`, `is-inline`, `tag`); `FluxFlexItem` for item-level
@@ -20,9 +20,8 @@ segment is **dropped** from the export (`layout/flex` → `FluxFlex`).
 - **Adaptive / overflow** - `FluxAdaptiveGroup` + `FluxAdaptiveSlot`,
   `FluxOverflowBar` (moves overflowing items into a menu).
 
-Stack helpers under `layout/flex/*` export as `Flux*Stack`: `FluxActionStack`,
-`FluxBadgeStack`, `FluxButtonStack`, `FluxInfoStack`, `FluxNoticeStack`,
-`FluxTagStack`.
+Stack helpers under `layout/flex/*` export as `Flux*Stack`; the six names are in
+`references/component-index.md`.
 
 ## Panes & list rows
 
@@ -73,9 +72,9 @@ Two levels of abstraction, pick deliberately:
 `FluxFilterBar` hosts the `Flux Filter*` controls (full list:
 `references/component-index.md` › Filter). `FluxFilter` is the standalone version
 (`v-model` a `FluxFilterState` + the same controls in its default slot) for filtering
-a non-table list. Custom controls read `useFilterInjection`; build reusable filters
-with `defineFilter` (or the `defineFilterMacro` compile macro from
-`@flux-ui/components/vite`).
+a non-table list. Custom controls and reusable filters (`useFilterInjection`,
+`defineFilter`, `defineFilterMacro`): the filter-authoring notes in
+`references/conventions.md`.
 
 Each control takes `name` / `label` / `icon`. **`FluxFilterRange` also requires `min`
 and `max`** (+ optional `:formatter`); `FluxFilterOption(s)` take `:options`

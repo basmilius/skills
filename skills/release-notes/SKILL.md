@@ -29,7 +29,7 @@ overrides from a `## Releasing` section in the project's `CLAUDE.md` / `AGENTS.m
 
 Decide which repository these notes cover, then derive its slug. From here on,
 `<dir>` is that repo's directory and `<slug>` is its `owner/name` on GitHub. Run
-**every** git command with `git -C <dir> …` and **every** GitHub command with
+**every** git command with `git -C <dir> ...` and **every** GitHub command with
 `--repo <slug>`.
 
 1. **Single repo**: if the current directory is inside a git repo
@@ -98,7 +98,7 @@ claims from file status rather than trusting messages alone:
 ## 3. Classify
 
 Assume **Conventional Commits**, and note that a single squashed subject often
-**concatenates several `type(scope): …` entries** on one line. Split each subject
+**concatenates several `type(scope): ...` entries** on one line. Split each subject
 into individual entries before classifying, and **dedupe** identical entries that
 appear across multiple commits.
 
@@ -108,10 +108,10 @@ Map each entry to a section by its type and content:
 |---|---|
 | `!` after type (`feat!:`, `fix!:`), a `BREAKING CHANGE:` footer, a deleted exported/component file, or a removed/renamed public API, prop, param or response field | **⚠️ Breaking changes** |
 | An added component/module/public file | **✨ New components** |
-| `feat(scope): …` adding features, props, slots, methods, behaviour | **🚀 Features** (grouped by scope/area) |
+| `feat(scope): ...` adding features, props, slots, methods, behaviour | **🚀 Features** (grouped by scope/area) |
 | Any entry about a11y (scope or text mentions accessibility, aria, role, keyboard, focus, roving tabindex, screen reader) | **♿ Accessibility** |
-| `fix: …` | **🐛 Fixes** |
-| `perf: …` | **⚡ Performance** |
+| `fix: ...` | **🐛 Fixes** |
+| `perf: ...` | **⚡ Performance** |
 | `style(...)`, styling/token/`.scss`- or `.css`-only changes | **🎨 Styles** |
 
 Rules:
@@ -170,7 +170,7 @@ pre-release banner line only when the target is a pre-release.
 ````
 
 Rendering rules:
-- **Never use em-dashes (—) or en-dashes (–) anywhere in the output.** Phrase each
+- **Never use em dashes or en dashes anywhere in the output.** Phrase each
   entry as a complete sentence; do not separate a name from its description with a
   dash. Use "now" for behavioural and fix entries, and use commas, parentheses or
   separate sentences elsewhere.

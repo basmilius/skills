@@ -50,11 +50,11 @@ Pure array conversions. RGB channels `0-255`; HEX `#rrggbb`; HSL `h 0-360`,
 | --- | --- | --- |
 | `hexToRGB` | `(hex: string): [number, number, number]` | Hex (`#` optional) to `[r, g, b]`. |
 | `rgbToHEX` | `(r: number, g: number, b: number): string` | RGB to `#rrggbb`. |
-| `rgbToHSL` | `(r: number, g: number, b: number): [number, number, number]` | RGB to `[h(0-360), s(0-100), l(0-100)]`. |
-| `rgbToHSV` | `(r: number, g: number, b: number): [number, number, number]` | RGB to `[h(0-1), s(0-1), v(0-1)]`. |
+| `rgbToHSL` | `(r: number, g: number, b: number): [number, number, number]` | RGB to HSL. |
+| `rgbToHSV` | `(r: number, g: number, b: number): [number, number, number]` | RGB to HSV. |
 | `hslToRGB` | `(h: number, s: number, l: number): [number, number, number]` | HSL to RGB. |
 | `hslToHSV` | `(h: number, s: number, v: number): [number, number, number]` | HSL to HSV (composed via RGB). |
-| `hsvToRGB` | `(h: number, s: number, v: number): [number, number, number]` | HSV (all 0-1) to RGB. |
+| `hsvToRGB` | `(h: number, s: number, v: number): [number, number, number]` | HSV to RGB. |
 | `hsvToHSL` | `(h: number, s: number, v: number): [number, number, number]` | HSV to HSL (composed via RGB). |
 | `hueToRGB` | `(p: number, q: number, t: number): number` | Low-level hue-to-channel primitive used by `hslToRGB`. Not a color-space converter. |
 

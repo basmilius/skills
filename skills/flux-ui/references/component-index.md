@@ -19,7 +19,7 @@ called out in SKILL.md §3 and marked **⚠** below.
 | Doc path      | Export          | Purpose |
 | ------------- | --------------- | ------- |
 | `action`      | `FluxAction`      | Single action element |
-| `action-bar`  | `FluxActionBar`   | Bar of actions |
+| `action-bar`  | `FluxActionBar`   | |
 | `action-pane` | `FluxActionPane`  | Pane of actions |
 | `pressable`   | `FluxPressable`   | Low-level pressable wrapper |
 | `remove`      | `FluxRemove`      | Remove/delete affordance |
@@ -121,8 +121,8 @@ The `Layout` path segment is **dropped** from the export name (⚠).
 | `layout/spacing`         | `FluxSpacing` ⚠ | Spacing helper |
 | `layout/split-view`      | `FluxSplitView` ⚠ | Resizable split view |
 | `layout/split-view/pane` | `FluxSplitViewPane` ⚠ | Split-view pane |
-| `divider`                | `FluxDivider` | Divider |
-| `separator`              | `FluxSeparator` | Separator |
+| `divider`                | `FluxDivider` | |
+| `separator`              | `FluxSeparator` | |
 | `adaptive-group`         | `FluxAdaptiveGroup` | Adaptive overflow group |
 | `adaptive-slot`          | `FluxAdaptiveSlot` | Adaptive slot |
 | `overflow-bar`           | `FluxOverflowBar` | Overflowing toolbar/bar |
@@ -147,8 +147,8 @@ Flex "stack" helpers live under `layout/flex/*` but export as `Flux*Stack` (⚠)
 | `skeleton`           | `FluxSkeleton` | Loading skeleton |
 | `root`               | `FluxRoot` | App-level wrapper (required for dialogs/tooltips) |
 
-`FluxRoot` internally renders `FluxOverlayProvider`, `FluxSnackbarProvider`,
-`FluxTooltipProvider` - these are exported but **not used directly**.
+The `Flux*Provider` exports are internal to `FluxRoot` and never placed yourself;
+see `references/conventions.md`.
 
 ## Data display
 
@@ -161,63 +161,63 @@ Flex "stack" helpers live under `layout/flex/*` but export as `Flux*Stack` (⚠)
 | `table/actions`   | `FluxTableActions` | Row actions |
 | `table/bar`       | `FluxTableBar` | Table toolbar |
 | `data-table`      | `FluxDataTable` | High-level data table |
-| `pagination`      | `FluxPagination` | Pagination |
-| `pagination/bar`  | `FluxPaginationBar` | Pagination bar |
-| `kanban`          | `FluxKanban` | Kanban board |
-| `kanban/column`   | `FluxKanbanColumn` | Kanban column |
-| `kanban/item`     | `FluxKanbanItem` | Kanban card |
-| `tree-view`       | `FluxTreeView` | Tree view |
-| `timeline`        | `FluxTimeline` | Timeline |
-| `timeline/item`   | `FluxTimelineItem` | Timeline entry |
-| `calendar`        | `FluxCalendar` | Calendar |
-| `calendar/item`   | `FluxCalendarItem` | Calendar entry |
+| `pagination`      | `FluxPagination` | |
+| `pagination/bar`  | `FluxPaginationBar` | |
+| `kanban`          | `FluxKanban` | |
+| `kanban/column`   | `FluxKanbanColumn` | |
+| `kanban/item`     | `FluxKanbanItem` | |
+| `tree-view`       | `FluxTreeView` | |
+| `timeline`        | `FluxTimeline` | |
+| `timeline/item`   | `FluxTimelineItem` | |
+| `calendar`        | `FluxCalendar` | |
+| `calendar/item`   | `FluxCalendarItem` | |
 | `date-picker`     | `FluxDatePicker` | Standalone date picker |
-| `gallery`         | `FluxGallery` | Image gallery |
-| `gallery/item`    | `FluxGalleryItem` | Gallery item |
+| `gallery`         | `FluxGallery` | |
+| `gallery/item`    | `FluxGalleryItem` | |
 | `item`            | `FluxItem` | List item |
-| `item/content`    | `FluxItemContent` | Item content |
-| `item/media`      | `FluxItemMedia` | Item media |
-| `item/actions`    | `FluxItemActions` | Item actions |
-| `item/stack`      | `FluxItemStack` | Stack of items |
+| `item/content`    | `FluxItemContent` | |
+| `item/media`      | `FluxItemMedia` | |
+| `item/actions`    | `FluxItemActions` | |
+| `item/stack`      | `FluxItemStack` | |
 | `description-list`      | `FluxDescriptionList` | Description list (term/detail pairs) |
-| `description-list/item` | `FluxDescriptionItem` ⚠ | One entry (**`List` dropped**, not `…ListItem`) |
+| `description-list/item` | `FluxDescriptionItem` ⚠ | One entry (**`List` dropped**, not `...ListItem`) |
 | `inline-edit`     | `FluxInlineEdit` | Inline-editable value |
-| `comment`         | `FluxComment` | Comment block |
+| `comment`         | `FluxComment` | |
 | `persona`         | `FluxPersona` | Person summary |
-| `avatar`          | `FluxAvatar` | Avatar |
+| `avatar`          | `FluxAvatar` | |
 | `avatar-group`    | `FluxAvatarGroup` | Group of overlapping avatars |
-| `progress-bar`    | `FluxProgressBar` | Progress bar |
-| `spinner`         | `FluxSpinner` | Loading spinner |
+| `progress-bar`    | `FluxProgressBar` | |
+| `spinner`         | `FluxSpinner` | |
 | `ticks`           | `FluxTicks` | Tick marks |
 
 ## Navigation
 
 | Doc path              | Export | Purpose |
 | --------------------- | ------ | ------- |
-| `breadcrumb`          | `FluxBreadcrumb` | Breadcrumb trail |
-| `breadcrumb/item`     | `FluxBreadcrumbItem` | Breadcrumb item |
-| `menu`                | `FluxMenu` | Menu |
-| `menu/item`           | `FluxMenuItem` | Menu item |
-| `menu/group`          | `FluxMenuGroup` | Menu group |
+| `breadcrumb`          | `FluxBreadcrumb` | |
+| `breadcrumb/item`     | `FluxBreadcrumbItem` | |
+| `menu`                | `FluxMenu` | |
+| `menu/item`           | `FluxMenuItem` | |
+| `menu/group`          | `FluxMenuGroup` | |
 | `menu/options`        | `FluxMenuOptions` | Menu options block |
-| `menu/collapsible`    | `FluxMenuCollapsible` | Collapsible menu section |
-| `menu/title`          | `FluxMenuTitle` | Menu title |
-| `menu/sub-header`     | `FluxMenuSubHeader` | Menu sub-header |
+| `menu/collapsible`    | `FluxMenuCollapsible` | |
+| `menu/title`          | `FluxMenuTitle` | |
+| `menu/sub-header`     | `FluxMenuSubHeader` | |
 | `menu/flyout`         | `FluxMenuFlyout` | Menu in a flyout |
 | `menu/pane`           | `FluxMenuPane` | Pane/surface inside a menu |
 | `context-menu`        | `FluxContextMenu` | Right-click / context menu |
-| `tabs`                | `FluxTabs` | Tabs |
-| `tabs/tab`            | `FluxTab` | A tab |
-| `tab-bar`             | `FluxTabBar` | Tab bar |
-| `tab-bar/item`        | `FluxTabBarItem` | Tab bar item |
+| `tabs`                | `FluxTabs` | |
+| `tabs/tab`            | `FluxTab` | |
+| `tab-bar`             | `FluxTabBar` | |
+| `tab-bar/item`        | `FluxTabBarItem` | |
 | `stepper`             | `FluxStepper` | Stepper/wizard |
-| `stepper/steps`       | `FluxStepperSteps` | Stepper steps wrapper |
-| `stepper/step`        | `FluxStepperStep` | Stepper step |
+| `stepper/steps`       | `FluxStepperSteps` | |
+| `stepper/step`        | `FluxStepperStep` | |
 | `command-palette`     | `FluxCommandPalette` / `FluxCommandPaletteGroup` / `FluxCommandPaletteItem` | Command palette (⌘K) |
-| `toolbar`             | `FluxToolbar` | Toolbar |
-| `toolbar/group`       | `FluxToolbarGroup` | Toolbar group |
-| `segmented-control`   | `FluxSegmentedControl` | Segmented control |
-| `segmented-control/item` | `FluxSegmentedControlItem` | Segmented item |
+| `toolbar`             | `FluxToolbar` | |
+| `toolbar/group`       | `FluxToolbarGroup` | |
+| `segmented-control`   | `FluxSegmentedControl` | |
+| `segmented-control/item` | `FluxSegmentedControlItem` | |
 | `link`                | `FluxLink` | Inline link |
 
 ## Overlays & transient surfaces
@@ -225,9 +225,9 @@ Flex "stack" helpers live under `layout/flex/*` but export as `Flux*Stack` (⚠)
 | Doc path     | Export | Purpose |
 | ------------ | ------ | ------- |
 | `overlay`    | `FluxOverlay` | Template-driven modal/dialog container |
-| `slide-over` | `FluxSlideOver` | Slide-over panel |
+| `slide-over` | `FluxSlideOver` | |
 | `flyout`     | `FluxFlyout` | Anchored popover/flyout |
-| `tooltip`    | `FluxTooltip` | Tooltip |
+| `tooltip`    | `FluxTooltip` | |
 | `window`     | `FluxWindow` | Multi-level popover/menu container - `#default="{ navigate }"` root + named sub-view slots (`#x="{ back }"`); used inside a `FluxFlyout` for drill-in menus (e.g. a profile menu) |
 | `tour`       | `FluxTour` / `FluxTourItem` | Guided product tour; each step is a `FluxTourItem` (targets an element via `target`, optional `title`, step content in the default slot) |
 
@@ -237,7 +237,7 @@ Flex "stack" helpers live under `layout/flex/*` but export as `Flux*Stack` (⚠)
 | -------------- | ------ | ------- |
 | `badge`        | `FluxBadge` / `FluxBadgeStack` ⚠ | Badge (+ stack) |
 | `badge-group`  | `FluxBadgeGroup` | Badge-in-a-pill with a message (`label` + a `FluxBadge` in the `#start`/`#end` slot, which inherits the group's `color`/`size`; optional `icon-leading`/`icon-trailing`) |
-| `chip`         | `FluxChip` | Chip |
+| `chip`         | `FluxChip` | |
 | `tag`          | `FluxTag` / `FluxTagStack` ⚠ | Tag (+ stack) |
 | `info`         | `FluxInfo` / `FluxInfoStack` ⚠ | Info text (+ stack) |
 | `text`         | `FluxText` | Typography primitive - Flux type scale (size/weight/color/tabular/truncate) |
@@ -262,19 +262,18 @@ Flex "stack" helpers live under `layout/flex/*` but export as `Flux*Stack` (⚠)
 | Doc path               | Export | Purpose |
 | ---------------------- | ------ | ------- |
 | `filter`               | `FluxFilter` | Filter root |
-| `filter/bar`           | `FluxFilterBar` | Filter bar |
+| `filter/bar`           | `FluxFilterBar` | |
 | `filter/option`        | `FluxFilterOption` | Single option filter |
 | `filter/options`       | `FluxFilterOptions` | Multi-option filter |
 | `filter/async-option`  | `FluxFilterOptionAsync` ⚠ | Async single option (**`Async` is a suffix**) |
 | `filter/async-options` | `FluxFilterOptionsAsync` ⚠ | Async multi option |
-| `filter/date`          | `FluxFilterDate` | Date filter |
-| `filter/date-range`    | `FluxFilterDateRange` | Date-range filter |
+| `filter/date`          | `FluxFilterDate` | |
+| `filter/date-range`    | `FluxFilterDateRange` | |
 | `filter/range`         | `FluxFilterRange` | Numeric range filter |
 
-Custom filter controls read context via `useFilterInjection`; author reusable
-filters with `defineFilter` (and the `defineFilterMacro` compile macro from the
-`@flux-ui/components/vite` subpath). Root-exported helpers: `pickFilterCommon`,
-`isFluxFilterOptionHeader`, `isFluxFilterOptionItem`.
+Authoring custom filters (`useFilterInjection`, `defineFilter`,
+`defineFilterMacro`): `references/conventions.md`. Root-exported helpers:
+`pickFilterCommon`, `isFluxFilterOptionHeader`, `isFluxFilterOptionItem`.
 
 ## Visual (decorative - never load-bearing UI)
 

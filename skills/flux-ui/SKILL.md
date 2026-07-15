@@ -82,7 +82,7 @@ Match the need to a component; confirm exact names in `references/component-inde
 - **Forms** → wrap each control in a `FluxFormField` inside a `FluxForm`. Trap names:
   toggle is `FluxToggle`, stepper `FluxQuantitySelector`, range `FluxFormRangeSlider`,
   dates `FluxFormDateInput`. Composition: `references/forms.md`.
-- **Dialogs & feedback** → code-driven `showConfirm` / `showPrompt` / `showAlert` /
+- **Dialogs & feedback** → programmatic `showConfirm` / `showPrompt` / `showAlert` /
   `showSnackbar`; rich or deep-linkable `FluxOverlay` / `FluxSlideOver`; inline
   `FluxNotice` / `FluxBadge` / `FluxTooltip`. `references/dialogs-and-feedback.md`.
 - **Layout, tables & navigation** → `FluxFlex` / `FluxGrid` / `FluxContainer`,
@@ -127,10 +127,8 @@ Depth for all of these: `references/conventions.md`.
 
 ## 6. When you need exact props
 
-Open the component's doc page (every URL is in `references/component-index.md`). Each
-has a consistent Props / Emits / Slots / Examples layout with a working sample and the
-exact import. Prefer this over assuming a prop exists: the library still evolves, so
-work against the latest version.
+Never assume a prop exists: open the component's doc page (every URL is in
+`references/component-index.md`) for its Props / Emits / Slots and the exact import.
 
 ## Reference files
 

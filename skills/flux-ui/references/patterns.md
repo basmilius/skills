@@ -225,7 +225,7 @@ headers work) only kicks in when the `FluxDataTable`/`FluxTable`/`FluxCalendar` 
   <FluxApplicationContent layout="full">
     <FluxDataTable is-sticky :items="items" :limits="[10, 25, 50]" :page="page"
       :per-page="perPage" :total="total" @limit="setPerPage" @navigate="setPage">
-      <!-- #filter / #header / column slots … -->
+      <!-- #filter / #header / column slots ... -->
     </FluxDataTable>
   </FluxApplicationContent>
 </template>
@@ -251,7 +251,7 @@ on change.
   <template #filter>
     <FluxTableBar>
       <FluxFilterBar v-model="filters" v-model:search="search" is-searchable
-        search-placeholder="Search orders…">
+        search-placeholder="Search orders...">
         <!-- sync options: FluxFilterOptionItem[] = { icon?, label, value } -->
         <FluxFilterOption name="status" label="Status" icon="circle-check" is-searchable
           :options="statusOptions" />
@@ -264,8 +264,8 @@ on change.
     </FluxTableBar>
   </template>
 
-  <template #header><!-- … --></template>
-  <!-- column slots … -->
+  <template #header><!-- ... --></template>
+  <!-- column slots ... -->
 </FluxDataTable>
 ```
 
@@ -278,7 +278,7 @@ const statusOptions: FluxFilterOptionItem[] = [
   { icon: 'circle-exclamation', label: 'Pending', value: 'pending' },
 ];
 // async fetchers return FluxFilterOptionRow[]:
-async function fetchEventOptions(ids: FluxFilterValue[]) { /* … */ }
+async function fetchEventOptions(ids: FluxFilterValue[]) { /* ... */ }
 ```
 
 Filter list + per-type `v-model` value shapes: `references/components.md`. Docs' worked
@@ -440,7 +440,7 @@ Two LayerPane caveats:
     <FluxPaneBody><!-- details --></FluxPaneBody>
   </FluxPane>
   <FluxPaneFooter> <!-- direct child of the layer pane → blends in, no chrome -->
-    <FluxButtonStack><FluxSecondaryButton icon-leading="pen" label="Edit role" @click="…" /></FluxButtonStack>
+    <FluxButtonStack><FluxSecondaryButton icon-leading="pen" label="Edit role" @click="..." /></FluxButtonStack>
   </FluxPaneFooter>
 </FluxLayerPane>
 ```
@@ -518,7 +518,7 @@ entity name). For **page-specific actions** (Create, Edit, Download), render a *
     <!-- 1) Search field with a ⌘K hint -->
     <FluxFormInputGroup is-secondary style="width: 30ch; align-self: center;">
       <FluxFormInputAddition icon="magnifying-glass" />
-      <FluxFormInput type="search" placeholder="Search for anything…" />
+      <FluxFormInput type="search" placeholder="Search for anything..." />
       <FluxFormInputAddition label="⌘K" />
     </FluxFormInputGroup>
 
@@ -594,7 +594,7 @@ to `FluxCommandPalette` (the key would fire twice).
       <FluxStatisticsGrid :sm="2" :md="3" :xl="5">
         <FluxStatisticsKpi icon="qrcode-read" title="Total scans" :value="formatNumber(scans)" />
         <FluxStatisticsKpi icon="user-check" title="Attendance" :value="formatPercent(rate)" />
-        <!-- … -->
+        <!-- ... -->
       </FluxStatisticsGrid>
     </FluxApplicationSection>
 
@@ -615,8 +615,8 @@ to `FluxCommandPalette` (the key would fire twice).
 </script>
 ```
 
-`FluxApplicationContent` `layout`: `default | dashboard | full | medium | narrow`
-(`narrow` for settings/forms, `dashboard` here). `FluxStatisticsGrid` takes responsive
+The `FluxApplicationContent` `layout` values and when to use each are in
+`references/ecosystem.md` (`dashboard` here). `FluxStatisticsGrid` takes responsive
 column counts (`:xs`/`:sm`/`:md`/`:lg`/`:xl`). Full application + statistics surface:
 `references/ecosystem.md`.
 
@@ -641,7 +641,7 @@ Three pieces:
        default: () => import('./EventLayout.vue'),
        menu: () => import('./EventMenu.vue'),   // <-- the context menu
      },
-     children: [ { name: 'event', /* … */ }, { name: 'event-products', /* … */ } ],
+     children: [ { name: 'event', /* ... */ }, { name: 'event-products', /* ... */ } ],
    }
    ```
 

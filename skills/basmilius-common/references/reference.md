@@ -101,9 +101,8 @@ plus `filters?`, `search?`, `searchDebounceMs?`, `dependencies?`, `preload?`, an
 
 ## store
 
-- `defineStore(id, setup)` - setup-style Pinia wrapper; the returned composable
-  runs `storeToRefs`, returns state/getters as `Ref`s and actions unchanged, and
-  filters `$`/`_` keys.
+- `defineStore(id, setup)` - the setup-style Pinia wrapper; its ref-returning
+  behavior is covered in SKILL.md section 1.
 - Re-exports from Pinia: `createPinia`, `getActivePinia`, `setActivePinia`.
 
 ## router (vue-router 5 wrappers)

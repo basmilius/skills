@@ -38,23 +38,13 @@ copy just drifts from them.
 
 ## 3. What is in there (category map)
 
-Signatures live in the reference; this is the "does it already exist" map.
-
-- **Date and time** (Luxon): `formatDate`, `formatDateFull`, `formatDateTime`,
-  `formatTime`, `formatMonth`, `formatMonthYear`, `isToday`, plus day-part /
-  season / moon / zodiac helpers (`getDayPeriod`, `getSeason`, `getMoonPhase`,
-  `getZodiacSign`, ...).
-- **Number and math:** `formatNumber`, `formatPercentage`, `countDecimals`,
-  `roundStep`, `clampWithStepPrecision`, `generateStepTicks`, `mulberry32` (PRNG).
-- **Color:** `hexToRGB`, `rgbToHEX`, `rgbToHSL`, `rgbToHSV`, `hslToRGB`,
-  `hsvToRGB`, `hslToHSV`, `hsvToHSL`.
-- **Download / print / navigate:** `downloadBlob`, `downloadString`,
-  `downloadUrl`, `openUrl`, `printHtml`.
-- **DOM / view:** `isHtmlElement`, `viewTransition`.
-- **Timing:** `debounce`, `waitFor`.
-- **Object / reflection:** `getPrototypeChain`, `setObjectMethod`,
-  `setObjectValue`.
-- **Geo:** `isNorthernHemisphere`, `isPointInPolygon`.
+The catalog covers: date and time formatting plus day-part / season / moon /
+zodiac helpers (Luxon); number and math formatting including step rounding and a
+seeded PRNG; color conversions between HEX, RGB, HSL and HSV; download / print /
+navigate triggers; DOM and view-transition helpers; debounce and wait-for timing;
+object reflection; and geo checks. Every function with its exact signature is in
+`references/function-index.md`; scan the matching category there before writing
+a helper.
 
 ## 4. Traps that bite (durable judgment)
 
@@ -68,15 +58,13 @@ Signatures live in the reference; this is the "does it already exist" map.
 - **`formatPercentage` reads `navigator.language` with no guard** and throws
   where there is no `navigator` (Node/SSR); `formatNumber` falls back to `nl-NL`.
   Guard percentage formatting on the server.
-- **Color ranges differ per space:** RGB channels `0-255`, HEX `#rrggbb`, HSL
-  `h 0-360`, `s,l 0-100`, HSV all `0-1`. Feed the wrong range and you get
-  garbage, not an error.
+- **Color ranges differ per space.** Feed the wrong range and you get garbage,
+  not an error; the exact ranges per space are in the reference's color section.
 - **`hueToRGB` is a low-level primitive** used inside `hslToRGB`, not a
   color-space converter. Do not reach for it to convert a hue.
 - **`downloadUrl` throws unless the scheme is `http(s):` or `blob:`.**
-- **Browser-only helpers:** the downloads, `openUrl`, `printHtml`,
-  `viewTransition` and `formatPercentage` need DOM globals; `isHtmlElement` and
-  `formatNumber` degrade gracefully. Guard the rest to client code.
+- **Several helpers need DOM globals.** The reference's browser-vs-pure split
+  says which; guard those to client code.
 - **No currency formatter.** There is `formatNumber` and `formatPercentage` but no
   `formatCurrency`. For money use `Intl.NumberFormat(locale, { style: 'currency',
   currency })` directly, or wrap `formatNumber` with the ISO code.

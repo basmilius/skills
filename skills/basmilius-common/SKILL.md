@@ -5,7 +5,8 @@ description: >-
   Milius): shared app primitives around Pinia, Vue Router and the DTO http client.
   Trigger on its `defineStore` (the ref-returning wrapper), on `useService` /
   `guarded` / `onError`, on `useDataTable` / `useDataReport`, on `useDtoForm`,
-  `useUrlState`, `persistentRef`, and its many composables (useClickOutside,
+  `useUrlState`, `persistentRef`, `unrefAll`, `generateColorPalette`, and its
+  many composables (useClickOutside,
   useHotKey, useEventListener, useLoaded, useResizeObserver, ...), its router
   helpers (useRouteParam, useRouteMeta, useNavigate, useNamedRoute) and its
   exceptions (ForbiddenException, UnauthorizedException, HandledException,
@@ -39,15 +40,7 @@ pinia 3 / vue-router 4; ignore that.
 - Bootstrap with the **re-exported `createPinia`** (`import { createPinia } from
   '@basmilius/common'`).
 - Do not give a public store key a `$` or `_` prefix; those are filtered out.
-
-```ts
-export const useCounterStore = defineStore('counter', () => {
-    const count = ref(0);
-    function increment(): void { count.value += 1; }
-    return { count, increment };
-});
-// const { count, increment } = useCounterStore(); // count is a Ref
-```
+  A worked store is in `references/patterns.md` section 1.
 
 ## 2. Data access: `useService` + `guarded`
 
@@ -73,10 +66,9 @@ and race-guarding for you.
 
 - Call it with an **options object**; the `fetcher` receives one
   `DataTableQuery<TFilter>` (`{ offset, limit, search, filters, sort }`) and
-  returns `BaseResponse<Paginated<TItem>> | false`. It returns `items`,
-  `isLoading`, `displayEmpty` (the managed empty flag), `error` (`Ref<unknown>`),
-  `page` / `perPage` / `total`, `search` / `filters` / `sort`, plus `reload` /
-  `setPage` / `toggleSort` (full shape in `references/reference.md`).
+  returns `BaseResponse<Paginated<TItem>> | false`. The full return shape is
+  typed in `references/reference.md`; bind its managed `displayEmpty` instead of
+  computing your own empty state.
 - **Keep the service independent of `@basmilius/common`:** map the
   `DataTableQuery` to the service's own params inside the fetcher, so the data
   layer depends only on `@basmilius/http-client`, not on this table type.
@@ -124,14 +116,14 @@ records' `meta`, inner wins), `useRouteNames`, `useIsView`, `useNavigate`
 depth). **Overlay / modal routing is NOT here** - that lives in the separate
 `@basmilius/routing` package, which builds on these primitives. Until a dedicated
 skill covers `@basmilius/routing`, model overlays by hand per `vue-build-feature`
-section 7 (child route + nested `<RouterView>` + a teleport inside the root).
+section 7 (child route + nested `<RouterView>`).
 
 ## 7. Exceptions
 
-Four empty `Error` subclasses, **thrown by the helpers and caught centrally**, not
-constructed with messages: `ForbiddenException`, `UnauthorizedException`,
-`HandledException` (already shown, stop propagating), `UnresolvedDependencyException`
-(swallowed by the data composables to skip a fetch).
+Four empty `Error` subclasses (`ForbiddenException`, `UnauthorizedException`,
+`HandledException`, `UnresolvedDependencyException`), **thrown by the helpers and
+caught centrally**, never constructed with messages. Per-exception meaning is in
+`references/reference.md`; sections 2 and 3 above cover how they flow.
 
 ## Reference files
 

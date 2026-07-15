@@ -24,23 +24,8 @@ overlay and `router.push` instead. All `show*` specs share `title` (**required**
 ## The show* functions and their return types
 
 **`showConfirm` → `Promise<boolean>`.** The dominant real-app loop is
-**confirm → act → snackbar** (see `references/patterns.md` §4); bail on `false`:
-
-```ts
-import { showConfirm, showSnackbar } from '@flux-ui/components';
-
-async function deleteProject(project: Project): Promise<void> {
-  const confirmed = await showConfirm({
-    icon: 'trash',
-    title: 'Delete project',
-    message: `Delete "${project.name}"? This cannot be undone.`
-  });
-  if (!confirmed) return;
-
-  await api.deleteProject(project.id);
-  showSnackbar({ icon: 'circle-check', color: 'success', message: 'Project deleted.' });
-}
-```
+**confirm → act → snackbar**: await `showConfirm`, bail on `false`, act, then show a
+success `showSnackbar`. Worked code: `references/patterns.md` §4.
 
 **`showPrompt` → `Promise<string | false>`** (resolves to the string, or **`false`**
 when cancelled, not `null`). Adds `fieldLabel` (required), optional `fieldPlaceholder`
@@ -64,7 +49,7 @@ the id and an update method:
 import { useFluxStore } from '@flux-ui/components';
 
 const store = useFluxStore();
-const id = store.addSnackbar({ icon: 'cloud-arrow-up', title: 'Uploading…',
+const id = store.addSnackbar({ icon: 'cloud-arrow-up', title: 'Uploading...',
   progressIndeterminate: true, isCloseable: false });
 
 await uploadFile(file, progress => {
@@ -87,7 +72,7 @@ store.updateSnackbar(id, { icon: 'circle-check', color: 'success', title: 'Uploa
 > surface; toggle only its content:
 > ```vue
 > <FluxSlideOver is-closeable @close="selected = null">
->   <FluxPane v-if="selected"> … uses selected.* … </FluxPane>
+>   <FluxPane v-if="selected"> ... uses selected.* ... </FluxPane>
 > </FluxSlideOver>
 > ```
 > Both run through `createDialogRenderer`, which sets *visible = there is a non-Comment

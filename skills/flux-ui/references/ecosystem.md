@@ -89,7 +89,7 @@ Verified props:
 **`FluxStatisticsTreemapChart` takes `:nodes`** (`FluxStatisticsChartTreemapNode[]`) and
 **`FluxStatisticsPolarAreaChart` (like pie/donut) takes `:slices`**. Series colors
 accept a `FluxStatisticsChartColor` (`FluxColor | #hex | var(--token)`), but
-**`FluxStatisticsLegendItem`'s `color` is only `FluxColor | #hex`** (a `var(--…)` is a
+**`FluxStatisticsLegendItem`'s `color` is only `FluxColor | #hex`** (a `var(--...)` is a
 type error there). A custom legend goes in the `FluxStatisticsChartPane` **`#legend`**
 slot (wrap items in `FluxStatisticsLegendScope`); the auto legend is just
 `<FluxStatisticsLegend/>` there. Full dashboard skeleton: `references/patterns.md` §6.
