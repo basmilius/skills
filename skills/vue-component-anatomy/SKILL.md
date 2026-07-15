@@ -84,9 +84,9 @@ Order the body top to bottom so state is declared before it is used:
 
 - Type props with the generic form: `defineProps<{ readonly id: number }>()`.
   Mark fields `readonly` - props are immutable.
-- **Defaults:** use `withDefaults(defineProps<...>(), { ... })`, or reactive
-  props destructuring with defaults (Vue 3.5+):
-  `const { size = 'md' } = defineProps<{ size?: Size }>()`.
+- **Defaults:** use reactive props destructuring with defaults:
+  `const { size = 'md' } = defineProps<{ size?: Size }>()`. The destructured
+  bindings stay reactive; only destructure the props that need a default.
 - **`type` over `interface`** for prop and data shapes. Use `interface` only
   where declaration merging is required (module augmentation, `declare global`).
 - **Inline the props type** in `defineProps<{ ... }>()` when it is used only
