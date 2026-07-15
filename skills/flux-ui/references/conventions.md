@@ -164,6 +164,26 @@ badges, notices, headers, ...) it comes via `icon` / `icon-leading` / `icon-trai
 - **Typography** and **dark mode** are handled by the library via these variables.
   Dark mode is built in; don't author separate dark styles per component.
 
+## Overriding Flux internals (last resort)
+
+Prefer props, slots and design tokens. When none of those reach what you need, a
+Flux-internal class can be targeted from your own `<style module>` with
+`:local(...)`, nested under your own base class:
+
+```scss
+.authViewContent {
+    :local(.pane) {
+        border-radius: var(--radius-double);
+    }
+}
+```
+
+This resolves to Flux's internal `.pane` because `@basmilius/vite-preset` mangles
+CSS-module class names by name, shared between app and library; it does not work
+under other CSS-modules configs. Writing `:local()` explicitly marks the class as
+foreign. Keep it minimal and add a one-line comment saying why props, slots or
+tokens did not suffice.
+
 ## Content: prop vs default slot (common trap)
 
 Flux is **not** consistent about how text content goes in, so don't assume a

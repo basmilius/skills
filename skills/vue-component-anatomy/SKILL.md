@@ -141,6 +141,13 @@ Order the body top to bottom so state is declared before it is used:
   `:class="[$style.tagInput, { [$style.isDisabled]: disabled }]"`.
 - **Custom / global / deep-selector CSS is a last resort.** Keep it minimal and
   leave a one-line comment explaining why the module route did not work.
+- **Overriding a component library's internals** (when props, slots and design
+  tokens truly cannot reach it) is done with `:local(.pane)` nested under your
+  own base class. Functionally it is just a local class reference; writing
+  `:local()` explicitly marks the class as foreign, deliberately reached into.
+  This only resolves to the library's class when app and library share the same
+  name-based CSS-modules mangling (for example both built with
+  `@basmilius/vite-preset`); the one-line-comment rule above applies.
 - **Theme through CSS custom properties** (design tokens), not by overriding
   internal selectors of other components. When the project has no token set, a
   standalone component can expose its own `var(--x, fallback)` properties so
