@@ -1,0 +1,149 @@
+#!/usr/bin/env bun
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { homedir } from 'node:os';
+import { dirname, join } from 'node:path';
+
+type Entry = {
+    path: string;
+    type: string;
+    title: string;
+    url: string;
+    updatedAt: string;
+};
+
+// Configuration comes from the environment, so nothing about a host lives on
+// disk. What is left on disk is state: which title was published where, which
+// belongs under XDG_STATE_HOME rather than alongside configuration.
+const STATE_DIRECTORY = join(process.env.XDG_STATE_HOME || join(homedir(), '.local', 'state'), 'artifact-fail');
+const REGISTRY_FILE = join(STATE_DIRECTORY, 'published.json');
+
+const options = parseArguments(process.argv.slice(2));
+
+if (!options.type || !options.title || !options.file) {
+    fail('Usage: publish.ts --type <doc|diagram> --title <title> --file <path> [--description <text>] [--path <yyyy/mm/slug>] [--new]');
+}
+
+if (options.type !== 'doc' && options.type !== 'diagram') {
+    fail(`Unknown type "${options.type}", expected "doc" or "diagram".`);
+}
+
+const endpoint = process.env.ARTIFACT_FAIL_ENDPOINT?.trim().replace(/\/$/, '');
+const token = process.env.ARTIFACT_FAIL_TOKEN?.trim();
+
+if (!endpoint) {
+    fail('ARTIFACT_FAIL_ENDPOINT is not set. It should hold the host to publish to, such as https://artifact.fail.');
+}
+
+if (!token) {
+    fail('ARTIFACT_FAIL_TOKEN is not set. It should hold the bearer token the host expects.');
+}
+
+const source = read(options.file!);
+
+if (source === null) {
+    fail(`Cannot read ${options.file}.`);
+}
+
+const registry = readRegistry();
+
+// Publishing the same title again should land on the page it landed on before,
+// unless a fresh URL was asked for explicitly. When a title has been split over
+// several pages with --new, the most recent one is the one being worked on.
+const path = options.path ?? (options.new ? undefined : findPrevious()?.path);
+
+const response = await fetch(`${endpoint}/api/publish`, {
+    method: 'POST',
+    headers: {
+        'authorization': `Bearer ${token}`,
+        'content-type': 'application/json'
+    },
+    body: JSON.stringify({
+        type: options.type,
+        title: options.title,
+        description: options.description,
+        source,
+        path
+    })
+});
+
+const result = await response.json() as Record<string, string>;
+
+if (!response.ok) {
+    fail(`${endpoint} answered ${response.status}: ${result.error ?? 'unknown error'}`);
+}
+
+writeRegistry([
+    ...registry.filter(entry => entry.path !== result.path),
+    {
+        path: result.path,
+        type: result.type,
+        title: result.title,
+        url: result.url,
+        updatedAt: result.updatedAt
+    }
+]);
+
+console.log(result.url);
+console.log(result.replaced ? '(replaced the existing page)' : '(new page)');
+
+function parseArguments(argv: string[]): Record<string, string | undefined> & { new?: boolean } {
+    const parsed: Record<string, string | boolean | undefined> = {};
+
+    for (let index = 0; index < argv.length; index++) {
+        const argument = argv[index];
+
+        if (!argument.startsWith('--')) {
+            continue;
+        }
+
+        const name = argument.slice(2);
+
+        if (name === 'new') {
+            parsed.new = true;
+            continue;
+        }
+
+        parsed[name] = argv[++index];
+    }
+
+    return parsed as Record<string, string | undefined> & { new?: boolean };
+}
+
+function findPrevious(): Entry | undefined {
+    return registry
+        .filter(entry => entry.title === options.title && entry.type === options.type)
+        .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
+        .at(0);
+}
+
+function readRegistry(): Entry[] {
+    const contents = read(REGISTRY_FILE);
+
+    if (contents === null) {
+        return [];
+    }
+
+    try {
+        return JSON.parse(contents) as Entry[];
+    } catch {
+        return [];
+    }
+}
+
+function writeRegistry(entries: Entry[]): void {
+    mkdirSync(dirname(REGISTRY_FILE), {recursive: true});
+    writeFileSync(REGISTRY_FILE, `${JSON.stringify(entries, null, 4)}\n`);
+}
+
+function read(path: string): string | null {
+    try {
+        return readFileSync(path, 'utf8');
+    } catch {
+        return null;
+    }
+}
+
+function fail(message: string): never {
+    console.error(message);
+    process.exit(1);
+}
