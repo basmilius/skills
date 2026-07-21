@@ -10,14 +10,32 @@ looks almost right.
 
 ## Spacing
 
-- A card is about 300px wide and 100 to 155px tall, depending on its text.
-- Put roughly 160px between the tops of two stacked nodes, more when the upper
-  one carries two lines of body text.
-- Put roughly 300px between the left edges of two columns, and at least 420px
-  when a labelled connection runs between them. At 320px the label sits wedged
-  against both cards and the connector all but disappears behind it.
-- Keep the happy path in one straight column and branch sideways. A reader
-  follows a single spine far more easily than a balanced tree.
+Measure the space between two nodes, never the distance between their tops. A
+card grows with its text, so a fixed distance between tops quietly eats the room
+the connector needs, and the taller the card the less is left.
+
+A card is 300px wide and `78 + 24 × lines` tall, where a line is about 36
+characters of body text: 102px for one line, 126px for two, 150px for three. A
+card with no body at all is 62px. So the next node goes at
+`y + height + spacing`, and these are the spacings:
+
+| Between | Space |
+| --- | --- |
+| Two stacked nodes | 60px |
+| Two stacked nodes, labelled connection | 110px |
+| Two columns | 120px |
+| Two columns, labelled connection | 120px plus about 8px per character of the label |
+
+The labelled numbers are not padding, they are arithmetic. A connector stops 9px
+short of each node, its badge punches a hole the size of itself plus 6px of air
+out of the middle of the line, and the dot and the chevron take another 11px.
+With a 28px badge that leaves nothing at all below 100px, which is why a label
+ends up sitting on both cards at once. Sideways the hole is as wide as the badge,
+so a long label pushes two columns apart; keeping labels to a word or two is
+usually the better fix.
+
+Keep the happy path in one straight column and branch sideways. A reader follows
+a single spine far more easily than a balanced tree.
 
 ## Where a connector attaches
 
@@ -65,8 +83,8 @@ downward flow wants.
   so two cards of different heights get a line that kinks on its way across.
 - `label`: leave it where it lands. Every badge sits in the middle of its
   connector, so do not reach for `labelPlacement` to nudge one out of trouble. A
-  badge in an awkward spot means the two nodes are too close, and moving the
-  nodes fixes it for good.
+  badge wedged against the cards means the two nodes are too close; give them the
+  space from the table above and it fixes itself.
 - `color`: use it to separate a failure path from the happy path.
 
 ```vue
@@ -110,15 +128,22 @@ the two produces a long detour. Pick one spine and keep the junction on it.
 
 ## Before you publish
 
-Nothing checks the geometry, so read your own coordinates back. Every node in a
-column shares one `x`, and each row's `y` is the previous `y` plus the spacing
-above. Crowding never announces itself, so walk these four:
+Read your own coordinates back. Every node in a column shares one `x`, and each
+row's `y` is the previous `y` plus that card's height plus the spacing. Walk
+these five:
 
-1. Does anything sit within 90px above the first node of a group, or 60px below
+1. Does every pair of connected nodes have the space from the table above,
+   counted from the bottom of the upper card rather than from its top?
+2. Does anything sit within 90px above the first node of a group, or 60px below
    its last?
-2. Does a badge on a connection leaving a group have room to sit clear of the
+3. Does a badge on a connection leaving a group have room to sit clear of the
    frame, rather than on top of it?
-3. Does a junction sit at the middle of the node after it, and does it have room
+4. Does a junction sit at the middle of the node after it, and does it have room
    on both sides?
-4. Does every connector between nodes of different heights account for the
+5. Does every connector between nodes of different heights account for the
    attachment inset, or will it arrive at a slight angle?
+
+`publish.ts --check --file <path>` does the first of these for you and reports
+every pair that is too close, which is faster than counting by hand. It runs on
+every diagram published as well, and refuses the publish when something is
+crowded.

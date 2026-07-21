@@ -2,6 +2,13 @@
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join } from 'node:path';
+import checkFlowGeometry from './flow-geometry';
+
+type Options = Record<string, string | undefined> & {
+    new?: boolean;
+    check?: boolean;
+    force?: boolean;
+};
 
 type Entry = {
     path: string;
@@ -14,17 +21,56 @@ type Entry = {
 // Configuration comes from the environment, so nothing about a host lives on
 // disk. What is left on disk is state: which title was published where, which
 // belongs under XDG_STATE_HOME rather than alongside configuration.
+// Arguments that stand on their own rather than taking the next word.
+const FLAGS = ['new', 'check', 'force'];
+
 const STATE_DIRECTORY = join(process.env.XDG_STATE_HOME || join(homedir(), '.local', 'state'), 'artifact-fail');
 const REGISTRY_FILE = join(STATE_DIRECTORY, 'published.json');
 
 const options = parseArguments(process.argv.slice(2));
 
-if (!options.type || !options.title || !options.file) {
-    fail('Usage: publish.ts --type <doc|diagram> --title <title> --file <path> [--description <text>] [--path <yyyy/mm/slug>] [--new]');
+if (!options.file || (!options.check && (!options.type || !options.title))) {
+    fail([
+        'Usage: publish.ts --type <doc|diagram> --title <title> --file <path> [--description <text>] [--path <yyyy/mm/slug>] [--new] [--force]',
+        '       publish.ts --check --file <path>'
+    ].join('\n'));
 }
 
-if (options.type !== 'doc' && options.type !== 'diagram') {
+if (options.type !== undefined && options.type !== 'doc' && options.type !== 'diagram') {
     fail(`Unknown type "${options.type}", expected "doc" or "diagram".`);
+}
+
+const source = read(options.file!);
+
+if (source === null) {
+    fail(`Cannot read ${options.file}.`);
+}
+
+// Nothing in Flow lays a diagram out, so a coordinate that leaves two nodes too
+// close for the connector between them only shows up once the page is live.
+// Checking here is the last moment it can still be fixed cheaply.
+if (options.check || options.type === 'diagram') {
+    const problems = checkFlowGeometry(source);
+
+    if (problems.length > 0) {
+        console.error(`${problems.length === 1 ? 'One pair of nodes sits' : `${problems.length} pairs of nodes sit`} too close together:`);
+
+        for (const problem of problems) {
+            console.error(`  ${problem}`);
+        }
+
+        console.error('See references/flow-layout.md for the spacing every connector needs, or pass --force to publish anyway.');
+
+        if (!options.force) {
+            process.exit(1);
+        }
+    } else if (options.check) {
+        console.log('Every connector has room.');
+    }
+
+    if (options.check) {
+        process.exit(0);
+    }
 }
 
 const endpoint = process.env.ARTIFACT_FAIL_ENDPOINT?.trim().replace(/\/$/, '');
@@ -36,12 +82,6 @@ if (!endpoint) {
 
 if (!token) {
     fail('ARTIFACT_FAIL_TOKEN is not set. It should hold the bearer token the host expects.');
-}
-
-const source = read(options.file!);
-
-if (source === null) {
-    fail(`Cannot read ${options.file}.`);
 }
 
 const registry = readRegistry();
@@ -86,7 +126,7 @@ writeRegistry([
 console.log(result.url);
 console.log(result.replaced ? '(replaced the existing page)' : '(new page)');
 
-function parseArguments(argv: string[]): Record<string, string | undefined> & { new?: boolean } {
+function parseArguments(argv: string[]): Options {
     const parsed: Record<string, string | boolean | undefined> = {};
 
     for (let index = 0; index < argv.length; index++) {
@@ -98,15 +138,15 @@ function parseArguments(argv: string[]): Record<string, string | undefined> & { 
 
         const name = argument.slice(2);
 
-        if (name === 'new') {
-            parsed.new = true;
+        if (FLAGS.includes(name)) {
+            parsed[name] = true;
             continue;
         }
 
         parsed[name] = argv[++index];
     }
 
-    return parsed as Record<string, string | undefined> & { new?: boolean };
+    return parsed as Options;
 }
 
 function findPrevious(): Entry | undefined {

@@ -71,6 +71,8 @@ URL back to the user; it is the whole point of the operation.
 | `--description` | no | One sentence, used for link previews and under the diagram title |
 | `--path` | no | Publish onto a specific existing page, as `2026/07/some-slug` |
 | `--new` | no | Force a fresh URL even when the title was published before |
+| `--check` | no | Check a diagram's spacing and stop; publishes nothing |
+| `--force` | no | Publish a diagram the spacing check objects to |
 
 ### Replacing an earlier page
 
@@ -113,9 +115,14 @@ reads a variable will not work.
 
 **Read `references/flow-layout.md` before placing anything.** Flow positions
 nothing for you, and the numbers that decide whether a diagram reads well are not
-guessable: a connector attaches 31px in from an edge, a group's frame extends
-21px past its nodes plus a 45px title band, and getting either wrong is what
-produces kinked lines and frames that touch the card above them.
+guessable: a card is as tall as its text, a labelled connection needs 110px of
+clear space or its badge lands on both cards, a connector attaches 31px in from
+an edge, and a group's frame extends 21px past its nodes plus a 45px title band.
+
+Publishing a diagram checks that spacing and refuses when two connected nodes sit
+too close, naming the pairs and the space they need. Fix the coordinates rather
+than reaching for `--force`. While drawing, `--check --file <path>` runs the same
+check on its own and publishes nothing.
 
 For which component to reach for and the props it takes, see
 `references/flow-components.md`.
@@ -129,4 +136,5 @@ makes it draggable and zoomable. It applies `interactive`, `background` and
 Publishing rejects a diagram naming a component the viewer cannot resolve. Vue
 drops its "failed to resolve component" warning from a production build, so a
 rejected publish means a typo or a component that does not exist, not a broken
-host. Nothing checks the geometry, so the layout is yours to get right.
+host. The host itself checks nothing about the layout; the spacing check runs in
+`publish.ts`, and everything it does not measure is yours to get right.
