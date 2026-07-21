@@ -6,7 +6,8 @@ description: >-
   internal anatomy: block order and template root, the compiler-macro order
   (defineEmits -> defineModel -> defineProps -> defineSlots, with defineExpose
   last), the ordering inside `<script setup>` (imports -> macros -> constants ->
-  state -> composables -> computed -> watch -> lifecycle -> functions), function-vs-arrow style, prop
+  stores -> state -> composables -> computed -> watch -> lifecycle -> functions),
+  function-vs-arrow style, prop
   and emit typing, v-model via defineModel, and scoped/module styling. Triggers
   on editing any `.vue` file, on defineProps/defineEmits/defineModel/defineSlots,
   on script-setup ordering questions, and on prop typing. For splitting a feature
@@ -65,18 +66,24 @@ Order the body top to bottom so state is declared before it is used:
 1. **imports**
 2. **macros** (emits / models / props / slots) - see section 2
 3. **module constants** (`ALL_CAPS`: config values, option lists, lookup maps)
-4. **reactive state** (`ref`, `reactive`, `shallowRef`, and template refs)
-5. **composables** (`useRouter`, `useI18n`, `use*` - data/state helpers)
-6. **computed**
-7. **watch / watchEffect**
-8. **lifecycle hooks** (`onMounted`, `onUnmounted`, ...)
-9. **function declarations** (event handlers and helpers)
-10. **`defineExpose`** last of all, only if a parent needs a ref handle
+4. **stores** (`use*Store()` - shared state)
+5. **reactive state** (`ref`, `reactive`, `shallowRef`, and template refs)
+6. **composables** (`useRouter`, `useI18n`, other `use*` behaviour helpers)
+7. **computed**
+8. **watch / watchEffect**
+9. **lifecycle hooks** (`onMounted`, `onUnmounted`, ...)
+10. **function declarations** (event handlers and helpers)
+11. **`defineExpose`** last of all, only if a parent needs a ref handle
 
 - **Module constants go below the macros, not above them.** The macros are the
   component's public contract and read first; constants are implementation
   detail. A constant that needs `t()` or other reactive input is not a constant:
-  make it a `computed` in step 6.
+  make it a `computed` in step 7.
+- **Stores sit above the reactive state, composables below it.** A store is
+  shared state and reads together with the component's own state; a composable
+  provides behaviour or derived data and may build on that state. Rule of thumb:
+  a `use*Store()` from the store layer is a store, every other `use*` call is a
+  composable.
 - **Template refs use `useTemplateRef('name')`** (Vue 3.5+) and sit with the
   reactive state; the string argument matches the `ref="name"` in the template.
 - **Import style (alias vs relative)** follows `vue-build-feature`: the path
@@ -156,7 +163,8 @@ Order the body top to bottom so state is declared before it is used:
 ## 9. Whitespace
 
 - **One blank line between the top-level groups** in `<script setup>` (imports,
-  each macro block, constants, state, composables, computed, watch, lifecycle)
+  each macro block, constants, stores, state, composables, computed, watch,
+  lifecycle)
   and between every `function` declaration.
 - **No blank line between adjacent single-line declarations** in the same group
   (a run of refs or composables stays together).
