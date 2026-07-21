@@ -98,6 +98,10 @@ Order the body top to bottom so state is declared before it is used:
   template, and stack-trace with a name.
 - **Arrow functions** only for inline callbacks and closures (watchers,
   `array.map`, `.filter`, event options).
+- **Lifecycle bodies stay inline:** `onMounted(async () => { ... })` keeps the
+  side effect where it runs. Only lift it into a named function when a second
+  caller needs it (a watcher, a retry button, the template) or when the body
+  grows past a handful of statements - not just to give it a name.
 
 ## 5. Props and their types
 
