@@ -112,9 +112,10 @@ reads a variable will not work.
 
 **Read `references/flow-layout.md` before placing anything.** Flow positions
 nothing for you, and the numbers that decide whether a diagram reads well are not
-guessable: a card is as tall as its text, a labelled connection needs 110px of
-clear space or its badge lands on both cards, a connector attaches 31px in from
-an edge, and a group's frame extends 21px past its nodes plus a 45px title band.
+guessable: a card is as tall as its text, a connection carrying a label needs
+110px of clear space and one carrying only an icon 100px or its badge lands on
+both cards, a connector attaches 31px in from an edge, and a group's frame extends
+21px past its nodes plus a 45px title band.
 
 Publishing a diagram checks that spacing and refuses when two connected nodes sit
 too close, naming the pairs and the space they need. Fix the coordinates rather

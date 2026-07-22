@@ -10,6 +10,7 @@ type FlowConnection = {
     readonly from: string;
     readonly to: string;
     readonly label: string;
+    readonly icon: string;
     readonly vertical: boolean | null;
 };
 
@@ -29,7 +30,12 @@ const LABEL_GAP = 6;
 const MARKERS = 11;
 const MIN_LINE = 15;
 
-// A connector without a label needs far less: no hole in the middle, so only the
+// An icon without a label rides the connector as a bare badge: no padding and no
+// background, just the icon at 20px. Flow masks the line against it exactly as it
+// does a label, and the icon is square, so it asks the same on both axes.
+const ICON_SIZE = 20;
+
+// A connector carrying neither needs far less: no hole in the middle, so only the
 // markers and a stretch of line on either side of them.
 const MIN_GAP = 60;
 
@@ -47,7 +53,7 @@ const CARD_COMPONENTS = ['FluxFlowCard', 'FluxFlowActionCard', 'FluxFlowConditio
  * Reads a Flow template back and reports every pair of nodes that sits too close
  * for the connector between them. Nothing in Flow lays a diagram out, so this is
  * the only thing standing between a typo in a coordinate and a published diagram
- * with its label sitting on top of its own line.
+ * with its badge sitting on top of its own line.
  */
 export default function checkFlowGeometry(source: string): string[] {
     const nodes = readNodes(source);
@@ -66,26 +72,45 @@ export default function checkFlowGeometry(source: string): string[] {
         const gap = vertical
             ? distance(from.y, from.height, to.y, to.height)
             : distance(from.x, from.width, to.x, to.width);
-        const required = connection.label ? labelledGap(vertical, connection.label) : MIN_GAP;
+        const badge = badgeSize(connection, vertical);
+        const required = badge === null ? MIN_GAP : badgedGap(badge);
 
         if (gap < 0) {
             problems.push(`${connection.from} -> ${connection.to}: the nodes overlap by ${-gap}px.`);
         } else if (gap < required) {
-            problems.push(`${connection.from} -> ${connection.to}: ${gap}px between them, and ${connection.label ? `a connector labelled "${connection.label}"` : 'a connector'} needs ${required}px.`);
+            problems.push(`${connection.from} -> ${connection.to}: ${gap}px between them, and ${describe(connection)} needs ${required}px.`);
         }
     }
 
     return problems;
 }
 
-// The space a labelled connector needs: clear of both nodes, the hole its badge
-// punches, the markers, and a visible stretch of line on either side of the
-// badge. A vertical badge is always one line tall; a horizontal one is as wide as
-// its text, so a long label pushes two columns further apart.
-function labelledGap(vertical: boolean, label: string): number {
-    const badge = vertical ? BADGE_HEIGHT : BADGE_PADDING + label.length * BADGE_CHARACTER;
-
+// The space a connector carrying a badge needs: clear of both nodes, the hole the
+// badge punches, the markers, and a visible stretch of line on either side of it.
+function badgedGap(badge: number): number {
     return NODE_GAP * 2 + badge + LABEL_GAP * 2 + MARKERS + MIN_LINE * 2;
+}
+
+// How much of the line the badge covers, or null when there is no badge at all. A
+// labelled badge is one line tall whichever way the connector runs, but as wide as
+// its text, so a long label pushes two columns further apart. A bare icon is
+// square and asks for the same on both axes.
+function badgeSize(connection: FlowConnection, vertical: boolean): number | null {
+    if (connection.label) {
+        return vertical ? BADGE_HEIGHT : BADGE_PADDING + connection.label.length * BADGE_CHARACTER;
+    }
+
+    return connection.icon ? ICON_SIZE : null;
+}
+
+// Names the connector the way the diagram writes it, so a reported pair can be
+// found back in the template.
+function describe(connection: FlowConnection): string {
+    if (connection.label) {
+        return `a connector labelled "${connection.label}"`;
+    }
+
+    return connection.icon ? `a connector carrying the icon "${connection.icon}"` : 'a connector';
 }
 
 // The clear space between two nodes on one axis, whichever of the two comes
@@ -144,6 +169,7 @@ function readConnections(source: string): FlowConnection[] {
             from,
             to,
             label: attribute(attributes, 'label') ?? '',
+            icon: attribute(attributes, 'icon') ?? '',
             vertical: side === undefined ? null : (side === 'top' || side === 'bottom')
         });
     }

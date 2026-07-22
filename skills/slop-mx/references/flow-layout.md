@@ -25,6 +25,7 @@ the reasoning behind each number.
 | Junction | 18 × 18px |
 | Connector attachment inset | 31px from the edge, clamped to half the node |
 | Two stacked nodes | 60px between them |
+| Two stacked nodes, connection carrying an icon | 100px |
 | Two stacked nodes, labelled connection | 110px |
 | Two columns | 120px, plus ~8px per label character when labelled |
 | Above the first node of a group | ~90px from the bottom of the node before it |
@@ -47,17 +48,25 @@ card with no body at all is 62px. So the next node goes at
 | Between | Space |
 | --- | --- |
 | Two stacked nodes | 60px |
+| Two stacked nodes, connection carrying an icon | 100px |
 | Two stacked nodes, labelled connection | 110px |
 | Two columns | 120px |
 | Two columns, labelled connection | 120px plus about 8px per character of the label |
 
-The labelled numbers are not padding, they are arithmetic. A connector stops 9px
-short of each node, its badge punches a hole the size of itself plus 6px of air
-out of the middle of the line, and the dot and the chevron take another 11px.
-With a 28px badge that leaves nothing at all below 100px, which is why a label
-ends up sitting on both cards at once. Sideways the hole is as wide as the badge,
-so a long label pushes two columns apart; keeping labels to a word or two is
-usually the better fix.
+These numbers are not padding, they are arithmetic. A connector stops 9px short of
+each node, its badge punches a hole the size of itself plus 6px of air out of the
+middle of the line, and the dot and the chevron take another 11px. With a 28px
+badge that leaves nothing at all below 100px, which is why a label ends up sitting
+on both cards at once. Sideways the hole is as wide as the badge, so a long label
+pushes two columns apart; keeping labels to a word or two is usually the better
+fix.
+
+An icon costs almost as much as a label. It rides the connector as a bare badge,
+so it is only the 20px icon rather than a 28px pill, but Flow masks the line
+against it exactly the same way: 91px is the least that works, hence the 100px in
+the table. Sideways it asks the same 91px, which the 120px between two columns
+already covers. So swapping "Yes" for `circle-check` buys back 10px, not the 50px
+back down to a plain connector.
 
 A worked column, so the arithmetic is concrete. A terminal, a one-line card and a
 two-line card stacked at `x = 0` with plain connections:
@@ -131,7 +140,8 @@ downward flow wants.
 - `icon`: a Font Awesome name; without a `label` the icon renders inline on the
   connector. Where a word would say no more than a mark, prefer the icon alone:
   `circle-check` and `circle-xmark` on the two sides of a condition instead of
-  "Yes" and "No" badges.
+  "Yes" and "No" badges. It is a badge like any other, so give it the 100px from
+  the table rather than the 60px a plain connector gets by.
 - `color`: use it to separate a failure path from the happy path.
 
 ```vue
