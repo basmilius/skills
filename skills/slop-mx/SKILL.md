@@ -23,10 +23,16 @@ rather than assembling one.
 
 ## Installing and updating
 
+The script runs on [Bun](https://bun.sh), so that has to be installed:
+`brew install oven-sh/bun/bun`, or `curl -fsSL https://bun.sh/install | bash`.
+
 ```shell
 npx skills add basmilius/skills --skill slop-mx
 npx skills update slop-mx
 ```
+
+The skill is copied into the agent's skills directory rather than linked, so a
+newer version arrives through `npx skills update`, not on its own.
 
 ## Setup
 
@@ -40,9 +46,11 @@ One environment variable, and nothing else:
 If the token is missing the script says so and stops. Report that rather than
 inventing a value or writing a config file: there is no config file to write.
 
-Set them wherever the agent's shell picks them up, which for Claude Code means a
-shell profile or the `env` block in `~/.claude/settings.json`. Keep the token out
-of a project's `.claude/settings.json`, since that one is committed.
+It has to be readable by the shell the agent runs commands in. On macOS that
+means `~/.zshenv`, which zsh reads for every shell it starts; `~/.zshrc` is only
+read by interactive ones, so a non-interactive command will not see it. For
+Claude Code the `env` block in `~/.claude/settings.json` works too. Keep the
+token out of a project's `.claude/settings.json`, since that one is committed.
 
 Nothing is kept on disk. The host remembers what was published where, so
 publishing the same title from a second machine lands on the same page.
