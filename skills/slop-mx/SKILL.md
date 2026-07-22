@@ -1,13 +1,13 @@
 ---
 name: slop-mx
 description: >-
-  Publish a document or a diagram from the terminal to a publishing host (unlisted
-  URL), drawing diagrams with Flux Flow. Use when the user asks to publish, post
-  or put something online ("publiceer dit plan op slop.mx", "zet dit
-  diagram online"), to update something published earlier, or wants a diagram of
-  a process, flow, pipeline or architecture ("maak een diagram van het
-  inlogproces", "teken deze pipeline"). Two page kinds: a doc (markdown) and a
-  diagram (a Flux Flow template with explicit coordinates).
+  Publish a document, a diagram or a small file from the terminal to a publishing
+  host (unlisted URL), drawing diagrams with Flux Flow. Use when the user asks to
+  publish, post or put something online ("publiceer dit plan op slop.mx", "zet dit
+  diagram online"), to update something published earlier, to upload a small image,
+  or wants a diagram of a process, flow, pipeline or architecture ("maak een diagram
+  van het inlogproces", "teken deze pipeline"). Three kinds: a doc (markdown), a
+  diagram (a Flux Flow template with explicit coordinates) and a file (raw bytes).
 license: MIT
 ---
 
@@ -15,59 +15,71 @@ license: MIT
 
 A page is published with one request and gets an unlisted URL: public to anyone
 holding the link, but with a random suffix, no index, and `noindex` on the page.
-A URL looks like `/2026/07/login-flow-k3f9dq`, dated by the month it was first
-published, and replacing a page later keeps that date so its link never moves.
+A URL looks like `/rita/2026/07/login-flow-k3f9dq`, dated by the month it was
+first published, and replacing a page later keeps that date so its link never
+moves. The first segment is the account publishing it; a host leaves it out for
+its own account. The host decides which, so report the URL the script prints
+rather than assembling one.
+
+## Installing and updating
+
+```shell
+npx skills add basmilius/skills --skill slop-mx
+npx skills update slop-mx
+```
 
 ## Setup
 
-Two environment variables, and nothing else:
+One environment variable, and nothing else:
 
 | Variable | Holds |
 | --- | --- |
-| `SLOP_MX_ENDPOINT` | The host to publish to, e.g. `https://slop.mx` |
-| `SLOP_MX_TOKEN` | The bearer token the host expects |
+| `SLOP_MX_TOKEN` | The bearer token the host issued |
+| `SLOP_MX_ENDPOINT` | Optional. Another host to publish to, when not `https://slop.mx` |
 
-If either is missing the script says which one and stops. Report that rather than
+If the token is missing the script says so and stops. Report that rather than
 inventing a value or writing a config file: there is no config file to write.
 
 Set them wherever the agent's shell picks them up, which for Claude Code means a
 shell profile or the `env` block in `~/.claude/settings.json`. Keep the token out
 of a project's `.claude/settings.json`, since that one is committed.
 
-The one thing kept on disk is state, not configuration: which title was published
-where, in `$XDG_STATE_HOME/slop-mx/published.json`, falling back to
-`~/.local/state/slop-mx/published.json`.
+Nothing is kept on disk. The host remembers what was published where, so
+publishing the same title from a second machine lands on the same page.
 
 ## Choosing the type
 
 - **doc** for prose: a plan, a summary, notes, a proposal. Written as markdown.
 - **diagram** for a process or a flow. Written as a Flux Flow template, which is
   Vue markup rather than markdown.
+- **file** for raw bytes: a screenshot, a small photo, a PDF. Up to 1 MB.
 
 ## Publishing
 
 Write the content to a file first, then hand that file to the script. Never pass
-long content as a shell argument. Content that already lives in a file is ready
-as it is: pass that path directly rather than copying or rewriting it into a new
-file.
+long content as a shell argument.
 
 ```shell
 bun ~/.claude/skills/slop-mx/publish.ts \
     --type doc \
     --title "Login flow" \
     --description "How a session is issued, end to end." \
+    --tags auth,review \
     --file /path/to/content.md
 ```
 
-The script prints the URL and whether it replaced an existing page. Report that
-URL back to the user; it is the whole point of the operation.
+The script prints the URL, whether it replaced an existing page, when it expires
+and which tags it carries. Report that URL back to the user; it is the whole
+point of the operation.
 
 | Argument | Required | Notes |
 | --- | --- | --- |
-| `--type` | yes | `doc` or `diagram` |
+| `--type` | yes | `doc`, `diagram` or `file` |
 | `--title` | yes | Shown as the page heading and used to derive the slug |
-| `--file` | yes | Path to the markdown or the Flow template |
+| `--file` | yes | Path to the markdown, the Flow template or the file to upload |
 | `--description` | no | One sentence, used for link previews and under the diagram title |
+| `--tags` | no | Comma separated, on top of the project tag |
+| `--no-project-tag` | no | Leave the project out of the tags |
 | `--path` | no | Publish onto a specific existing page, as `2026/07/some-slug` |
 | `--new` | no | Force a fresh URL even when the title was published before |
 | `--check` | no | Check a diagram's spacing and stop; publishes nothing |
@@ -75,22 +87,65 @@ URL back to the user; it is the whole point of the operation.
 
 ### Replacing an earlier page
 
-The script remembers what it published in its state file, keyed by title, so
-publishing the same title again lands on the same URL.
+The host keys a page on its title, so publishing the same title again lands on
+the same URL and keeps its original date.
 
 - The user gives a URL to update: pass everything after the domain as `--path`.
 - The user wants a separate page despite the same title: pass `--new`.
 
+An upload is the exception: it always takes a fresh URL unless `--path` names one
+to replace, and a replacement has to carry the same extension, because the
+extension is part of the URL.
+
+## Tags
+
+Tags are what make something findable again in the host's own admin. The script
+adds one for the repository it runs in, so everything published while working on
+a project groups together without anyone having to remember to say so. Add your
+own with `--tags` for the subject or the kind of work: `auth`, `review`,
+`incident`.
+
+Before publishing, the script asks the host which tags already exist and reuses
+the spelling it finds, so `slop-mx` and `slopmx` do not end up living side by
+side. Two or three tags is plenty; past a handful they stop narrowing anything
+down, and the host refuses more than ten.
+
+Publishing replaces a page's tags rather than adding to them, so pass `--tags`
+again when republishing something that carried tags you want to keep.
+
+## Expiry
+
+A host may remove a page a set number of days after it was last published.
+Publishing it again starts that clock over. The script prints the expiry when
+there is one; mention it, because a link that disappears in a month is a
+different promise than one that does not.
+
+## Uploading a file
+
+```shell
+bun ~/.claude/skills/slop-mx/publish.ts \
+    --type file \
+    --title "Dashboard sketch" \
+    --tags design \
+    --file /path/to/sketch.png
+```
+
+Images, PDFs and small text files up to 1 MB. The URL carries the extension, so
+it can be used straight in a doc as a normal markdown image:
+
+```markdown
+![Dashboard sketch](https://slop.mx/2026/07/dashboard-sketch-k3f9dq.png)
+```
+
+Upload the image first, then write the doc around the URL it printed.
+
 ## Writing a doc
 
-Both types get a fixed house style, so do not write styling of your own: no HTML
-in the markdown, no inline styles, no headings used for visual effect.
+Both page types get a fixed house style, so do not write styling of your own: no
+HTML in the markdown, no inline styles, no headings used for visual effect.
 
 Start the markdown at `##`. The title comes from `--title` and is rendered as the
 page heading already, so a leading `#` would give the page two titles.
-
-For a doc this file is all there is to read: both references cover diagrams
-only, and `publish.ts` is there to run, not to study.
 
 ## Writing a diagram
 

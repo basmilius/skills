@@ -1,50 +1,38 @@
 #!/usr/bin/env bun
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { homedir } from 'node:os';
-import { dirname, join } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { basename } from 'node:path';
 import checkFlowGeometry from './flow-geometry';
 
 type Options = Record<string, string | undefined> & {
     new?: boolean;
     check?: boolean;
     force?: boolean;
+    'no-project-tag'?: boolean;
 };
 
-type Entry = {
-    path: string;
-    type: string;
-    title: string;
-    url: string;
-    updatedAt: string;
-};
+const DEFAULT_ENDPOINT = 'https://slop.mx';
 
-// Configuration comes from the environment, so nothing about a host lives on
-// disk. What is left on disk is state: which title was published where, which
-// belongs under XDG_STATE_HOME rather than alongside configuration.
 // Arguments that stand on their own rather than taking the next word.
-const FLAGS = ['new', 'check', 'force'];
+const FLAGS = ['new', 'check', 'force', 'no-project-tag'];
 
-const STATE_DIRECTORY = join(process.env.XDG_STATE_HOME || join(homedir(), '.local', 'state'), 'slop-mx');
-const REGISTRY_FILE = join(STATE_DIRECTORY, 'published.json');
+const TYPES = ['doc', 'diagram', 'file'];
 
 const options = parseArguments(process.argv.slice(2));
 
 if (!options.file || (!options.check && (!options.type || !options.title))) {
     fail([
-        'Usage: publish.ts --type <doc|diagram> --title <title> --file <path> [--description <text>] [--path <yyyy/mm/slug>] [--new] [--force]',
+        'Usage: publish.ts --type <doc|diagram|file> --title <title> --file <path> [--description <text>]',
+        '                  [--tags a,b] [--no-project-tag] [--path <[user/]yyyy/mm/slug>] [--new] [--force]',
         '       publish.ts --check --file <path>'
     ].join('\n'));
 }
 
-if (options.type !== undefined && options.type !== 'doc' && options.type !== 'diagram') {
-    fail(`Unknown type "${options.type}", expected "doc" or "diagram".`);
+if (options.type !== undefined && !TYPES.includes(options.type)) {
+    fail(`Unknown type "${options.type}", expected one of ${TYPES.join(', ')}.`);
 }
 
-const source = read(options.file!);
-
-if (source === null) {
-    fail(`Cannot read ${options.file}.`);
-}
+// An upload is bytes rather than text, and is read further down.
+const source = options.type === 'file' ? '' : readText(options.file!);
 
 // Nothing in Flow lays a diagram out, so a coordinate that leaves two nodes too
 // close for the connector between them only shows up once the page is live.
@@ -73,58 +61,147 @@ if (options.check || options.type === 'diagram') {
     }
 }
 
-const endpoint = process.env.SLOP_MX_ENDPOINT?.trim().replace(/\/$/, '');
+// The host is slop.mx unless something says otherwise, which is only ever a
+// local worker being tested against.
+const endpoint = process.env.SLOP_MX_ENDPOINT?.trim().replace(/\/$/, '') || DEFAULT_ENDPOINT;
 const token = process.env.SLOP_MX_TOKEN?.trim();
-
-if (!endpoint) {
-    fail('SLOP_MX_ENDPOINT is not set. It should hold the host to publish to, such as https://slop.mx.');
-}
 
 if (!token) {
     fail('SLOP_MX_TOKEN is not set. It should hold the bearer token the host expects.');
 }
 
-const registry = readRegistry();
-
-// Publishing the same title again should land on the page it landed on before,
-// unless a fresh URL was asked for explicitly. When a title has been split over
-// several pages with --new, the most recent one is the one being worked on.
-const path = options.path ?? (options.new ? undefined : findPrevious()?.path);
-
-const response = await fetch(`${endpoint}/api/publish`, {
-    method: 'POST',
-    headers: {
-        'authorization': `Bearer ${token}`,
-        'content-type': 'application/json'
-    },
-    body: JSON.stringify({
-        type: options.type,
-        title: options.title,
-        description: options.description,
-        source,
-        path
-    })
-});
-
-const result = await response.json() as Record<string, string>;
-
-if (!response.ok) {
-    fail(`${endpoint} answered ${response.status}: ${result.error ?? 'unknown error'}`);
-}
-
-writeRegistry([
-    ...registry.filter(entry => entry.path !== result.path),
-    {
-        path: result.path,
-        type: result.type,
-        title: result.title,
-        url: result.url,
-        updatedAt: result.updatedAt
-    }
-]);
+const tags = await resolveTags();
+const result = options.type === 'file' ? await uploadFile() : await publishPage();
 
 console.log(result.url);
 console.log(result.replaced ? '(replaced the existing page)' : '(new page)');
+
+if (result.expiresAt) {
+    console.log(`(expires ${new Date(result.expiresAt).toISOString().slice(0, 10)})`);
+}
+
+if (tags.length > 0) {
+    console.log(`(tagged ${tags.join(', ')})`);
+}
+
+async function publishPage(): Promise<Record<string, string>> {
+    return await send('publish', {
+        method: 'POST',
+        headers: {
+            'authorization': `Bearer ${token}`,
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            type: options.type,
+            title: options.title,
+            description: options.description,
+            source,
+            path: options.path,
+            tags,
+            new: options.new === true
+        })
+    });
+}
+
+async function uploadFile(): Promise<Record<string, string>> {
+    const query = new URLSearchParams({
+        filename: basename(options.file!),
+        title: options.title!
+    });
+
+    if (options.description) {
+        query.set('description', options.description);
+    }
+
+    if (options.path) {
+        query.set('path', options.path);
+    }
+
+    if (tags.length > 0) {
+        query.set('tags', tags.join(','));
+    }
+
+    return await send(`upload?${query}`, {
+        method: 'POST',
+        headers: {
+            'authorization': `Bearer ${token}`
+        },
+        body: readBytes(options.file!)
+    });
+}
+
+/**
+ * The tags this publish carries: what was asked for, plus the project it was run
+ * in. A tag is only worth having if the same idea always spells the same way, so
+ * anything that matches a tag the host already knows takes that spelling rather
+ * than introducing a near-duplicate next to it.
+ */
+async function resolveTags(): Promise<string[]> {
+    const wanted = (options.tags ?? '')
+        .split(',')
+        .map(tag => slug(tag))
+        .filter(tag => tag !== '');
+
+    const project = options['no-project-tag'] === true ? null : projectTag();
+
+    if (project !== null) {
+        wanted.unshift(project);
+    }
+
+    if (wanted.length === 0) {
+        return [];
+    }
+
+    const known = await knownTags();
+    const resolved = new Set<string>();
+
+    for (const tag of wanted) {
+        resolved.add(known.get(compact(tag)) ?? tag);
+    }
+
+    return [...resolved];
+}
+
+async function knownTags(): Promise<Map<string, string>> {
+    try {
+        const response = await fetch(`${endpoint}/api/tags`, {
+            headers: {authorization: `Bearer ${token}`}
+        });
+
+        if (!response.ok) {
+            return new Map();
+        }
+
+        const body = await response.json() as {tags: {tag: string}[]};
+
+        return new Map(body.tags.map(entry => [compact(entry.tag), entry.tag]));
+    } catch {
+        return new Map();
+    }
+}
+
+/**
+ * The repository this was run in, which is nearly always the thing the page is
+ * about. It makes everything published while working on one project findable
+ * together without anyone having to remember to say so.
+ */
+function projectTag(): string | null {
+    const root = run('git', ['rev-parse', '--show-toplevel']) ?? process.cwd();
+    const name = slug(basename(root));
+
+    return name === '' ? null : name;
+}
+
+async function send(path: string, init: RequestInit): Promise<Record<string, string>> {
+    const response = await fetch(`${endpoint}/api/${path}`, init);
+    const result = await response.json() as Record<string, string>;
+
+    if (!response.ok) {
+        fail(`${endpoint} answered ${response.status}: ${result.error ?? 'unknown error'}`);
+    }
+
+    return result;
+}
 
 function parseArguments(argv: string[]): Options {
     const parsed: Record<string, string | boolean | undefined> = {};
@@ -149,37 +226,41 @@ function parseArguments(argv: string[]): Options {
     return parsed as Options;
 }
 
-function findPrevious(): Entry | undefined {
-    return registry
-        .filter(entry => entry.title === options.title && entry.type === options.type)
-        .sort((left, right) => right.updatedAt.localeCompare(left.updatedAt))
-        .at(0);
+function slug(value: string): string {
+    return value
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/\p{Diacritic}/gu, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 32)
+        .replace(/-+$/g, '');
 }
 
-function readRegistry(): Entry[] {
-    const contents = read(REGISTRY_FILE);
-
-    if (contents === null) {
-        return [];
-    }
-
-    try {
-        return JSON.parse(contents) as Entry[];
-    } catch {
-        return [];
-    }
+/** A tag stripped to what it means, so `slop-mx` and `slopmx` compare equal. */
+function compact(value: string): string {
+    return value.replace(/[^a-z0-9]/g, '');
 }
 
-function writeRegistry(entries: Entry[]): void {
-    mkdirSync(dirname(REGISTRY_FILE), {recursive: true});
-    writeFileSync(REGISTRY_FILE, `${JSON.stringify(entries, null, 4)}\n`);
+function run(command: string, args: string[]): string | null {
+    const result = Bun.spawnSync([command, ...args], {stderr: 'ignore'});
+
+    return result.success ? result.stdout.toString().trim() : null;
 }
 
-function read(path: string): string | null {
+function readText(path: string): string {
     try {
         return readFileSync(path, 'utf8');
     } catch {
-        return null;
+        return fail(`Cannot read ${path}.`);
+    }
+}
+
+function readBytes(path: string): Buffer {
+    try {
+        return readFileSync(path);
+    } catch {
+        return fail(`Cannot read ${path}.`);
     }
 }
 
