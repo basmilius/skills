@@ -2,17 +2,15 @@
 name: vue-component-anatomy
 description: >-
   Use when writing, editing, or reviewing a single Vue 3 Single File Component
-  (a `.vue` file with `<script setup lang="ts">`). Covers one component's
-  internal anatomy: block order and template root, the compiler-macro order
-  (defineEmits -> defineModel -> defineProps -> defineSlots, with defineExpose
-  last), the ordering inside `<script setup>` (imports -> macros -> constants ->
-  stores -> state -> composables -> computed -> watch -> lifecycle -> functions),
-  function-vs-arrow style, prop
-  and emit typing, v-model via defineModel, and scoped/module styling. Triggers
-  on editing any `.vue` file, on defineProps/defineEmits/defineModel/defineSlots,
-  on script-setup ordering questions, and on prop typing. For splitting a feature
-  across multiple components and layers use `vue-build-feature`; if the project
-  uses the Flux UI library see `flux-ui`.
+  (a `.vue` file with `<script setup lang="ts">`). Covers block order and
+  template root, the compiler-macro order (defineEmits -> defineModel ->
+  defineProps -> defineSlots, defineExpose last), the ordering inside `<script
+  setup>` (imports -> macros -> constants -> stores -> state -> composables ->
+  computed -> watch -> lifecycle -> functions), function-vs-arrow style, prop and
+  emit typing, v-model via defineModel, and scoped/module styling. Triggers on
+  editing any `.vue` file, on defineProps/defineEmits/defineModel/defineSlots, on
+  script-setup ordering questions, and on prop typing. Feature-level splitting:
+  `vue-build-feature`; Flux UI library: `flux-ui`.
 ---
 
 # Vue component anatomy

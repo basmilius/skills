@@ -2,15 +2,14 @@
 name: flux-ui
 description: >-
   Use when building, editing, or reviewing Vue 3 UI with Flux (by Bas Milius):
-  the @flux-ui/components library (docs at flux-ui.dev) and its siblings
-  @flux-ui/application (app shell / dashboards) and @flux-ui/statistics
-  (KPIs/charts). Trigger on Flux-prefixed components (FluxPrimaryButton,
-  FluxFormField, FluxPane), on FluxRoot / showConfirm / showSnackbar / showPrompt
-  / showAlert, on its composables (useBreakpoints, useFluxStore, use*Injection),
-  or any import from @flux-ui/*. Use it to pick the right component, get imports
-  and composition right, and avoid the naming traps. This is the Vue 3 Flux
-  (basmilius), NOT the Livewire/Blade Flux from fluxui.dev and NOT the Flux
-  web-components library; never mix their syntaxes.
+  @flux-ui/components (docs at flux-ui.dev) and its siblings @flux-ui/application
+  (app shell / dashboards) and @flux-ui/statistics (KPIs/charts). Trigger on
+  Flux-prefixed components (FluxPrimaryButton, FluxFormField, FluxPane), on
+  FluxRoot / showConfirm / showSnackbar / showPrompt / showAlert, on its
+  composables (useBreakpoints, useFluxStore, use*Injection), or any import from
+  @flux-ui/*. This is the Vue 3 Flux (basmilius), NOT the Livewire/Blade Flux
+  from fluxui.dev and NOT the Flux web-components library; never mix their
+  syntaxes.
 license: MIT (skill content); Flux itself is MIT, by Bas Milius
 ---
 

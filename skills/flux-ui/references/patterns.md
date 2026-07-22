@@ -6,6 +6,15 @@ more than any single prop. App-specific helpers (i18n, validation wrappers, data
 services) are stripped to plain English placeholders. Strings are inline English;
 styling is via Flux tokens, not utility classes.
 
+Each section stands alone; jump to the one you need:
+
+- **§1** application shell (FluxRoot, routed overlays)
+- **§2** CRUD / settings form (+ FluxDropZone upload)
+- **§3** data-table page (+ filterable variant)
+- **§4** destructive action: confirm → act → snackbar
+- **§5** pane composition (item rows, clickable rows, FluxLayerPane)
+- **§6** dashboard (application shell, top bar, statistics, context menus)
+
 ## 1. Application shell
 
 `FluxRoot` (dialogs/tooltips) wraps `FluxApplication` (chrome) from

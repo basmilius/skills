@@ -2,17 +2,15 @@
 name: basmilius-http-client
 description: >-
   Use when building or reviewing the data layer of a Vue 3 app that uses
-  `@basmilius/http-client` (by Bas Milius): a typed HTTP client where every
-  request/response body is a `@dto` class, every endpoint group is a
-  `BaseService` subclass, and raw snake_case JSON is mapped to DTOs by a static
-  `@adapter` class. Trigger on `@dto` / `@adapter`, on `HttpClient`,
-  `RequestBuilder`, `BaseService`, `BaseResponse`, `Paginated`, `ForeignData`,
-  `QueryString`, on `.runAdapter` / `.runPaginatedAdapter`, on `RequestError` /
-  `ValidationError`, on `serialize` / `deserialize` / `cloneDto`, on the tsconfig
-  pair `experimentalDecorators` + `useDefineForClassFields`, or the `dtoNames`
-  Vite plugin. This is the concrete data
-  layer that `vue-build-feature` defers to. For app/state primitives (useService,
-  useDataTable, stores) see `basmilius-common`; for standalone helpers see
+  `@basmilius/http-client` (by Bas Milius): every request/response body is a
+  `@dto` class, every endpoint group a `BaseService` subclass, and raw snake_case
+  JSON is mapped to DTOs by a static `@adapter` class. Trigger on `@dto` /
+  `@adapter`, `HttpClient`, `RequestBuilder`, `BaseService`, `BaseResponse`,
+  `Paginated`, `ForeignData`, `QueryString`, `.runAdapter` /
+  `.runPaginatedAdapter`, `RequestError` / `ValidationError`, `serialize` /
+  `deserialize` / `cloneDto`, the tsconfig pair `experimentalDecorators` +
+  `useDefineForClassFields`, or the `dtoNames` Vite plugin. App/state primitives
+  (useService, useDataTable, stores): `basmilius-common`; standalone helpers:
   `basmilius-utils`.
 license: MIT (skill content); @basmilius/http-client is MIT, by Bas Milius
 ---

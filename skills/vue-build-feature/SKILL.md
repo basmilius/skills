@@ -2,16 +2,14 @@
 name: vue-build-feature
 description: >-
   Use when building, porting, or refactoring a Vue 3 feature that spans multiple
-  components and layers: a page/view plus its presentational components,
-  composables, data access, a router route and shared utilities. Covers the
-  view-orchestrates / components-present split, feature-folder structure with a
-  barrel (index.ts) and path-alias imports, encapsulating data loading and state
-  in composables, resetting shared/module-level state, router wiring, and the
-  recommended build sequence across layers. Triggers on building a new
-  screen/view/feature, on splitting a large `.vue` into smaller components, on
-  adding a data model/service, and on wiring a router route. For a single
-  component's internal anatomy use `vue-component-anatomy`; if the project uses
-  the Flux UI library see `flux-ui`.
+  components and layers: a page/view plus presentational components, composables,
+  data access, a router route and shared utilities. Covers the view-orchestrates
+  / components-present split, feature folders with a barrel (index.ts), data
+  loading in composables, resetting shared state, router wiring and the build
+  sequence. Triggers on building a new screen/view/feature, splitting a large
+  `.vue` into smaller components, adding a data model/service, and wiring a
+  router route. Single component's internals: `vue-component-anatomy`; Flux UI
+  library: `flux-ui`.
 ---
 
 # Vue build feature

@@ -3,16 +3,14 @@ name: basmilius-common
 description: >-
   Use when building or reviewing a Vue 3 app that uses `@basmilius/common` (by Bas
   Milius): shared app primitives around Pinia, Vue Router and the DTO http client.
-  Trigger on its `defineStore` (the ref-returning wrapper), on `useService` /
-  `guarded` / `onError`, on `useDataTable` / `useDataReport`, on `useDtoForm`,
-  `useUrlState`, `persistentRef`, `unrefAll`, `generateColorPalette`, and its
-  many composables (useClickOutside,
-  useHotKey, useEventListener, useLoaded, useResizeObserver, ...), its router
-  helpers (useRouteParam, useRouteMeta, useNavigate, useNamedRoute) and its
-  exceptions (ForbiddenException, UnauthorizedException, HandledException,
-  UnresolvedDependencyException). This is the concrete state/data/router layer
-  that `vue-build-feature` defers to. For the DTO client see
-  `basmilius-http-client`; for standalone helpers see `basmilius-utils`.
+  Trigger on its `defineStore` (the ref-returning wrapper), `useService` /
+  `guarded` / `onError`, `useDataTable` / `useDataReport`, `useDtoForm`,
+  `useUrlState`, `persistentRef`, `unrefAll`, `generateColorPalette`, its
+  composables (useClickOutside, useHotKey, useEventListener, useLoaded,
+  useResizeObserver, ...), router helpers (useRouteParam, useRouteMeta,
+  useNavigate, useNamedRoute) and exceptions (ForbiddenException,
+  UnauthorizedException, HandledException, UnresolvedDependencyException). DTO
+  client: `basmilius-http-client`; standalone helpers: `basmilius-utils`.
 license: MIT (skill content); @basmilius/common is MIT, by Bas Milius
 ---
 

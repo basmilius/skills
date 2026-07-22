@@ -2,14 +2,14 @@
 name: basmilius-utils
 description: >-
   Use in a project that depends on `@basmilius/utils` (by Bas Milius): reach for
-  its ready-made helpers before hand-rolling date, number, color, download, DOM,
-  timing, geo or PRNG logic. Trigger on any import from `@basmilius/utils` and on
-  tasks like formatDate / formatDateTime / formatNumber / formatPercentage, color
+  its ready-made date, number, color, download, DOM, timing, geo and PRNG helpers
+  before hand-rolling them. Trigger on any import from `@basmilius/utils` and on
+  formatDate / formatDateTime / formatNumber / formatPercentage, color
   conversions (hexToRGB, rgbToHEX, hslToRGB, hsvToRGB), debounce / waitFor,
   downloadBlob / downloadUrl / printHtml, viewTransition, mulberry32,
   isPointInPolygon, getSeason / getMoonPhase / getZodiacSign. Dates are Luxon
-  `DateTime` based. For the data layer see `basmilius-http-client`; for app and
-  state primitives see `basmilius-common`.
+  `DateTime` based. Data layer: `basmilius-http-client`; app/state primitives:
+  `basmilius-common`.
 license: MIT (skill content); @basmilius/utils is MIT, by Bas Milius
 ---
 
@@ -38,11 +38,10 @@ copy just drifts from them.
 
 ## 3. What is in there (category map)
 
-The catalog covers: date and time formatting plus day-part / season / moon /
-zodiac helpers (Luxon); number and math formatting including step rounding and a
-seeded PRNG; color conversions between HEX, RGB, HSL and HSV; download / print /
-navigate triggers; DOM and view-transition helpers; debounce and wait-for timing;
-object reflection; and geo checks. Every function with its exact signature is in
+Categories: date/time (Luxon, plus day-part / season / moon / zodiac); number and
+math (step rounding, seeded PRNG); color conversions (HEX / RGB / HSL / HSV);
+download / print / navigate; DOM and view transitions; debounce / wait-for;
+object reflection; geo. Every function with its exact signature is in
 `references/function-index.md`; scan the matching category there before writing
 a helper.
 

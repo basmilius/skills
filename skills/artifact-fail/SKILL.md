@@ -1,16 +1,13 @@
 ---
 name: artifact-fail
 description: >-
-  Publish a document or a diagram from the terminal to an artifact host, where it
-  gets its own unlisted URL, and draw the diagrams it renders with Flux Flow. Use
-  when the user asks to publish, post or put something online ("publiceer dit plan
-  op artifact.fail", "zet dit diagram online", "publish this to artifact.fail"),
-  when they ask to update something published earlier, and whenever a diagram of a
-  process, flow, pipeline or architecture is wanted ("maak een diagram van het
-  inlogproces", "teken deze pipeline"). Handles two kinds of page: a doc, written
-  as markdown, and a diagram, written as a Flux Flow template with explicit
-  coordinates rather than a layout engine. The host is read from configuration, so
-  it carries no domain of its own.
+  Publish a document or a diagram from the terminal to an artifact host (unlisted
+  URL), drawing diagrams with Flux Flow. Use when the user asks to publish, post
+  or put something online ("publiceer dit plan op artifact.fail", "zet dit
+  diagram online"), to update something published earlier, or wants a diagram of
+  a process, flow, pipeline or architecture ("maak een diagram van het
+  inlogproces", "teken deze pipeline"). Two page kinds: a doc (markdown) and a
+  diagram (a Flux Flow template with explicit coordinates).
 license: MIT
 ---
 

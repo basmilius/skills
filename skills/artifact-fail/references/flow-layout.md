@@ -8,6 +8,27 @@ The measurements below come from reading Flow's own geometry, not from eyeballin
 a screenshot. They are the difference between a diagram that reads and one that
 looks almost right.
 
+## Every constant in one table
+
+The lookup table for while you are placing coordinates; the sections below carry
+the reasoning behind each number.
+
+| Constant | Value |
+| --- | --- |
+| Card width | 300px |
+| Card height | `78 + 24 × lines` (a line ≈ 36 characters); 62px with no body |
+| Terminal height | 36px |
+| Junction size | 18px |
+| Connector attachment inset | 31px from the edge, clamped to half the node |
+| Two stacked nodes | 60px between them |
+| Two stacked nodes, labelled connection | 110px |
+| Two columns | 120px, plus ~8px per label character when labelled |
+| Above the first node of a group | ~90px from the bottom of the node before it |
+| Below the last node of a group | ~60px |
+| Between two stacked groups | ~100px |
+| Frame to next node, labelled connection leaving a group | ~120px |
+| Clear space above and below a junction | ~100px |
+
 ## Spacing
 
 Measure the space between two nodes, never the distance between their tops. A
@@ -33,6 +54,18 @@ With a 28px badge that leaves nothing at all below 100px, which is why a label
 ends up sitting on both cards at once. Sideways the hole is as wide as the badge,
 so a long label pushes two columns apart; keeping labels to a word or two is
 usually the better fix.
+
+A worked column, so the arithmetic is concrete. A terminal, a one-line card and a
+two-line card stacked at `x = 0` with plain connections:
+
+| Node | Height | y |
+| --- | --- | --- |
+| `start` (terminal) | 36px | 0 |
+| `check` (1 line) | 102px | 0 + 36 + 60 = **96** |
+| `save` (2 lines) | 126px | 96 + 102 + 60 = **258** |
+
+Each `y` is the previous node's `y + height + spacing`. A fixed increment (0, 160,
+320, ...) only happens to work while every card has the same height.
 
 Keep the happy path in one straight column and branch sideways. A reader follows
 a single spine far more easily than a balanced tree.

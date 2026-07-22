@@ -32,14 +32,17 @@ The full export surface. Named exports from the package root
 | `useService` | `<T extends BaseService>(cls: { new(): T }, ...wrap: ((fn: Function) => Function)[]): T` | Instantiate a service, wrap each prototype method with `guarded` (+ wrappers). |
 | `useUrlState` | `(state: UrlStateInput, options?: { prefix?, serializers? }): void` | Two-way sync refs / reactive object with the URL query. |
 
-Type exports include `UseHotKeyOptions`; the `useDataTable` family
-(`DataTableFetcher`, `DataTablePreload`, `DataTablePreloadContext`,
-`DataTableQuery`, `DataTableSort`, `DataTableSortDirection`, `UseDataTable`,
-`UseDataTableOptions`); the `useDataReport` family (`DataReportFetcher`,
-`DataReportPreload`, `DataReportPreloadContext`, `DataReportQuery`,
-`UseDataReport`, `UseDataReportOptions`); and the `useUrlState` family
-(`UrlStateInput`, `UrlStateOptions`, `UrlStatePrimitive`, `UrlStateSerializer`,
-`UrlStateValue`).
+Type exports:
+
+- `UseHotKeyOptions`
+- `useDataTable` family: `DataTableFetcher`, `DataTablePreload`,
+  `DataTablePreloadContext`, `DataTableQuery`, `DataTableSort`,
+  `DataTableSortDirection`, `UseDataTable`, `UseDataTableOptions`
+- `useDataReport` family: `DataReportFetcher`, `DataReportPreload`,
+  `DataReportPreloadContext`, `DataReportQuery`, `UseDataReport`,
+  `UseDataReportOptions`
+- `useUrlState` family: `UrlStateInput`, `UrlStateOptions`, `UrlStatePrimitive`,
+  `UrlStateSerializer`, `UrlStateValue`
 
 ## Data composable shapes
 
