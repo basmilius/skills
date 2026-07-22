@@ -41,7 +41,7 @@ See [vercel-labs/skills](https://github.com/vercel-labs/skills) and
 | [`basmilius-common`](skills/basmilius-common/SKILL.md) | Shared Vue 3 app primitives from `@basmilius/common`: the ref-returning `defineStore` wrapper, `useService` / `guarded`, `useDataTable`, `useDtoForm`, and its many composables. |
 | [`basmilius-http-client`](skills/basmilius-http-client/SKILL.md) | The typed data layer of `@basmilius/http-client`: `@dto` classes, `BaseService` endpoint groups, `@adapter` mapping from snake_case JSON to DTOs. |
 | [`basmilius-utils`](skills/basmilius-utils/SKILL.md) | The helper catalog of `@basmilius/utils`: date, number, color, download, DOM, timing, geo and PRNG helpers to reach for before hand-rolling logic. |
-| [`artifact-fail`](skills/artifact-fail/SKILL.md) | Publish a markdown doc or a [Flux Flow](https://flux-ui.dev) diagram from the terminal to your own artifact host, and lay the diagram out so its connectors actually line up. Host and token come from configuration. |
+| [`slop-mx`](skills/slop-mx/SKILL.md) | Publish a markdown doc or a [Flux Flow](https://flux-ui.dev) diagram from the terminal to your own host, and lay the diagram out so its connectors actually line up. Host and token come from configuration. |
 | [`release`](skills/release/SKILL.md) | Cut a GitHub release from a bump keyword (`major`/`minor`/`patch`/`stable`, optionally `beta`) and let CI publish; works on a single repo or a sibling-repo workspace. |
 | [`release-notes`](skills/release-notes/SKILL.md) | Generate a copy-pasteable changelog by diffing a base tag against `origin/main`; read-only, creates nothing. |
 

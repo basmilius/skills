@@ -1,9 +1,9 @@
 ---
-name: artifact-fail
+name: slop-mx
 description: >-
-  Publish a document or a diagram from the terminal to an artifact host (unlisted
+  Publish a document or a diagram from the terminal to a publishing host (unlisted
   URL), drawing diagrams with Flux Flow. Use when the user asks to publish, post
-  or put something online ("publiceer dit plan op artifact.fail", "zet dit
+  or put something online ("publiceer dit plan op slop.mx", "zet dit
   diagram online"), to update something published earlier, or wants a diagram of
   a process, flow, pipeline or architecture ("maak een diagram van het
   inlogproces", "teken deze pipeline"). Two page kinds: a doc (markdown) and a
@@ -11,7 +11,7 @@ description: >-
 license: MIT
 ---
 
-# Publishing to an artifact host
+# Publishing to a host
 
 A page is published with one request and gets an unlisted URL: public to anyone
 holding the link, but with a random suffix, no index, and `noindex` on the page.
@@ -24,8 +24,8 @@ Two environment variables, and nothing else:
 
 | Variable | Holds |
 | --- | --- |
-| `ARTIFACT_FAIL_ENDPOINT` | The host to publish to, e.g. `https://artifact.fail` |
-| `ARTIFACT_FAIL_TOKEN` | The bearer token the host expects |
+| `SLOP_MX_ENDPOINT` | The host to publish to, e.g. `https://slop.mx` |
+| `SLOP_MX_TOKEN` | The bearer token the host expects |
 
 If either is missing the script says which one and stops. Report that rather than
 inventing a value or writing a config file: there is no config file to write.
@@ -35,8 +35,8 @@ shell profile or the `env` block in `~/.claude/settings.json`. Keep the token ou
 of a project's `.claude/settings.json`, since that one is committed.
 
 The one thing kept on disk is state, not configuration: which title was published
-where, in `$XDG_STATE_HOME/artifact-fail/published.json`, falling back to
-`~/.local/state/artifact-fail/published.json`.
+where, in `$XDG_STATE_HOME/slop-mx/published.json`, falling back to
+`~/.local/state/slop-mx/published.json`.
 
 ## Choosing the type
 
@@ -50,7 +50,7 @@ Write the content to a file first, then hand that file to the script. Never pass
 long content as a shell argument.
 
 ```shell
-bun ~/.claude/skills/artifact-fail/publish.ts \
+bun ~/.claude/skills/slop-mx/publish.ts \
     --type doc \
     --title "Login flow" \
     --description "How a session is issued, end to end." \

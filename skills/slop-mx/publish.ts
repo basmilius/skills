@@ -24,7 +24,7 @@ type Entry = {
 // Arguments that stand on their own rather than taking the next word.
 const FLAGS = ['new', 'check', 'force'];
 
-const STATE_DIRECTORY = join(process.env.XDG_STATE_HOME || join(homedir(), '.local', 'state'), 'artifact-fail');
+const STATE_DIRECTORY = join(process.env.XDG_STATE_HOME || join(homedir(), '.local', 'state'), 'slop-mx');
 const REGISTRY_FILE = join(STATE_DIRECTORY, 'published.json');
 
 const options = parseArguments(process.argv.slice(2));
@@ -73,15 +73,15 @@ if (options.check || options.type === 'diagram') {
     }
 }
 
-const endpoint = process.env.ARTIFACT_FAIL_ENDPOINT?.trim().replace(/\/$/, '');
-const token = process.env.ARTIFACT_FAIL_TOKEN?.trim();
+const endpoint = process.env.SLOP_MX_ENDPOINT?.trim().replace(/\/$/, '');
+const token = process.env.SLOP_MX_TOKEN?.trim();
 
 if (!endpoint) {
-    fail('ARTIFACT_FAIL_ENDPOINT is not set. It should hold the host to publish to, such as https://artifact.fail.');
+    fail('SLOP_MX_ENDPOINT is not set. It should hold the host to publish to, such as https://slop.mx.');
 }
 
 if (!token) {
-    fail('ARTIFACT_FAIL_TOKEN is not set. It should hold the bearer token the host expects.');
+    fail('SLOP_MX_TOKEN is not set. It should hold the bearer token the host expects.');
 }
 
 const registry = readRegistry();
