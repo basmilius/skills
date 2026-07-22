@@ -1,25 +1,10 @@
----
-name: basmilius-utils
-description: >-
-  Use in a project that depends on `@basmilius/utils` (by Bas Milius): reach for
-  its ready-made date, number, color, download, DOM, timing, geo and PRNG helpers
-  before hand-rolling them. Trigger on any import from `@basmilius/utils` and on
-  formatDate / formatDateTime / formatNumber / formatPercentage, color
-  conversions (hexToRGB, rgbToHEX, hslToRGB, hsvToRGB), debounce / waitFor,
-  downloadBlob / downloadUrl / printHtml, viewTransition, mulberry32,
-  isPointInPolygon, getSeason / getMoonPhase / getZodiacSign. Dates are Luxon
-  `DateTime` based. Data layer: `basmilius-http-client`; app/state primitives:
-  `basmilius-common`.
-license: MIT (skill content); @basmilius/utils is MIT, by Bas Milius
----
-
-# Bas Milius utils
+# @basmilius/utils guide
 
 `@basmilius/utils` is a set of ~45 small, tree-shakeable, framework-agnostic
 TypeScript helpers: dates (Luxon), colors, numbers and math, downloads, DOM,
-timing, geo/astro and a seeded PRNG. This skill exists so you **reach for what is
+timing, geo/astro and a seeded PRNG. This guide exists so you **reach for what is
 already there instead of reinventing it**, and dodge the per-function traps. The
-full, categorized catalog with signatures is `references/function-index.md`.
+full, categorized catalog with signatures is `utils-function-index.md`.
 
 ## 1. The rule: look before you write one
 
@@ -42,7 +27,7 @@ Categories: date/time (Luxon, plus day-part / season / moon / zodiac); number an
 math (step rounding, seeded PRNG); color conversions (HEX / RGB / HSL / HSV);
 download / print / navigate; DOM and view transitions; debounce / wait-for;
 object reflection; geo. Every function with its exact signature is in
-`references/function-index.md`; scan the matching category there before writing
+`utils-function-index.md`; scan the matching category there before writing
 a helper.
 
 ## 4. Traps that bite (durable judgment)
@@ -78,15 +63,15 @@ a helper.
 
 ## Reference files
 
-- `references/function-index.md` - every exported function grouped by category,
+- `utils-function-index.md` - every exported function grouped by category,
   with exact signatures, return types and the browser-vs-pure split. **Start
   here for signatures.**
 
-## Related skills
+## Related
 
-- **`basmilius-http-client`** - the DTO/service data layer (uses these utils
-  under the hood).
-- **`basmilius-common`** - Vue app and state primitives (composables, store, data
+- **`http-client.md`** - the DTO/service data layer (uses these utils under the
+  hood).
+- **`common.md`** - Vue app and state primitives (composables, store, data
   tables) built on top of these utils.
-- **`vue-component-anatomy`** / **`vue-build-feature`** - the library-neutral Vue
-  patterns these helpers slot into.
+- The **`vue-component-anatomy`** / **`vue-build-feature`** skills - the
+  library-neutral Vue patterns these helpers slot into.

@@ -1,20 +1,4 @@
----
-name: basmilius-common
-description: >-
-  Use when building or reviewing a Vue 3 app that uses `@basmilius/common` (by Bas
-  Milius): shared app primitives around Pinia, Vue Router and the DTO http client.
-  Trigger on its `defineStore` (the ref-returning wrapper), `useService` /
-  `guarded` / `onError`, `useDataTable` / `useDataReport`, `useDtoForm`,
-  `useUrlState`, `persistentRef`, `unrefAll`, `generateColorPalette`, its
-  composables (useClickOutside, useHotKey, useEventListener, useLoaded,
-  useResizeObserver, ...), router helpers (useRouteParam, useRouteMeta,
-  useNavigate, useNamedRoute) and exceptions (ForbiddenException,
-  UnauthorizedException, HandledException, UnresolvedDependencyException). DTO
-  client: `basmilius-http-client`; standalone helpers: `basmilius-utils`.
-license: MIT (skill content); @basmilius/common is MIT, by Bas Milius
----
-
-# Bas Milius common
+# @basmilius/common guide
 
 `@basmilius/common` is a set of opinionated Vue 3 app primitives: a `defineStore`
 that hands back refs, data composables (`useDataTable` / `useDataReport`), a
@@ -22,8 +6,8 @@ that hands back refs, data composables (`useDataTable` / `useDataReport`), a
 `vue-router` wrappers, domain exceptions and small reactive utilities. It assumes
 Vue Router and Pinia, and unlocks its data composables when
 `@basmilius/http-client` is present. Everything is a named export from the package
-root. Full catalogs live in `references/reference.md`; worked code in
-`references/patterns.md`.
+root. Full catalogs live in `common-reference.md`; worked code in
+`common-patterns.md`.
 
 **Versions (package.json is the source of truth):** `pinia@^4`,
 `vue-router@^5`, `vue@^3.6.0-beta`. The docs' `installation.md` still says
@@ -38,7 +22,7 @@ pinia 3 / vue-router 4; ignore that.
 - Bootstrap with the **re-exported `createPinia`** (`import { createPinia } from
   '@basmilius/common'`).
 - Do not give a public store key a `$` or `_` prefix; those are filtered out.
-  A worked store is in `references/patterns.md` section 1.
+  A worked store is in `common-patterns.md` section 1.
 
 ## 2. Data access: `useService` + `guarded`
 
@@ -65,7 +49,7 @@ and race-guarding for you.
 - Call it with an **options object**; the `fetcher` receives one
   `DataTableQuery<TFilter>` (`{ offset, limit, search, filters, sort }`) and
   returns `BaseResponse<Paginated<TItem>> | false`. The full return shape is
-  typed in `references/reference.md`; bind its managed `displayEmpty` instead of
+  typed in `common-reference.md`; bind its managed `displayEmpty` instead of
   computing your own empty state.
 - **Keep the service independent of `@basmilius/common`:** map the
   `DataTableQuery` to the service's own params inside the fetcher, so the data
@@ -94,7 +78,7 @@ and race-guarding for you.
 
 ## 5. The composable catalog
 
-Signatures in `references/reference.md`. Grouped by what they do:
+Signatures in `common-reference.md`. Grouped by what they do:
 
 - **DOM and observers:** `useClickOutside`, `useEventListener`,
   `useResizeObserver`, `useMutationObserver`, `useInView`, `useScrollPosition`.
@@ -121,21 +105,21 @@ section 7 (child route + nested `<RouterView>`).
 Four empty `Error` subclasses (`ForbiddenException`, `UnauthorizedException`,
 `HandledException`, `UnresolvedDependencyException`), **thrown by the helpers and
 caught centrally**, never constructed with messages. Per-exception meaning is in
-`references/reference.md`; sections 2 and 3 above cover how they flow.
+`common-reference.md`; sections 2 and 3 above cover how they flow.
 
 ## Reference files
 
-- `references/reference.md` - the full composable catalog with signatures, the
+- `common-reference.md` - the full composable catalog with signatures, the
   `store` / `router` / `error` / `util` exports, and how they interrelate with
   `@basmilius/http-client` and `@basmilius/utils`.
-- `references/patterns.md` - stores, `useService` + `onError`, the `useDataTable`
+- `common-patterns.md` - stores, `useService` + `onError`, the `useDataTable`
   view, `useDtoForm`, `useUrlState`.
 
-## Related skills
+## Related
 
-- **`basmilius-http-client`** - the DTO client that `useService`, `useDataTable`
+- **`http-client.md`** - the DTO client that `useService`, `useDataTable`
   and `useDtoForm` build on.
-- **`basmilius-utils`** - standalone helpers (this package uses `debounce` /
+- **`utils.md`** - standalone helpers (this package uses `debounce` /
   `isHtmlElement` from it).
-- **`vue-build-feature`** / **`vue-component-anatomy`** - the neutral Vue
-  architecture and SFC patterns these primitives slot into.
+- The **`vue-build-feature`** / **`vue-component-anatomy`** skills - the neutral
+  Vue architecture and SFC patterns these primitives slot into.

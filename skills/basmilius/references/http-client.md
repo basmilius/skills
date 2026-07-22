@@ -1,27 +1,10 @@
----
-name: basmilius-http-client
-description: >-
-  Use when building or reviewing the data layer of a Vue 3 app that uses
-  `@basmilius/http-client` (by Bas Milius): every request/response body is a
-  `@dto` class, every endpoint group a `BaseService` subclass, and raw snake_case
-  JSON is mapped to DTOs by a static `@adapter` class. Trigger on `@dto` /
-  `@adapter`, `HttpClient`, `RequestBuilder`, `BaseService`, `BaseResponse`,
-  `Paginated`, `ForeignData`, `QueryString`, `.runAdapter` /
-  `.runPaginatedAdapter`, `RequestError` / `ValidationError`, `serialize` /
-  `deserialize` / `cloneDto`, the tsconfig pair `experimentalDecorators` +
-  `useDefineForClassFields`, or the `dtoNames` Vite plugin. App/state primitives
-  (useService, useDataTable, stores): `basmilius-common`; standalone helpers:
-  `basmilius-utils`.
-license: MIT (skill content); @basmilius/http-client is MIT, by Bas Milius
----
-
-# Bas Milius http-client
+# @basmilius/http-client guide
 
 `@basmilius/http-client` is a typed HTTP client for Vue 3. You model **every
 payload and response body as a `@dto` class**, **every endpoint group as a
 `BaseService` subclass**, and translate raw JSON to DTOs through a static
-`@adapter`. This skill encodes the model and the traps; exhaustive signatures live
-in `references/reference.md` and worked code in `references/patterns.md`.
+`@adapter`. This guide encodes the model and the traps; exhaustive signatures live
+in `http-client-reference.md` and worked code in `http-client-patterns.md`.
 
 The data flow is one line: **service method -> `RequestBuilder` -> `fetch` ->
 JSON -> adapter -> DTO -> `BaseResponse`**.
@@ -42,7 +25,7 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
 - **Minification trap:** if you `serialize` / `deserialize` / `cloneDto` in a
   production build, add the `dtoNames()` plugin from `@basmilius/http-client/vite`
   to `vite.config.ts`. DTO rehydration is keyed by class name, which minifiers
-  rename. See `references/patterns.md`.
+  rename. See `http-client-patterns.md`.
 - **Peers:** `vue@^3.6.0-beta`, `luxon`. (`vite` is an optional peer, only for the
   plugin.)
 
@@ -91,13 +74,13 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
   on `res.ok` and read `res.data`.
 - **Catch order matters** (structural siblings): `isRequestAborted` ->
   `isValidationError` -> `isRequestError`, and `isUnsanctionedRequest` for
-  401/403. See `references/patterns.md`.
+  401/403. See `http-client-patterns.md`.
 - **`204` and unauthenticated responses without a body resolve as
   `BaseResponse(null, ...)`** rather than throwing: handle `data === null`.
   Network-level `fetch` rejections bubble up unwrapped.
 - **In a `@basmilius/common` app you usually do not try/catch here.** Wrap the
   service in `useService()` so `guarded` turns these into typed exceptions for a
-  global handler. See `basmilius-common`.
+  global handler. See `common.md`.
 
 ## 6. Dirty tracking and serialization
 
@@ -106,22 +89,22 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
   changed.
 - `serialize` / `deserialize` round-trip DTOs and Luxon `DateTime`s by class name
   (needs the `dtoNames` plugin under minification). Details in
-  `references/patterns.md`.
+  `http-client-patterns.md`.
 
 ## Reference files
 
-- `references/reference.md` - the full export surface: decorators, DTO helpers,
+- `http-client-reference.md` - the full export surface: decorators, DTO helpers,
   `RequestBuilder` runners and config, `BaseResponse`, `QueryString`, the value
   classes (`Paginated`, `BlobResponse`, `RequestError`, `ValidationError`),
   guards, `HttpAdapter`, types and the Vite plugin options.
-- `references/patterns.md` - the end-to-end recipe (DTO -> adapter -> service ->
+- `http-client-patterns.md` - the end-to-end recipe (DTO -> adapter -> service ->
   call), error handling, the dirty-save pattern, serialize/deserialize and the
   `dtoNames` setup.
 
-## Related skills
+## Related
 
-- **`basmilius-common`** - `useService` (auto-`guarded`), `useDataTable` /
+- **`common.md`** - `useService` (auto-`guarded`), `useDataTable` /
   `useDataReport` and `useDtoForm` build directly on this client.
-- **`basmilius-utils`** - standalone helpers this package uses internally.
-- **`vue-build-feature`** - the neutral feature architecture; this client is the
-  concrete "data access" layer it leaves project-specific.
+- **`utils.md`** - standalone helpers this package uses internally.
+- The **`vue-build-feature`** skill - the neutral feature architecture; this
+  client is the concrete "data access" layer it leaves project-specific.

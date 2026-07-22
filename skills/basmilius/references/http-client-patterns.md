@@ -156,7 +156,7 @@ try {
 
 In a `@basmilius/common` app, prefer `useService(UserService)`: it wraps every
 method with `guarded`, which turns these into typed exceptions for a global
-handler, so the call site stays free of `try/catch`. See `basmilius-common`.
+handler, so the call site stays free of `try/catch`. See `common.md`.
 
 ## 6. Dirty-tracking save
 

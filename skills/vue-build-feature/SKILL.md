@@ -107,8 +107,8 @@ component/
   error + a request token that drops stale responses) and model each feature
   composable on it.
 - **If the project uses `@basmilius/common`,** its `useDataTable` /
-  `useDataReport` are that data helper (see `basmilius-common`), backed by
-  `@basmilius/http-client` services and DTOs (see `basmilius-http-client`).
+  `useDataReport` are that data helper, backed by `@basmilius/http-client`
+  services and DTOs (see the `basmilius` skill for both).
 
 ## 6. Reset shared / module-level state
 
@@ -151,8 +151,8 @@ component/
 
 - **`vue-component-anatomy`** - how to build each `.vue` file this feature adds.
 - **`flux-ui`** - selecting and composing components when the project uses Flux.
-- **`basmilius-http-client`** / **`basmilius-common`** - if the project uses these
-  (by Bas Milius), the concrete data layer (DTO services) and the state/composable
+- **`basmilius`** - if the project uses the `@basmilius/*` packages (by Bas
+  Milius), the concrete data layer (DTO services) and the state/composable
   layer (`useDataTable`, stores) this skill leaves project-specific.
 - The repo's **`CLAUDE.md` / `AGENTS.md`** - the state/data library, permission
   model, i18n location and other project-specific rules.
