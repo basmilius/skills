@@ -7,7 +7,7 @@ Full documentation, including runnable examples, is at
 | Component | Use for | Key props |
 | --- | --- | --- |
 | `FluxFlowNode` | Positions one piece of content | `id`, `x`, `y` |
-| `FluxFlowConnection` | Wires two nodes together | `from`, `to`, `label` |
+| `FluxFlowConnection` | Wires two nodes together | `from`, `to`, `label`, `icon` |
 | `FluxFlowTerminal` | The start and the end of a flow | `label`, `icon`, `color` |
 | `FluxFlowTriggerCard` | What sets the flow off | `title`, default slot |
 | `FluxFlowActionCard` | A step that does something | `title`, default slot |
@@ -53,7 +53,8 @@ Colours are the Flux palette: `primary`, `info`, `success`, `warning`, `danger`.
 Use `success` for a completed end, `danger` for a failure path, and leave the
 rest untinted so the tinted ones mean something.
 
-Icons are Font Awesome names such as `user`, `check`, `bolt`, `lock`, `envelope`,
-`database`, `clock`, `arrow-right`, `xmark`, `circle-check`. Only the set the
-project registers with `fluxRegisterIcons` is available, and an unregistered name
-renders as nothing at all. When unsure, leave the icon off.
+Icons are Font Awesome names such as `user`, `bolt`, `lock`, `envelope`,
+`database`, `clock`, `arrow-right`. The viewer resolves the entire Font Awesome
+Pro set, so any Pro name works and there is no registration step. For check,
+xmark, plus and minus, always use the circle variants: `circle-check`,
+`circle-xmark`, `circle-plus` and `circle-minus`, never the bare glyphs.
