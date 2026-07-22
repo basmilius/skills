@@ -84,6 +84,15 @@ if (tags.length > 0) {
     console.log(`(tagged ${tags.join(', ')})`);
 }
 
+// A doc may come back with warnings: a card pointing at nothing yet, an unknown
+// component, an unknown icon. None of them block the publish, but the author
+// should hear them.
+if (Array.isArray(result.warnings)) {
+    for (const warning of result.warnings) {
+        console.log(`(warning: ${warning})`);
+    }
+}
+
 async function publishPage(): Promise<Record<string, string>> {
     return await send('publish', {
         method: 'POST',

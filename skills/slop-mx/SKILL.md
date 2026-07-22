@@ -153,7 +153,192 @@ Both page types get a fixed house style, so do not write styling of your own: no
 HTML in the markdown, no inline styles, no headings used for visual effect.
 
 Start the markdown at `##`. The title comes from `--title` and is rendered as the
-page heading already, so a leading `#` would give the page two titles.
+page heading already, so a leading `#` would give the page two titles. The h2 and
+h3 headings become the page's side navigation, so structure a doc with meaningful
+ones.
+
+GitHub-flavoured markdown works throughout: tables, task lists (`- [ ]`),
+footnotes (`[^1]`), strikethrough. Code fences are highlighted for bash, css,
+diff, html, ini, java, javascript, json, markdown, php, python, scss, sql,
+typescript, vue and yaml; any other language renders unhighlighted, never as an
+error.
+
+### Components
+
+A doc may also use a small set of components. Rules that make them work: block
+components always close with `::`, props are always double-quoted, and internal
+targets are paths exactly as the API hands them back (`2026/07/some-slug`, or
+`rita/2026/07/some-slug` for another account). On GitHub or in a raw view these
+degrade to visible marker lines with the target still readable.
+
+A **card** links to another published item or an external URL. For an internal
+target the host fills in the title, description and kind icon at render time,
+so write nothing but the path; body text replaces the description. An `icon`
+prop (kebab-case Font Awesome Duotone name, same set diagrams use) overrides the
+default; an unknown name falls back with a publish warning.
+
+```markdown
+::card{to="2026/07/login-flow-k3f9dq"}
+::
+
+::card{to="https://flux-ui.dev" icon="paintbrush"}
+Optional one-line teaser that replaces the resolved description.
+::
+```
+
+A **card grid** puts cards side by side where the column allows it. Note the
+extra colon on the wrapper:
+
+```markdown
+:::cards
+::card{to="2026/07/login-flow-k3f9dq"}
+::
+::card{to="2026/07/checkout-flow-m2xk1p"}
+::
+:::
+```
+
+An **embedded diagram** shows a published diagram inside the doc, in an
+interactive frame with a link to the full page. Body text becomes the caption.
+Without a `height` the frame takes the reader's own viewport ratio; pass one
+(`height="24rem"`) only when a diagram wants less room.
+
+```markdown
+::diagram{path="2026/07/checkout-flow-m2xk1p"}
+The checkout flow, embedded.
+::
+```
+
+**Callouts** use GitHub's alert syntax, which GitHub itself also renders:
+
+```markdown
+> [!NOTE]
+> Docs are cached for five minutes.
+```
+
+`NOTE`, `TIP`, `WARNING`, `IMPORTANT` and `CAUTION` are accepted. Note for
+context, tip for a shortcut, warning for something that bites.
+
+A **collapsible section** hides detail behind a native disclosure:
+
+```markdown
+::details{summary="Full stack trace"}
+Any markdown, including code fences.
+::
+```
+
+A **YouTube video** embeds in a frame; a bare id, a watch URL or a share link
+all work, and body text becomes the caption:
+
+```markdown
+::youtube{id="5UiM7m9tQ80"}
+::
+```
+
+A **details group** turns several collapsibles into an accordion: one open at
+a time, all closed on arrival. Good for FAQs:
+
+```markdown
+:::details-group
+::details{summary="First question"}
+The answer.
+::
+::details{summary="Second question"}
+Another answer.
+::
+:::
+```
+
+A **progress bar** states how far something is; `status` is the label, `max`
+defaults to 100, colors are the badge colors:
+
+```markdown
+::progress{value="60" status="Rollout to production" color="success"}
+::
+```
+
+A **wide image** breaks out of the text column; the title becomes its caption,
+and every image in a doc opens in a lightbox when clicked:
+
+```markdown
+![Dashboard sketch](https://slop.mx/2026/07/dashboard-sketch-k3f9dq.png "The caption"){.wide}
+```
+
+**Steps** dress a plain ordered list as numbered stops on a line, for
+instructions and how-tos:
+
+```markdown
+::steps
+1. Install Bun.
+2. Run the script.
+::
+```
+
+A **facts panel** is a key-value block for metadata at the top of a doc. Every
+prop becomes a row and the keys are yours to choose:
+
+```markdown
+::facts{status="In review" ticket="IPV3-5924" branch="feature/rich-docs"}
+::
+```
+
+**Stat tiles** put the numbers of a report in a grid; `hint` is optional:
+
+```markdown
+:::stats
+::stat{value="12" label="Tests fixed"}
+::
+::stat{value="2.0 MB" label="Server bundle" hint="gzip"}
+::
+:::
+```
+
+An **inline badge** is a status chip in running text or a table cell. Colors:
+`gray`, `primary`, `info`, `success`, `warning`, `danger`:
+
+```markdown
+The rollout is :badge[Done]{color="success"}, the docs are :badge[In review]{color="warning"}.
+```
+
+A **file tree** renders a plain nested list as a tree. A trailing slash marks a
+folder; an entry with children is one already:
+
+```markdown
+::tree
+- src/
+  - worker/
+    - index.ts
+- package.json
+::
+```
+
+A **code fence title** names the file above the block, straight after the
+language, and gets a copy button either way:
+
+````markdown
+```typescript [server/utils/foo.ts]
+const x = 1;
+```
+````
+
+A **code group** turns consecutive fences into tabs, labelled by their titles:
+
+````markdown
+:::code-group
+```typescript [a.ts]
+const a = 1;
+```
+
+```bash [terminal]
+bun run dev
+```
+:::
+````
+
+Publishing a doc never fails over its content, but it may print warnings: a card
+target that does not resolve yet, an unknown component (usually a typo like
+`::caard`), an unknown icon. Relay them to the user; a target published a moment
+later simply starts working.
 
 ## Writing a diagram
 
