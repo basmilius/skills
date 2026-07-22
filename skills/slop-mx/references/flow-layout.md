@@ -17,8 +17,12 @@ the reasoning behind each number.
 | --- | --- |
 | Card width | 300px |
 | Card height | `78 + 24 × lines` (a line ≈ 36 characters); 62px with no body |
-| Terminal height | 36px |
-| Junction size | 18px |
+| Terminal | `40 + 8 × label characters` wide, 36px tall |
+| Pill | `54 + 8 × label characters` wide, 44px tall |
+| Note width | 210px |
+| Step | 36 × 36px |
+| Gate | 60 × 60px |
+| Junction | 18 × 18px |
 | Connector attachment inset | 31px from the edge, clamped to half the node |
 | Two stacked nodes | 60px between them |
 | Two stacked nodes, labelled connection | 110px |
@@ -91,18 +95,22 @@ Two nodes therefore do not line up just because they share a coordinate. The
 result is a line with a small kink in it, and it is the single most common flaw
 in a hand-placed diagram.
 
-Two pairings come up constantly, both with a fixed correction:
+On a vertical connection, keep the default `center` alignment and do the lining
+up with coordinates instead: both ends attach at their horizontal middle, so a
+narrower node above or below a wider one belongs at the wider one's centre, at
+`x + (wide - narrow) / 2` rather than at its `x`. The widths come from the table
+above. Two cases come up constantly:
 
-- **A terminal beside a card.** The card attaches 31px down, the terminal at its
-  middle. Put the terminal 13px lower than the card and the line runs straight.
-- **A junction below a card.** Both attach at their horizontal middle. With a
-  300px card at `x`, the junction belongs at `x + 141`: the card's middle less
-  half the junction's 18px.
+- **A junction below a 300px card at `x`** goes at `x + 141`: the card's middle
+  less half the junction's 18px.
+- **A terminal below that card** goes at `x + 150 - (40 + 8 × label characters) / 2`.
+  A five-character label makes the terminal 80px wide, so it goes at `x + 110`.
 
-For a terminal hanging below a card, give both ends `from-align="start"` and
-`to-align="start"` and put the terminal at the card's `x`. Both then attach 31px
-in from the left and the line is straight whatever width the label turns out to
-be, which beats guessing at the terminal's width.
+Sideways the same trick does not work, because a card grows with its text and
+its vertical middle moves with it. So **for a terminal beside a card**, give the
+card end `align="start"`: the card then attaches 31px down, the terminal at its
+own middle, and putting the terminal 13px lower than the card runs the line
+straight.
 
 ## Connections
 
@@ -113,11 +121,17 @@ downward flow wants.
   branch leaves sideways, otherwise the line loops around the card.
 - `fromAlign` / `toAlign`: give both `start` on a connection running sideways
   between two cards. The default anchors each end to the middle of its own card,
-  so two cards of different heights get a line that kinks on its way across.
+  so two cards of different heights get a line that kinks on its way across. On
+  a vertical connection, leave both at the default `center` and line up the
+  nodes' horizontal middles with their coordinates instead.
 - `label`: leave it where it lands. Every badge sits in the middle of its
   connector, so do not reach for `labelPlacement` to nudge one out of trouble. A
   badge wedged against the cards means the two nodes are too close; give them the
   space from the table above and it fixes itself.
+- `icon`: a Font Awesome name; without a `label` the icon renders inline on the
+  connector. Where a word would say no more than a mark, prefer the icon alone:
+  `circle-check` and `circle-xmark` on the two sides of a condition instead of
+  "Yes" and "No" badges.
 - `color`: use it to separate a failure path from the happy path.
 
 ```vue
@@ -173,8 +187,8 @@ these five:
    frame, rather than on top of it?
 4. Does a junction sit at the middle of the node after it, and does it have room
    on both sides?
-5. Does every connector between nodes of different heights account for the
-   attachment inset, or will it arrive at a slight angle?
+5. Does every connector attach straight: `start` on both card ends of a
+   sideways connection, and horizontal middles lined up on a vertical one?
 
 `publish.ts --check --file <path>` does the first of these for you and reports
 every pair that is too close, which is faster than counting by hand. It runs on
