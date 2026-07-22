@@ -6,7 +6,9 @@ description: >-
   publish, post or put something online ("publiceer dit plan op slop.mx", "zet dit
   diagram online"), to update something published earlier, to upload a small image,
   or wants a diagram of a process, flow, pipeline or architecture ("maak een diagram
-  van het inlogproces", "teken deze pipeline"). Three kinds: a doc (markdown), a
+  van het inlogproces", "teken deze pipeline"), or wants to show a code change as a
+  rich diff ("publiceer deze diff", "zet deze wijziging online als diff"). Three
+  kinds: a doc (markdown, with components including a GitHub-style diff view), a
   diagram (a Flux Flow template with explicit coordinates) and a file (raw bytes).
 license: MIT
 ---
@@ -333,6 +335,29 @@ const a = 1;
 bun run dev
 ```
 :::
+````
+
+A **diff** renders a unified diff the way GitHub does: syntax-highlighted, with
+a toggle between unified and split view and a copy button for the raw patch.
+`title` names the file above the block. The body is one ```diff fence holding
+the patch exactly as `git diff` printed it; the fence is what keeps `---` and
+`+++` lines from being read as markdown. One file per block: a multi-file patch
+falls back to a plain highlighted fence with a publish warning, so split it
+into one `::diff` per file. A bare ```diff fence outside the component stays
+what it always was, a simple highlighted snippet, so reach for `::diff` when
+the change itself is the story.
+
+````markdown
+::diff{title="src/app.ts"}
+```diff
+--- a/src/app.ts
++++ b/src/app.ts
+@@ -1,3 +1,3 @@
+ import { createApp } from 'vue';
+-const app = createApp({});
++const app = createApp(App);
+```
+::
 ````
 
 Publishing a doc never fails over its content, but it may print warnings: a card
