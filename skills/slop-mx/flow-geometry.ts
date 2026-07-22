@@ -1,5 +1,6 @@
 type FlowNode = {
     readonly id: string;
+    readonly component: string;
     readonly x: number;
     readonly y: number;
     readonly width: number;
@@ -11,10 +12,13 @@ type FlowConnection = {
     readonly to: string;
     readonly label: string;
     readonly icon: string;
+    readonly markerStart: string;
+    readonly markerEnd: string;
     readonly vertical: boolean | null;
 };
 
 type FlowSize = {
+    readonly component: string;
     readonly width: number;
     readonly height: number;
 };
@@ -49,11 +53,16 @@ const NOTE_LINE = 21;
 
 const CARD_COMPONENTS = ['FluxFlowCard', 'FluxFlowActionCard', 'FluxFlowConditionCard', 'FluxFlowTriggerCard'];
 
+// The shapes that are themselves the point where paths meet, so a connector
+// touching one carries no marker on that end.
+const ANCHOR_COMPONENTS = ['FluxFlowGate', 'FluxFlowJunction'];
+
 /**
  * Reads a Flow template back and reports every pair of nodes that sits too close
- * for the connector between them. Nothing in Flow lays a diagram out, so this is
- * the only thing standing between a typo in a coordinate and a published diagram
- * with its badge sitting on top of its own line.
+ * for the connector between them, plus every connector still carrying a marker
+ * where it meets a junction or a gate. Nothing in Flow lays a diagram out, so
+ * this is the only thing standing between a typo in a coordinate and a published
+ * diagram with its badge sitting on top of its own line.
  */
 export default function checkFlowGeometry(source: string): string[] {
     const nodes = readNodes(source);
@@ -66,6 +75,14 @@ export default function checkFlowGeometry(source: string): string[] {
         if (!from || !to) {
             problems.push(`${connection.from} -> ${connection.to}: there is no node with id "${from ? connection.to : connection.from}".`);
             continue;
+        }
+
+        if (isAnchor(from) && connection.markerStart !== 'none') {
+            problems.push(`${connection.from} -> ${connection.to}: the end touching ${shape(from)} "${from.id}" needs marker-start="none".`);
+        }
+
+        if (isAnchor(to) && connection.markerEnd !== 'none') {
+            problems.push(`${connection.from} -> ${connection.to}: the end touching ${shape(to)} "${to.id}" needs marker-end="none".`);
         }
 
         const vertical = connection.vertical ?? isVertical(from, to);
@@ -101,6 +118,16 @@ function badgeSize(connection: FlowConnection, vertical: boolean): number | null
     }
 
     return connection.icon ? ICON_SIZE : null;
+}
+
+function isAnchor(node: FlowNode): boolean {
+    return ANCHOR_COMPONENTS.includes(node.component);
+}
+
+// "junction" or "gate", so a report reads as the diagram does rather than naming
+// the component.
+function shape(node: FlowNode): string {
+    return node.component.replace('FluxFlow', '').toLowerCase();
 }
 
 // Names the connector the way the diagram writes it, so a reported pair can be
@@ -170,6 +197,8 @@ function readConnections(source: string): FlowConnection[] {
             to,
             label: attribute(attributes, 'label') ?? '',
             icon: attribute(attributes, 'icon') ?? '',
+            markerStart: attribute(attributes, 'marker-start') ?? 'dot',
+            markerEnd: attribute(attributes, 'marker-end') ?? 'chevron',
             vertical: side === undefined ? null : (side === 'top' || side === 'bottom')
         });
     }
@@ -178,8 +207,9 @@ function readConnections(source: string): FlowConnection[] {
 }
 
 // What a node measures on the canvas, estimated from the component it holds and
-// the text in it. Deliberately on the low side: a card guessed too tall would
-// report a gap that is not really too small.
+// the text in it, along with the name of that component. Sizes are deliberately
+// on the low side: a card guessed too tall would report a gap that is not really
+// too small.
 function measure(content: string): FlowSize {
     const component = content.match(/<(FluxFlow[A-Za-z]+)/)?.[1] ?? '';
     const attributes = content.match(/<FluxFlow[A-Za-z]+([^>]*)>/)?.[1] ?? '';
@@ -187,24 +217,24 @@ function measure(content: string): FlowSize {
     const body = content.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
     if (CARD_COMPONENTS.includes(component)) {
-        return {width: 300, height: body ? 76 + CARD_LINE * lines(body, CARD_CHARACTERS) : 62};
+        return {component, width: 300, height: body ? 76 + CARD_LINE * lines(body, CARD_CHARACTERS) : 62};
     }
 
     switch (component) {
         case 'FluxFlowNote':
-            return {width: 210, height: 50 + NOTE_LINE * lines(body, NOTE_CHARACTERS)};
+            return {component, width: 210, height: 50 + NOTE_LINE * lines(body, NOTE_CHARACTERS)};
         case 'FluxFlowTerminal':
-            return {width: 40 + label.length * 8, height: 36};
+            return {component, width: 40 + label.length * 8, height: 36};
         case 'FluxFlowPill':
-            return {width: 54 + label.length * 8, height: 44};
+            return {component, width: 54 + label.length * 8, height: 44};
         case 'FluxFlowStep':
-            return {width: 36, height: 36};
+            return {component, width: 36, height: 36};
         case 'FluxFlowGate':
-            return {width: 60, height: 60};
+            return {component, width: 60, height: 60};
         case 'FluxFlowJunction':
-            return {width: 18, height: 18};
+            return {component, width: 18, height: 18};
         default:
-            return {width: 36, height: 36};
+            return {component, width: 36, height: 36};
     }
 }
 

@@ -53,19 +53,19 @@ if (options.check || options.type === 'diagram') {
     const problems = checkFlowGeometry(source);
 
     if (problems.length > 0) {
-        console.error(`${problems.length === 1 ? 'One pair of nodes sits' : `${problems.length} pairs of nodes sit`} too close together:`);
+        console.error(`${problems.length === 1 ? 'One problem' : `${problems.length} problems`} with the connectors:`);
 
         for (const problem of problems) {
             console.error(`  ${problem}`);
         }
 
-        console.error('See references/flow-layout.md for the spacing every connector needs, or pass --force to publish anyway.');
+        console.error('See references/flow-layout.md for what every connector needs, or pass --force to publish anyway.');
 
         if (!options.force) {
             process.exit(1);
         }
     } else if (options.check) {
-        console.log('Every connector has room.');
+        console.log('Every connector has room and the right markers.');
     }
 
     if (options.check) {

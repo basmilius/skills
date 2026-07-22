@@ -146,6 +146,12 @@ downward flow wants.
   retry, a reason such as "expired" or "over quota", or a condition whose
   wording leaves which side is which open. Either way it is a badge, so give it
   the 100px from the table rather than the 60px a plain connector gets by.
+- `markerStart` / `markerEnd`: what the line ends in at the `from` and at the `to`
+  end, a dot and a chevron by default. Give the end `none` whenever it meets a
+  junction or a gate: those shapes already are the point where the paths come
+  together, so the marker only says a second time what the shape says, and on an
+  18px junction it lands on top of it. The other end of that same connector keeps
+  its marker.
 - `color`: use it to separate a failure path from the happy path.
 
 ```vue
@@ -187,6 +193,19 @@ Do not route a junction into a marker column. If the flow's trunk runs through
 numbered steps on the left and its cards sit to the right, a junction that joins
 the two produces a long detour. Pick one spine and keep the junction on it.
 
+Every line touching a junction ends bare. A line arriving at one carries
+`marker-end="none"`, a line leaving it `marker-start="none"`, and a line running
+from one junction to another carries both. Three connectors converging with their
+default dots and chevrons intact bury an 18px shape under its own arrowheads. A
+gate is the same shape of thing and takes the same treatment, even though it is
+60px and hides it better:
+
+```vue
+<FluxFlowConnection from="check" to="merge" marker-end="none"/>
+<FluxFlowConnection from="retry" to="merge" marker-end="none"/>
+<FluxFlowConnection from="merge" to="save" marker-start="none"/>
+```
+
 ## Before you publish
 
 Read your own coordinates back. Every node in a column shares one `x`, and each
@@ -203,8 +222,10 @@ these five:
    on both sides?
 5. Does every connector attach straight: `start` on both card ends of a
    sideways connection, and horizontal middles lined up on a vertical one?
+6. Does every end touching a junction or a gate carry `marker-start="none"` or
+   `marker-end="none"`, whichever end that is?
 
-`publish.ts --check --file <path>` does the first of these for you and reports
-every pair that is too close, which is faster than counting by hand. It runs on
-every diagram published as well, and refuses the publish when something is
-crowded.
+`publish.ts --check --file <path>` does the first and the last of these for you
+and names every connector it objects to, which is faster than counting by hand.
+It runs on every diagram published as well, and refuses the publish when
+something is crowded or a marker is left on.

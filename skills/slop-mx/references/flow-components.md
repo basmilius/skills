@@ -7,7 +7,7 @@ Full documentation, including runnable examples, is at
 | Component | Use for | Key props |
 | --- | --- | --- |
 | `FluxFlowNode` | Positions one piece of content | `id`, `x`, `y` |
-| `FluxFlowConnection` | Wires two nodes together | `from`, `to`, `label`, `icon` |
+| `FluxFlowConnection` | Wires two nodes together | `from`, `to`, `label`, `icon`, `markerStart`, `markerEnd` |
 | `FluxFlowTerminal` | The start and the end of a flow | `label`, `icon`, `color` |
 | `FluxFlowTriggerCard` | What sets the flow off | `title`, default slot |
 | `FluxFlowActionCard` | A step that does something | `title`, default slot |
