@@ -138,10 +138,14 @@ downward flow wants.
   badge wedged against the cards means the two nodes are too close; give them the
   space from the table above and it fixes itself.
 - `icon`: a Font Awesome name; without a `label` the icon renders inline on the
-  connector. Where a word would say no more than a mark, prefer the icon alone:
-  `circle-check` and `circle-xmark` on the two sides of a condition instead of
-  "Yes" and "No" badges. It is a badge like any other, so give it the 100px from
-  the table rather than the 60px a plain connector gets by.
+  connector. Judge per diagram whether the mark or the word reads clearer, and
+  hold that choice across the whole diagram. An icon is enough when the node it
+  leaves already asks the question, so a card reading "Are the credentials
+  valid?" can branch into `circle-check` and `circle-xmark`. A word earns its
+  badge when the branch carries something a mark cannot: a third outcome, a
+  retry, a reason such as "expired" or "over quota", or a condition whose
+  wording leaves which side is which open. Either way it is a badge, so give it
+  the 100px from the table rather than the 60px a plain connector gets by.
 - `color`: use it to separate a failure path from the happy path.
 
 ```vue
