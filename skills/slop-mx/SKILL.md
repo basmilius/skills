@@ -47,7 +47,9 @@ where, in `$XDG_STATE_HOME/slop-mx/published.json`, falling back to
 ## Publishing
 
 Write the content to a file first, then hand that file to the script. Never pass
-long content as a shell argument.
+long content as a shell argument. Content that already lives in a file is ready
+as it is: pass that path directly rather than copying or rewriting it into a new
+file.
 
 ```shell
 bun ~/.claude/skills/slop-mx/publish.ts \
@@ -86,6 +88,9 @@ in the markdown, no inline styles, no headings used for visual effect.
 
 Start the markdown at `##`. The title comes from `--title` and is rendered as the
 page heading already, so a leading `#` would give the page two titles.
+
+For a doc this file is all there is to read: both references cover diagrams
+only, and `publish.ts` is there to run, not to study.
 
 ## Writing a diagram
 
