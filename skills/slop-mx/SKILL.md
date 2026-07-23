@@ -284,11 +284,15 @@ prop becomes a row and the keys are yours to choose:
 ::
 ```
 
-**Stat tiles** put the numbers of a report in a grid; `hint` is optional:
+**Stat tiles** put the numbers of a report in a grid. `hint`, `icon` (the same
+Font Awesome Duotone set cards use) and `color` (the badge colors) are all
+optional; the color tints the icon, or the value when there is no icon:
 
 ```markdown
 :::stats
-::stat{value="12" label="Tests fixed"}
+::stat{value="3" label="Blockers" icon="circle-xmark" color="danger"}
+::
+::stat{value="7" label="Must fix" icon="circle-exclamation" color="warning"}
 ::
 ::stat{value="2.0 MB" label="Server bundle" hint="gzip"}
 ::
