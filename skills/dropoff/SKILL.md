@@ -100,7 +100,7 @@ reporting the link is the whole point of the operation.
 | `--description` | no | One sentence, used for link previews and under the diagram title |
 | `--tags` | no | Comma separated, on top of the project tag |
 | `--no-project-tag` | no | Leave the project out of the tags |
-| `--path` | no | Publish onto a specific existing page, as `2026/07/some-slug` |
+| `--path` | no | Publish onto a specific existing page, as `2026/07/some-slug` or its `/p/<code>` short link |
 | `--new` | no | Force a fresh URL even when the title was published before |
 | `--check` | no | Check a diagram's spacing and stop; publishes nothing |
 | `--force` | no | Publish a diagram the spacing check objects to |
@@ -112,10 +112,10 @@ the same URL and keeps its original date. Pick a title specific enough not to
 collide with an unrelated page, and if the output says `(replaced the existing
 page)` when you did not mean to replace one, tell the user and offer `--new`.
 
-- The user gives a long URL to update: pass everything after the domain as
-  `--path`, dropping your own account segment, so `2026/07/some-slug`. A short
-  `/p/<code>` link is not a path and never goes into `--path`; resolve it to its
-  long URL first, or simply publish the same title again.
+- The user gives a URL to update: pass everything after the domain as `--path`.
+  For a long URL drop your own account segment, so `2026/07/some-slug`. A short
+  `/p/<code>` link goes in as-is, as `p/<code>` or just the code; it stands in
+  for the account, date and slug, so it lands on the page it names.
 - The user wants a separate page despite the same title: pass `--new`.
 
 An upload is the exception: it always takes a fresh URL unless `--path` names one
@@ -431,7 +431,7 @@ nothing for you, and the numbers that decide whether a diagram reads well are no
 guessable: a card is as tall as its text, a connection carrying a label needs
 110px of clear space and one carrying only an icon 100px or its badge lands on
 both cards, a connector attaches 31px in from an edge, and a group's frame extends
-21px past its nodes plus a 45px title band.
+21px past its nodes plus a 60px title band.
 
 Publishing a diagram checks that spacing and refuses when two connected nodes sit
 too close, naming the pairs and the space they need. Fix the coordinates rather

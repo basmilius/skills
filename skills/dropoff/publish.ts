@@ -22,7 +22,7 @@ const options = parseArguments(process.argv.slice(2));
 if (!options.file || (!options.check && (!options.type || !options.title))) {
     fail([
         'Usage: publish.ts --type <doc|diagram|file> --title <title> --file <path> [--description <text>]',
-        '                  [--tags a,b] [--no-project-tag] [--path <[user/]yyyy/mm/slug>] [--new] [--force]',
+        '                  [--tags a,b] [--no-project-tag] [--path <[user/]yyyy/mm/slug | p/code>] [--new] [--force]',
         '       publish.ts --check --file <path>'
     ].join('\n'));
 }
