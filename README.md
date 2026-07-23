@@ -30,7 +30,7 @@ Update what you already installed, all of them or one by name:
 
 ```bash
 npx skills update
-npx skills update slop-mx
+npx skills update dropoff
 ```
 
 `npx skills` uses GitHub as its registry and installs each skill into your
@@ -46,7 +46,7 @@ See [vercel-labs/skills](https://github.com/vercel-labs/skills) and
 | [`vue-build-feature`](skills/vue-build-feature/SKILL.md) | Building a Vue 3 feature across multiple components and layers: view-orchestrates / components-present, feature folders and barrels, composables, routing, the build sequence. |
 | [`flux-ui`](skills/flux-ui/SKILL.md) | Building, editing and reviewing Vue 3 UIs with the [Flux](https://flux-ui.dev) design system: picking the right component, imports and composition, the naming traps. |
 | [`basmilius`](skills/basmilius/SKILL.md) | The `@basmilius` npm scope as one stack: the `@basmilius/utils` helper catalog, the `@basmilius/http-client` DTO data layer (`@dto` / `@adapter` / `BaseService`) and the `@basmilius/common` Vue 3 app primitives (`defineStore`, `useService`, `useDataTable`, composables). |
-| [`slop-mx`](skills/slop-mx/SKILL.md) | Publish a markdown doc, a [Flux Flow](https://flux-ui.dev) diagram or a small file from the terminal to your own host, tagged so it can be found back, and lay the diagram out so its connectors actually line up. Host and token come from configuration. |
+| [`dropoff`](skills/dropoff/SKILL.md) | Publish a markdown doc, a [Flux Flow](https://flux-ui.dev) diagram or a small file from the terminal to your own host, tagged so it can be found back, and lay the diagram out so its connectors actually line up. Host and token come from configuration. |
 | [`release`](skills/release/SKILL.md) | Cut a GitHub release from a bump keyword (`major`/`minor`/`patch`/`stable`, optionally `beta`) and let CI publish; works on a single repo or a sibling-repo workspace. |
 | [`release-notes`](skills/release-notes/SKILL.md) | Generate a copy-pasteable changelog by diffing a base tag against `origin/main`; read-only, creates nothing. |
 

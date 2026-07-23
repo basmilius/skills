@@ -1,9 +1,9 @@
 ---
-name: slop-mx
+name: dropoff
 description: >-
   Publish a document, a diagram or a small file from the terminal to a publishing
   host (unlisted URL), drawing diagrams with Flux Flow. Use when the user asks to
-  publish, post or put something online ("publiceer dit plan op slop.mx", "zet dit
+  publish, post or put something online ("publiceer dit plan op dropoff.sh", "zet dit
   diagram online"), to update something published earlier, to upload a small image,
   or wants a diagram of a process, flow, pipeline or architecture ("maak een diagram
   van het inlogproces", "teken deze pipeline"), or wants to show a code change as a
@@ -20,8 +20,10 @@ holding the link, but with a random suffix, no index, and `noindex` on the page.
 A URL looks like `/rita/2026/07/login-flow-k3f9dq`, dated by the month it was
 first published, and replacing a page later keeps that date so its link never
 moves. The first segment is the account publishing it; a host leaves it out for
-its own account. The host decides which, so report the URL the script prints
-rather than assembling one.
+its own account. A doc or a diagram also gets a short link, `/p/<code>`, which
+carries no account and no date and is the link to hand a reader. The host
+decides the exact URLs, so report what the script prints rather than assembling
+one.
 
 ## Installing and updating
 
@@ -29,8 +31,8 @@ The script runs on [Bun](https://bun.sh), so that has to be installed:
 `brew install oven-sh/bun/bun`, or `curl -fsSL https://bun.sh/install | bash`.
 
 ```shell
-npx skills add basmilius/skills --skill slop-mx
-npx skills update slop-mx
+npx skills add basmilius/skills --skill dropoff
+npx skills update dropoff
 ```
 
 The skill is copied into the agent's skills directory rather than linked, so a
@@ -42,8 +44,8 @@ One environment variable, and nothing else:
 
 | Variable | Holds |
 | --- | --- |
-| `SLOP_MX_TOKEN` | The bearer token the host issued |
-| `SLOP_MX_ENDPOINT` | Optional. Another host to publish to, when not `https://slop.mx` |
+| `DROPOFF_TOKEN` | The bearer token the host issued |
+| `DROPOFF_ENDPOINT` | Optional. Another host to publish to, when not `https://dropoff.sh` |
 
 If the token is missing the script says so and stops. Report that rather than
 inventing a value or writing a config file: there is no config file to write.
@@ -70,7 +72,7 @@ Write the content to a file first, then hand that file to the script. Never pass
 long content as a shell argument.
 
 ```shell
-bun ~/.claude/skills/slop-mx/publish.ts \
+bun ~/.claude/skills/dropoff/publish.ts \
     --type doc \
     --title "Login flow" \
     --description "How a session is issued, end to end." \
@@ -79,8 +81,10 @@ bun ~/.claude/skills/slop-mx/publish.ts \
 ```
 
 The script prints the URL, whether it replaced an existing page, when it expires
-and which tags it carries. Report that URL back to the user; it is the whole
-point of the operation.
+and which tags it carries. For a doc or a diagram it leads with the short
+`/p/<code>` link and prints the long one after it; report the short link, since
+that is the one worth sharing. A file has only its long URL. Either way,
+reporting the link is the whole point of the operation.
 
 | Argument | Required | Notes |
 | --- | --- | --- |
@@ -116,7 +120,7 @@ own with `--tags` for the subject or the kind of work: `auth`, `review`,
 `incident`.
 
 Before publishing, the script asks the host which tags already exist and reuses
-the spelling it finds, so `slop-mx` and `slopmx` do not end up living side by
+the spelling it finds, so `auth-flow` and `authflow` do not end up living side by
 side. Two or three tags is plenty; past a handful they stop narrowing anything
 down, and the host refuses more than ten.
 
@@ -133,7 +137,7 @@ different promise than one that does not.
 ## Uploading a file
 
 ```shell
-bun ~/.claude/skills/slop-mx/publish.ts \
+bun ~/.claude/skills/dropoff/publish.ts \
     --type file \
     --title "Dashboard sketch" \
     --tags design \
@@ -144,7 +148,7 @@ Images, PDFs and small text files up to 1 MB. The URL carries the extension, so
 it can be used straight in a doc as a normal markdown image:
 
 ```markdown
-![Dashboard sketch](https://slop.mx/2026/07/dashboard-sketch-k3f9dq.png)
+![Dashboard sketch](https://dropoff.sh/2026/07/dashboard-sketch-k3f9dq.png)
 ```
 
 Upload the image first, then write the doc around the URL it printed.
@@ -263,7 +267,7 @@ A **wide image** breaks out of the text column; the title becomes its caption,
 and every image in a doc opens in a lightbox when clicked:
 
 ```markdown
-![Dashboard sketch](https://slop.mx/2026/07/dashboard-sketch-k3f9dq.png "The caption"){.wide}
+![Dashboard sketch](https://dropoff.sh/2026/07/dashboard-sketch-k3f9dq.png "The caption"){.wide}
 ```
 
 **Steps** dress a plain ordered list as numbered stops on a line, for

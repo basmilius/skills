@@ -10,7 +10,7 @@ type Options = Record<string, string | undefined> & {
     'no-project-tag'?: boolean;
 };
 
-const DEFAULT_ENDPOINT = 'https://slop.mx';
+const DEFAULT_ENDPOINT = 'https://dropoff.sh';
 
 // Arguments that stand on their own rather than taking the next word.
 const FLAGS = ['new', 'check', 'force', 'no-project-tag'];
@@ -61,19 +61,28 @@ if (options.check || options.type === 'diagram') {
     }
 }
 
-// The host is slop.mx unless something says otherwise, which is only ever a
+// The host is dropoff.sh unless something says otherwise, which is only ever a
 // local worker being tested against.
-const endpoint = process.env.SLOP_MX_ENDPOINT?.trim().replace(/\/$/, '') || DEFAULT_ENDPOINT;
-const token = process.env.SLOP_MX_TOKEN?.trim();
+const endpoint = process.env.DROPOFF_ENDPOINT?.trim().replace(/\/$/, '') || DEFAULT_ENDPOINT;
+const token = process.env.DROPOFF_TOKEN?.trim();
 
 if (!token) {
-    fail('SLOP_MX_TOKEN is not set. It should hold the bearer token the host expects.');
+    fail('DROPOFF_TOKEN is not set. It should hold the bearer token the host expects.');
 }
 
 const tags = await resolveTags();
 const result = options.type === 'file' ? await uploadFile() : await publishPage();
 
-console.log(result.url);
+// A doc and a diagram lead with their short URL, since that is the link worth
+// sharing; the long one still follows, for a path a card or an image needs. A
+// file has no short URL, so it just prints its own.
+if (result.shortUrl) {
+    console.log(result.shortUrl);
+    console.log(`(also at ${result.url})`);
+} else {
+    console.log(result.url);
+}
+
 console.log(result.replaced ? '(replaced the existing page)' : '(new page)');
 
 if (result.expiresAt) {
@@ -246,7 +255,7 @@ function slug(value: string): string {
         .replace(/-+$/g, '');
 }
 
-/** A tag stripped to what it means, so `slop-mx` and `slopmx` compare equal. */
+/** A tag stripped to what it means, so `auth-flow` and `authflow` compare equal. */
 function compact(value: string): string {
     return value.replace(/[^a-z0-9]/g, '');
 }
