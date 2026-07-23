@@ -7,7 +7,7 @@ Full documentation, including runnable examples, is at
 | Component | Use for | Key props |
 | --- | --- | --- |
 | `FluxFlowNode` | Positions one piece of content | `id`, `x`, `y` |
-| `FluxFlowConnection` | Wires two nodes together | `from`, `to`, `label`, `icon`, `markerStart`, `markerEnd` |
+| `FluxFlowConnection` | Wires two nodes together | `from`, `to`, `label`, `icon`, `marker-start`, `marker-end` |
 | `FluxFlowTerminal` | The start and the end of a flow | `label`, `icon`, `color` |
 | `FluxFlowTriggerCard` | What sets the flow off | `title`, default slot |
 | `FluxFlowActionCard` | A step that does something | `title`, default slot |
@@ -20,7 +20,7 @@ Full documentation, including runnable examples, is at
 | `FluxFlowLane` | A horizontal or vertical band | `title`, `y`, `height`, `x`, `width` |
 | `FluxFlowJunction` | A point where paths meet | `color` |
 | `FluxFlowGate` | An and / or / xor split | `type` |
-| `FluxFlowChain` | Places a run of steps and wires them | `x`, `y`, `gap`, `direction`, `autoConnect` |
+| `FluxFlowChain` | Places a run of steps and wires them | `x`, `y`, `gap`, `direction`, `auto-connect` |
 | `FluxFlowPort` | A named anchor to connect to | `id`, `side` |
 
 The card body is the default slot, so
@@ -30,6 +30,21 @@ write one. Use `title` when a card needs a heading above its body as well.
 `FluxFlowGroup` is decoration: it renders behind every card, takes no pointer,
 and nothing connects to it. An id naming a node that does not exist is skipped
 without a word.
+
+Props are kebab-case in the markup: `marker-start`, not `markerStart`. The
+spacing check only reads them in that form, so a camelCase prop is ignored
+without a word and its default assumed, which then reads as a marker that is not
+there.
+
+The spacing check sees only `FluxFlowNode` elements with a literal `x` and `y`.
+Nodes an auto-layout container places (`FluxFlowGraph`, `FluxFlowChain`) and
+`FluxFlowPort` anchors are invisible to it, so a connection naming one is
+reported as a missing node. Position the nodes yourself in a published diagram.
+
+The viewer supplies the zoom, fit and fullscreen controls, the minimap and any
+overlay panels itself, so `FluxFlowControls`, `FluxFlowMinimap` and
+`FluxFlowPanel` do not belong in a template; adding one doubles what the viewer
+already draws.
 
 ## The root
 

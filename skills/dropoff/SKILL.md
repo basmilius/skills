@@ -68,8 +68,14 @@ publishing the same title from a second machine lands on the same page.
 
 ## Publishing
 
-Write the content to a file first, then hand that file to the script. Never pass
-long content as a shell argument.
+The script is a black box: run it and read what it prints. There is no need to
+open `publish.ts` or its helpers to understand it; everything it checks, refuses
+or warns about is described in this skill, references included.
+
+Write the content to a temporary file first, outside the repository unless it
+already belongs there, then hand that file to the script; never pass long content
+as a shell argument. The examples below use the usual Claude Code skill path; if
+this skill lives elsewhere, run the `publish.ts` that sits next to this SKILL.md.
 
 ```shell
 bun ~/.claude/skills/dropoff/publish.ts \
@@ -102,9 +108,14 @@ reporting the link is the whole point of the operation.
 ### Replacing an earlier page
 
 The host keys a page on its title, so publishing the same title again lands on
-the same URL and keeps its original date.
+the same URL and keeps its original date. Pick a title specific enough not to
+collide with an unrelated page, and if the output says `(replaced the existing
+page)` when you did not mean to replace one, tell the user and offer `--new`.
 
-- The user gives a URL to update: pass everything after the domain as `--path`.
+- The user gives a long URL to update: pass everything after the domain as
+  `--path`, dropping your own account segment, so `2026/07/some-slug`. A short
+  `/p/<code>` link is not a path and never goes into `--path`; resolve it to its
+  long URL first, or simply publish the same title again.
 - The user wants a separate page despite the same title: pass `--new`.
 
 An upload is the exception: it always takes a fresh URL unless `--path` names one
@@ -157,6 +168,11 @@ Upload the image first, then write the doc around the URL it printed.
 
 Both page types get a fixed house style, so do not write styling of your own: no
 HTML in the markdown, no inline styles, no headings used for visual effect.
+Punctuate with hyphens, commas, colons or parentheses, never en or em dashes.
+
+Write the whole document in one language, headings included. Match the language
+of the work you are describing rather than defaulting to English, and never mix
+the two: English headings over a body in another language is the usual slip.
 
 Start the markdown at `##`. The title comes from `--title` and is rendered as the
 page heading already, so a leading `#` would give the page two titles. The h2 and
@@ -169,13 +185,22 @@ diff, html, ini, java, javascript, json, markdown, php, python, scss, sql,
 typescript, vue and yaml; any other language renders unhighlighted, never as an
 error.
 
+When a doc explains something with moving parts, a process, a flow, an
+architecture or a pipeline, a diagram alongside the prose often earns its place.
+Publish it first as its own `--type diagram`, then embed it with
+`::diagram{path=...}` (see below). Do not force one onto every doc; add it where
+a picture saves the reader a paragraph.
+
 ### Components
 
 A doc may also use a small set of components. Rules that make them work: block
-components always close with `::`, props are always double-quoted, and internal
-targets are paths exactly as the API hands them back (`2026/07/some-slug`, or
-`rita/2026/07/some-slug` for another account). On GitHub or in a raw view these
-degrade to visible marker lines with the target still readable.
+components always close with `::`, props are always double-quoted, and an
+internal target is a path, not a URL. Derive it from the long URL the script
+printed: drop the scheme and domain, and for your own pages the leading account
+segment too, keeping the last three segments (`2026/07/some-slug`); keep the
+account segment only when linking another account's page
+(`rita/2026/07/some-slug`). On GitHub or in a raw view these degrade to visible
+marker lines with the target still readable.
 
 A **card** links to another published item or an external URL. For an internal
 target the host fills in the title, description and kind icon at render time,
@@ -225,11 +250,14 @@ The checkout flow, embedded.
 `NOTE`, `TIP`, `WARNING`, `IMPORTANT` and `CAUTION` are accepted. Note for
 context, tip for a shortcut, warning for something that bites.
 
-A **collapsible section** hides detail behind a native disclosure:
+A **collapsible section** hides detail behind a native disclosure. Put prose,
+lists, links or a callout inside, never a code fence or a `::tree`; keep those at
+the top level of the doc. This holds for a details group too, since it is made of
+these.
 
 ```markdown
-::details{summary="Full stack trace"}
-Any markdown, including code fences.
+::details{summary="Why the retry loops"}
+Prose, a list, a callout. No code fence or file tree.
 ::
 ```
 
@@ -303,8 +331,10 @@ optional; the color tints the icon, or the value when there is no icon:
 :::
 ```
 
-An **inline badge** is a status chip in running text or a table cell. Colors:
-`gray`, `primary`, `info`, `success`, `warning`, `danger`:
+An **inline badge** is a status chip in running text or a table cell. The text in
+`[...]` is the label a reader sees, so make it a real word like `Critical` or
+`Blocker`, never the color name. `color` only sets the tint: `gray`, `primary`,
+`info`, `success`, `warning`, `danger`:
 
 ```markdown
 The rollout is :badge[Done]{color="success"}, the docs are :badge[In review]{color="warning"}.
