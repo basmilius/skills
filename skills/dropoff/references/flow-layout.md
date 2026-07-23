@@ -163,7 +163,7 @@ Props are kebab-case in markup: `from-side`, not `fromSide`.
 ## Groups need room you cannot see
 
 A group draws its frame from the nodes it names, not from coordinates of its own:
-21px around them, plus a 45px band at the top when it has a title. That frame is
+21px around them, plus a 60px band at the top when it has a title. That frame is
 invisible while you count node positions, which is how a group ends up touching
 the card above it.
 
