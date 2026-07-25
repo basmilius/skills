@@ -70,7 +70,7 @@ if (options.check || options.type === 'diagram') {
             console.error(`  ${problem}`);
         }
 
-        console.error('See references/flow-layout.md for what every connector needs, or pass --force to publish anyway.');
+        console.error('See references/diagram-layout.md for what every connector needs, or pass --force to publish anyway.');
 
         if (!options.force) {
             process.exit(1);

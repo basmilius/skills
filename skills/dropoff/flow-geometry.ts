@@ -15,6 +15,14 @@ type FlowConnection = {
     readonly markerStart: string;
     readonly markerEnd: string;
     readonly vertical: boolean | null;
+    readonly around: boolean;
+};
+
+type FlowGroup = {
+    readonly nodes: readonly string[];
+
+    /** Where the frame starts, which is well above the first node it holds. */
+    readonly top: number;
 };
 
 type FlowSize = {
@@ -65,6 +73,13 @@ const CARD_COMPONENTS = ['FluxFlowCard', 'FluxFlowActionCard', 'FluxFlowConditio
 // touching one carries no marker on that end.
 const ANCHOR_COMPONENTS = ['FluxFlowGate', 'FluxFlowJunction'];
 
+// A group draws its frame from the nodes it names rather than from coordinates of
+// its own: this much around them, and a title adds a band on top of that. Neither
+// is visible while you place nodes, which is how a connector's badge ends up on
+// the dashed border long before it would touch a card.
+const GROUP_PADDING = 21;
+const GROUP_TITLE = 60;
+
 /**
  * Reads a Flow template back and reports every pair of nodes that sits too close
  * for the connector between them, plus every connector still carrying a marker
@@ -74,6 +89,7 @@ const ANCHOR_COMPONENTS = ['FluxFlowGate', 'FluxFlowJunction'];
  */
 export default function checkFlowGeometry(source: string): string[] {
     const nodes = readNodes(source);
+    const groups = readGroups(source, nodes);
     const axis = readAxis(source);
     const problems: string[] = [];
 
@@ -96,8 +112,11 @@ export default function checkFlowGeometry(source: string): string[] {
 
         // A connection from a node to itself is drawn as a loop beside that node
         // rather than a run between two, so there is no gap to measure: doing so
-        // would report the node as overlapping itself.
-        if (connection.from === connection.to) {
+        // would report the node as overlapping itself. One that leaves and
+        // arrives on the same side swings around the nodes the same way, which is
+        // how a retry gets back to the step above it, and measuring the axis that
+        // side names would report two nodes in one column as overlapping.
+        if (connection.from === connection.to || connection.around) {
             continue;
         }
 
@@ -106,12 +125,16 @@ export default function checkFlowGeometry(source: string): string[] {
             ? distance(from.y, from.height, to.y, to.height)
             : distance(from.x, from.width, to.x, to.width);
         const badge = badgeSize(connection, vertical);
-        const required = requiredGap(connection, badge, vertical);
+        const plain = requiredGap(connection, badge, vertical);
+        const frame = frameGap(from, to, groups, badge, vertical);
+        const required = Math.max(plain, frame);
 
         if (gap < 0) {
             problems.push(`${connection.from} -> ${connection.to}: the nodes overlap by ${-gap}px.`);
         } else if (gap < required) {
-            problems.push(`${connection.from} -> ${connection.to}: ${gap}px between them, and ${describe(connection)} needs ${required}px.`);
+            const because = frame > plain ? ', which is what it takes to clear the frame of the group it enters' : '';
+
+            problems.push(`${connection.from} -> ${connection.to}: ${gap}px between them, and ${describe(connection)} needs ${required}px${because}.`);
         }
     }
 
@@ -152,6 +175,34 @@ function badgeSize(connection: FlowConnection, vertical: boolean): number | null
     return connection.icon ? ICON_SIZE : null;
 }
 
+/**
+ * The space a connection needs on top of its own when it comes down into a group
+ * from outside. The frame starts above the first node the group holds, a title
+ * puts a band above that again, and the badge rides the middle of the connector,
+ * so the two nodes have to stand twice that distance apart for the badge to land
+ * clear of the dashed border. Zero for every connection that crosses no frame,
+ * and for one leaving a group, since only the top edge carries the band.
+ */
+function frameGap(from: FlowNode, to: FlowNode, groups: FlowGroup[], badge: number | null, vertical: boolean): number {
+    if (!vertical || from.y >= to.y) {
+        return 0;
+    }
+
+    const entered = groups.find(group => group.nodes.includes(to.id) && !group.nodes.includes(from.id));
+
+    if (entered === undefined) {
+        return 0;
+    }
+
+    const offset = to.y - entered.top;
+
+    // Without a badge nothing rides the line, so the node above only has to stay
+    // off the frame itself.
+    return badge === null
+        ? offset + NODE_GAP
+        : Math.ceil(2 * (offset + badge / 2 + LABEL_GAP));
+}
+
 function isAnchor(node: FlowNode): boolean {
     return ANCHOR_COMPONENTS.includes(node.component);
 }
@@ -178,6 +229,34 @@ function distance(fromStart: number, fromExtent: number, toStart: number, toExte
     return fromStart <= toStart
         ? toStart - (fromStart + fromExtent)
         : fromStart - (toStart + toExtent);
+}
+
+/**
+ * The groups in a template, each with the top edge of the frame it will draw. An
+ * id naming a node that does not exist is dropped rather than reported: Flow
+ * skips it too, so a group listing one simply draws around the rest.
+ */
+function readGroups(source: string, nodes: Map<string, FlowNode>): FlowGroup[] {
+    const groups: FlowGroup[] = [];
+    const pattern = /<FluxFlowGroup\b([^>]*?)\/?>/g;
+
+    for (const [, attributes] of source.matchAll(pattern)) {
+        const named = (attribute(attributes, 'nodes') ?? '')
+            .split(',')
+            .map(id => id.replace(/[^\w-]/g, ''))
+            .filter(id => nodes.has(id));
+
+        if (named.length === 0) {
+            continue;
+        }
+
+        const band = attribute(attributes, 'title') === undefined ? 0 : GROUP_TITLE;
+        const first = Math.min(...named.map(id => nodes.get(id)!.y));
+
+        groups.push({nodes: named, top: first - GROUP_PADDING - band});
+    }
+
+    return groups;
 }
 
 // `<FluxFlow axis="...">` settles the axis for every connection that does not
@@ -231,7 +310,9 @@ function readConnections(source: string): FlowConnection[] {
             continue;
         }
 
-        const side = attribute(attributes, 'from-side') ?? opposite(attribute(attributes, 'to-side'));
+        const fromSide = attribute(attributes, 'from-side');
+        const toSide = attribute(attributes, 'to-side');
+        const side = fromSide ?? opposite(toSide);
 
         connections.push({
             from,
@@ -240,7 +321,8 @@ function readConnections(source: string): FlowConnection[] {
             icon: attribute(attributes, 'icon') ?? '',
             markerStart: attribute(attributes, 'marker-start') ?? 'dot',
             markerEnd: attribute(attributes, 'marker-end') ?? 'chevron',
-            vertical: side === undefined ? null : (side === 'top' || side === 'bottom')
+            vertical: side === undefined ? null : (side === 'top' || side === 'bottom'),
+            around: fromSide !== undefined && fromSide === toSide
         });
     }
 
