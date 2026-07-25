@@ -43,6 +43,14 @@ const ICON_SIZE = 20;
 // markers and a stretch of line on either side of them.
 const MIN_GAP = 60;
 
+// What Flow itself leaves between two layers once a connector carries a label,
+// straight out of LABELLED_GAP in @flux-ui/flow. Its own auto-layout will not go
+// below this, so neither does the check: the sum below can work out lower on a
+// short label, and a diagram that only just clears the arithmetic still reads
+// cramped next to one Flow laid out itself. A horizontal run asks for far more,
+// since a badge there is as wide as its text rather than one line high.
+const LABELLED_GAP = {vertical: 105, horizontal: 210};
+
 // Rough type metrics. A card is 300px wide with 15px of padding, so about 36
 // characters of 15px text fit on a line; a badge sets 13px text.
 const CARD_CHARACTERS = 36;
@@ -66,6 +74,7 @@ const ANCHOR_COMPONENTS = ['FluxFlowGate', 'FluxFlowJunction'];
  */
 export default function checkFlowGeometry(source: string): string[] {
     const nodes = readNodes(source);
+    const axis = readAxis(source);
     const problems: string[] = [];
 
     for (const connection of readConnections(source)) {
@@ -85,12 +94,19 @@ export default function checkFlowGeometry(source: string): string[] {
             problems.push(`${connection.from} -> ${connection.to}: the end touching ${shape(to)} "${to.id}" needs marker-end="none".`);
         }
 
-        const vertical = connection.vertical ?? isVertical(from, to);
+        // A connection from a node to itself is drawn as a loop beside that node
+        // rather than a run between two, so there is no gap to measure: doing so
+        // would report the node as overlapping itself.
+        if (connection.from === connection.to) {
+            continue;
+        }
+
+        const vertical = connection.vertical ?? axis ?? isVertical(from, to);
         const gap = vertical
             ? distance(from.y, from.height, to.y, to.height)
             : distance(from.x, from.width, to.x, to.width);
         const badge = badgeSize(connection, vertical);
-        const required = badge === null ? MIN_GAP : badgedGap(badge);
+        const required = requiredGap(connection, badge, vertical);
 
         if (gap < 0) {
             problems.push(`${connection.from} -> ${connection.to}: the nodes overlap by ${-gap}px.`);
@@ -102,19 +118,35 @@ export default function checkFlowGeometry(source: string): string[] {
     return problems;
 }
 
-// The space a connector carrying a badge needs: clear of both nodes, the hole the
-// badge punches, the markers, and a visible stretch of line on either side of it.
-function badgedGap(badge: number): number {
-    return NODE_GAP * 2 + badge + LABEL_GAP * 2 + MARKERS + MIN_LINE * 2;
+/**
+ * The clear space a connector needs. Without a badge that is only the markers and
+ * a stretch of line. With one it is what the badge punches out of the middle plus
+ * the room around it, and a labelled connector never goes below what Flow's own
+ * layout leaves for one, however short the label.
+ */
+function requiredGap(connection: FlowConnection, badge: number | null, vertical: boolean): number {
+    if (badge === null) {
+        return MIN_GAP;
+    }
+
+    const room = NODE_GAP * 2 + badge + LABEL_GAP * 2 + MARKERS + MIN_LINE * 2;
+
+    return connection.label ? Math.max(room, LABELLED_GAP[vertical ? 'vertical' : 'horizontal']) : room;
 }
 
 // How much of the line the badge covers, or null when there is no badge at all. A
 // labelled badge is one line tall whichever way the connector runs, but as wide as
-// its text, so a long label pushes two columns further apart. A bare icon is
-// square and asks for the same on both axes.
+// its text, so a long label pushes two columns further apart; an icon beside that
+// label widens it again. A bare icon is square and asks for the same on both axes.
 function badgeSize(connection: FlowConnection, vertical: boolean): number | null {
     if (connection.label) {
-        return vertical ? BADGE_HEIGHT : BADGE_PADDING + connection.label.length * BADGE_CHARACTER;
+        if (vertical) {
+            return BADGE_HEIGHT;
+        }
+
+        const icon = connection.icon ? ICON_SIZE + LABEL_GAP : 0;
+
+        return BADGE_PADDING + icon + connection.label.length * BADGE_CHARACTER;
     }
 
     return connection.icon ? ICON_SIZE : null;
@@ -146,6 +178,15 @@ function distance(fromStart: number, fromExtent: number, toStart: number, toExte
     return fromStart <= toStart
         ? toStart - (fromStart + fromExtent)
         : fromStart - (toStart + toExtent);
+}
+
+// `<FluxFlow axis="...">` settles the axis for every connection that does not
+// name a side of its own, so it wins over the heuristic below the same way it
+// does in Flow. Null when the root leaves it open, which is the usual case.
+function readAxis(source: string): boolean | null {
+    const axis = attribute(source.match(/<FluxFlow\b([^>]*)>/)?.[1] ?? '', 'axis');
+
+    return axis === undefined ? null : axis === 'vertical';
 }
 
 // Mirrors `autoSides` in Flow: without explicit sides, a connection runs along
@@ -224,7 +265,9 @@ function measure(content: string): FlowSize {
         case 'FluxFlowNote':
             return {component, width: 210, height: 50 + NOTE_LINE * lines(body, NOTE_CHARACTERS)};
         case 'FluxFlowTerminal':
-            return {component, width: 40 + label.length * 8, height: 36};
+            // A terminal is a capsule of 18px padding either side; an icon on it
+            // adds its own 15px and the 6px gap after it.
+            return {component, width: 40 + label.length * 8 + (attribute(attributes, 'icon') ? 21 : 0), height: 36};
         case 'FluxFlowPill':
             return {component, width: 54 + label.length * 8, height: 44};
         case 'FluxFlowStep':

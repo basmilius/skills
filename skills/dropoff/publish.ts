@@ -10,20 +10,43 @@ type Options = Record<string, string | undefined> & {
     'no-project-tag'?: boolean;
 };
 
+/** What the host answers a publish or an upload with, as far as this script reads it. */
+type Published = {
+    readonly url: string;
+    readonly shortUrl: string | null;
+    readonly replaced: boolean;
+    readonly expiresAt: string | null;
+    readonly tags?: readonly string[];
+
+    /** Only a doc carries these, and none of them stopped it from being published. */
+    readonly warnings?: readonly string[];
+
+    /** Present instead of everything above when the host refused. */
+    readonly error?: string;
+};
+
 const DEFAULT_ENDPOINT = 'https://dropoff.sh';
+
+// The host refuses more than this many tags, so the script keeps within it rather
+// than letting a publish bounce as a 400.
+const MAX_TAGS = 10;
 
 // Arguments that stand on their own rather than taking the next word.
 const FLAGS = ['new', 'check', 'force', 'no-project-tag'];
 
-const TYPES = ['doc', 'diagram', 'file'];
+const TYPES = ['doc', 'diagram', 'file', 'code', 'table', 'diff'];
 
 const options = parseArguments(process.argv.slice(2));
 
 if (!options.file || (!options.check && (!options.type || !options.title))) {
     fail([
-        'Usage: publish.ts --type <doc|diagram|file> --title <title> --file <path> [--description <text>]',
-        '                  [--tags a,b] [--no-project-tag] [--path <[user/]yyyy/mm/slug | p/code>] [--new] [--force]',
-        '       publish.ts --check --file <path>'
+        'Usage: publish.ts --type <doc|diagram|file|code|table|diff> --title <title> --file <path>',
+        '                  [--description <text>] [--tags a,b] [--no-project-tag] [--folder <name>]',
+        '                  [--language <lang>] [--format <csv|json>] [--path <url | p/code>] [--new] [--force]',
+        '       publish.ts --check --file <path>',
+        '',
+        'code needs --language (e.g. ts, python); table takes --format (csv or json, else auto);',
+        'diff reads a single-file unified diff. --folder files the item under a folder (Pro).'
     ].join('\n'));
 }
 
@@ -73,10 +96,11 @@ if (!token) {
 const tags = await resolveTags();
 const result = options.type === 'file' ? await uploadFile() : await publishPage();
 
-// A doc and a diagram lead with their short URL, since that is the link worth
-// sharing; the long one still follows, for a path a card or an image needs. A
-// file has no short URL, so it just prints its own.
-if (result.shortUrl) {
+// A page leads with its short URL, since that is the link worth sharing; the
+// long one still follows, for a path a card or an embed needs. A file carries a
+// short URL too, but only its long one spells out the extension a markdown image
+// wants, so a file leads with that instead.
+if (result.shortUrl && options.type !== 'file') {
     console.log(result.shortUrl);
     console.log(`(also at ${result.url})`);
 } else {
@@ -89,26 +113,30 @@ if (result.expiresAt) {
     console.log(`(expires ${new Date(result.expiresAt).toISOString().slice(0, 10)})`);
 }
 
-if (tags.length > 0) {
-    console.log(`(tagged ${tags.join(', ')})`);
+// The host is what a page is actually tagged with: it sorts them and drops
+// anything that normalises away, so its list is the one to report.
+const reported = result.tags ?? tags;
+
+if (reported.length > 0) {
+    console.log(`(tagged ${reported.join(', ')})`);
 }
 
 // A doc may come back with warnings: a card pointing at nothing yet, an unknown
 // component, an unknown icon. None of them block the publish, but the author
 // should hear them.
-if (Array.isArray(result.warnings)) {
-    for (const warning of result.warnings) {
-        console.log(`(warning: ${warning})`);
-    }
+for (const warning of result.warnings ?? []) {
+    console.log(`(warning: ${warning})`);
 }
 
-async function publishPage(): Promise<Record<string, string>> {
+async function publishPage(): Promise<Published> {
     return await send('publish', {
         method: 'POST',
         headers: {
             'authorization': `Bearer ${token}`,
             'content-type': 'application/json'
         },
+        // JSON.stringify drops the undefined ones, so an argument that was not
+        // passed simply never reaches the body.
         body: JSON.stringify({
             type: options.type,
             title: options.title,
@@ -116,12 +144,15 @@ async function publishPage(): Promise<Record<string, string>> {
             source,
             path: options.path,
             tags,
-            new: options.new === true
+            new: options.new === true,
+            language: options.language,
+            format: options.format,
+            folder: options.folder
         })
     });
 }
 
-async function uploadFile(): Promise<Record<string, string>> {
+async function uploadFile(): Promise<Published> {
     const query = new URLSearchParams({
         filename: basename(options.file!),
         title: options.title!
@@ -133,6 +164,10 @@ async function uploadFile(): Promise<Record<string, string>> {
 
     if (options.path) {
         query.set('path', options.path);
+    }
+
+    if (options.folder) {
+        query.set('folder', options.folder);
     }
 
     if (tags.length > 0) {
@@ -162,22 +197,46 @@ async function resolveTags(): Promise<string[]> {
 
     const project = options['no-project-tag'] === true ? null : projectTag();
 
-    if (project !== null) {
-        wanted.unshift(project);
-    }
-
-    if (wanted.length === 0) {
+    if (wanted.length === 0 && project === null) {
         return [];
     }
 
     const known = await knownTags();
-    const resolved = new Set<string>();
+    const spell = (tag: string): string => known.get(compact(tag)) ?? tag;
+
+    // The user's own tags come first and unique, spelled the way the host already
+    // knows them so a near-duplicate collapses onto the existing spelling.
+    const resolved: string[] = [];
 
     for (const tag of wanted) {
-        resolved.add(known.get(compact(tag)) ?? tag);
+        const spelled = spell(tag);
+
+        if (!resolved.includes(spelled)) {
+            resolved.push(spelled);
+        }
     }
 
-    return [...resolved];
+    // The project tag is a convenience the user did not ask for, so it yields the
+    // last slot rather than taking it: added only when the user's own tags left
+    // room, and dropped with a note when they already filled all ten.
+    if (project !== null) {
+        const spelled = spell(project);
+        const present = resolved.includes(spelled);
+
+        if (!present && resolved.length < MAX_TAGS) {
+            resolved.push(spelled);
+        } else if (!present) {
+            console.error(`(note: left the project tag "${spelled}" off, already at the ${MAX_TAGS}-tag limit)`);
+        }
+    }
+
+    // A user who passed more than ten tags themselves would trip the same limit, so
+    // the list is capped either way rather than handed on to be refused.
+    if (resolved.length > MAX_TAGS) {
+        console.error(`(note: kept the first ${MAX_TAGS} tags, the host allows no more)`);
+    }
+
+    return resolved.slice(0, MAX_TAGS);
 }
 
 async function knownTags(): Promise<Map<string, string>> {
@@ -204,18 +263,56 @@ async function knownTags(): Promise<Map<string, string>> {
  * together without anyone having to remember to say so.
  */
 function projectTag(): string | null {
-    const root = run('git', ['rev-parse', '--show-toplevel']) ?? process.cwd();
+    const root = run('git', ['rev-parse', '--show-toplevel']);
+
+    // Run from outside a repository there is no project to name, and the working
+    // directory is as likely to be the temporary folder the content was written
+    // to as anything else. A tag reading "scratchpad" names nothing and would sit
+    // beside the real ones for good, so nothing is added at all.
+    if (root === null) {
+        return null;
+    }
+
     const name = slug(basename(root));
 
     return name === '' ? null : name;
 }
 
-async function send(path: string, init: RequestInit): Promise<Record<string, string>> {
-    const response = await fetch(`${endpoint}/api/${path}`, init);
-    const result = await response.json() as Record<string, string>;
+async function send(path: string, init: RequestInit): Promise<Published> {
+    let response: Response;
+
+    // A host that cannot be reached at all, a DNS failure or a refused connection,
+    // throws rather than answering, and a stack trace is no use to whoever asked
+    // for a page. It becomes the same one-line refusal every other failure gets.
+    try {
+        response = await fetch(`${endpoint}/api/${path}`, init);
+    } catch (error) {
+        return fail(`${endpoint} could not be reached: ${error instanceof Error ? error.message : String(error)}`);
+    }
+
+    const body = await response.text();
+
+    // The edge can answer a 5xx with an HTML page rather than JSON, so the body is
+    // read as text first and parsed defensively: a failed parse leaves an empty
+    // result and the status below carries the message, not an uncaught TypeError.
+    let result = {} as Published;
+
+    try {
+        result = JSON.parse(body) as Published;
+    } catch {
+        // Not JSON; the status is what the caller gets told about instead.
+    }
 
     if (!response.ok) {
-        fail(`${endpoint} answered ${response.status}: ${result.error ?? 'unknown error'}`);
+        // A rate limit says when to come back in a header rather than the body, so
+        // it is surfaced next to the status when it is there. Retry-After is either
+        // a number of seconds or an HTTP date, and only the former gets a unit.
+        const retryAfter = response.status === 429 ? response.headers.get('retry-after') : null;
+        const when = retryAfter === null
+            ? ''
+            : `, retry after ${/^\d+$/.test(retryAfter) ? `${retryAfter}s` : retryAfter}`;
+
+        fail(`${endpoint} answered ${response.status}${when}: ${result.error ?? 'unknown error'}`);
     }
 
     return result;

@@ -2,7 +2,9 @@
 
 Coordinates are pixels, `x` to the right and `y` down, and they address a node's
 top left corner. Nothing moves them for you, so every number here is one you have
-to plan rather than discover after rendering.
+to plan rather than discover after rendering. A fraction is allowed where the
+arithmetic lands on one, so a node whose width is odd can still sit dead centre
+under a card at `:x="75.5"`.
 
 The measurements below come from reading Flow's own geometry, not from eyeballing
 a screenshot. They are the difference between a diagram that reads and one that
@@ -16,18 +18,19 @@ the reasoning behind each number.
 | Constant | Value |
 | --- | --- |
 | Card width | 300px |
-| Card height | `78 + 24 × lines` (a line ≈ 36 characters); 62px with no body |
-| Terminal | `40 + 8 × label characters` wide, 36px tall |
+| Card height | `76 + 24 × lines` (a line ≈ 36 characters); 62px with no body |
+| Terminal | `40 + 8 × label characters` wide, 21px more with an icon, 36px tall |
 | Pill | `54 + 8 × label characters` wide, 44px tall |
-| Note width | 210px |
+| Note | 210px wide, `50 + 21 × lines` tall (a line ≈ 26 characters) |
 | Step | 36 × 36px |
 | Gate | 60 × 60px |
 | Junction | 18 × 18px |
-| Connector attachment inset | 31px from the edge, clamped to half the node |
+| Connector attachment inset | 30px from the edge, clamped to half the node |
 | Two stacked nodes | 60px between them |
-| Two stacked nodes, connection carrying an icon | 100px |
-| Two stacked nodes, labelled connection | 110px |
-| Two columns | 120px, plus ~8px per label character when labelled |
+| Two stacked nodes, connection carrying an icon | 91px |
+| Two stacked nodes, labelled connection | 105px |
+| Two columns | 60px, or 91px when the connection carries an icon |
+| Two columns, labelled connection | 210px, more once the label runs past a word or two |
 | Above the first node of a group | ~90px from the bottom of the node before it |
 | Below the last node of a group | ~60px |
 | Between two stacked groups | ~100px |
@@ -40,33 +43,37 @@ Measure the space between two nodes, never the distance between their tops. A
 card grows with its text, so a fixed distance between tops quietly eats the room
 the connector needs, and the taller the card the less is left.
 
-A card is 300px wide and `78 + 24 × lines` tall, where a line is about 36
-characters of body text: 102px for one line, 126px for two, 150px for three. A
-card with no body at all is 62px. So the next node goes at
+A card is 300px wide and `76 + 24 × lines` tall, where a line is about 36
+characters of body text: 100px for one line, 124px for two, 148px for three. A
+card with no body at all is 62px. Those heights lean low on purpose, so a
+diagram that clears them clears the real thing too. The next node goes at
 `y + height + spacing`, and these are the spacings:
 
 | Between | Space |
 | --- | --- |
 | Two stacked nodes | 60px |
-| Two stacked nodes, connection carrying an icon | 100px |
-| Two stacked nodes, labelled connection | 110px |
-| Two columns | 120px |
-| Two columns, labelled connection | 120px plus about 8px per character of the label |
+| Two stacked nodes, connection carrying an icon | 91px |
+| Two stacked nodes, labelled connection | 105px |
+| Two columns | 60px |
+| Two columns, connection carrying an icon | 91px |
+| Two columns, labelled connection | 210px, and more once the label is long |
 
 These numbers are not padding, they are arithmetic. A connector stops 9px short of
 each node, its badge punches a hole the size of itself plus 6px of air out of the
 middle of the line, and the dot and the chevron take another 11px. With a 28px
 badge that leaves nothing at all below 100px, which is why a label ends up sitting
-on both cards at once. Sideways the hole is as wide as the badge, so a long label
-pushes two columns apart; keeping labels to a word or two is usually the better
-fix.
+on both cards at once.
 
-An icon costs almost as much as a label. It rides the connector as a bare badge,
-so it is only the 20px icon rather than a 28px pill, but Flow masks the line
-against it exactly the same way: 91px is the least that works, hence the 100px in
-the table. Sideways it asks the same 91px, which the 120px between two columns
-already covers. So swapping "Yes" for `circle-check` buys back 10px, not the 50px
-back down to a plain connector.
+A label is held to more than that arithmetic, though: 105px down the page and
+210px across, which is what Flow's own auto-layout leaves between two layers once
+a connection carries a label. Sideways the badge is as wide as its text, so those
+210px are a floor rather than an answer, and a long label pushes two columns
+further apart still. Keeping a label to a word or two is usually the better fix.
+
+An icon costs less. It rides the connector as a bare badge, so it is only the
+20px icon rather than a 28px pill, and Flow masks the line against it exactly the
+same way: 91px is the least that works, on either axis. So swapping "Yes" for
+`circle-check` buys back 14px down a column and well over 100px across one.
 
 A worked column, so the arithmetic is concrete. A terminal, a one-line card and a
 two-line card stacked at `x = 0` with plain connections:
@@ -74,8 +81,8 @@ two-line card stacked at `x = 0` with plain connections:
 | Node | Height | y |
 | --- | --- | --- |
 | `start` (terminal) | 36px | 0 |
-| `check` (1 line) | 102px | 0 + 36 + 60 = **96** |
-| `save` (2 lines) | 126px | 96 + 102 + 60 = **258** |
+| `check` (1 line) | 100px | 0 + 36 + 60 = **96** |
+| `save` (2 lines) | 124px | 96 + 100 + 60 = **256** |
 
 Each `y` is the previous node's `y + height + spacing`. A fixed increment (0, 160,
 320, ...) only happens to work while every card has the same height.
@@ -86,17 +93,17 @@ a single spine far more easily than a balanced tree.
 ## Where a connector attaches
 
 A connector does not attach to the corner of a node. With `align="start"` it
-attaches 31px in from the edge, but Flow clamps that inset to half the node:
+attaches 30px in from the edge, but Flow clamps that inset to half the node:
 
 ```ts
-const clamped = Math.min(inset, extent / 2);   // inset = 31
+const clamped = Math.min(inset, extent / 2);   // inset = 30
 ```
 
-So anything shorter or narrower than 62px attaches at its own middle instead:
+So anything shorter or narrower than 60px attaches at its own middle instead:
 
 | Node | Size | Attaches at |
 | --- | --- | --- |
-| Card | 103px tall | 31px from the top |
+| Card | 100px tall | 30px from the top |
 | Terminal | 36px tall | 18px, its middle |
 | Junction | 18px | 9px, its middle |
 
@@ -112,13 +119,14 @@ above. Two cases come up constantly:
 
 - **A junction below a 300px card at `x`** goes at `x + 141`: the card's middle
   less half the junction's 18px.
-- **A terminal below that card** goes at `x + 150 - (40 + 8 × label characters) / 2`.
-  A five-character label makes the terminal 80px wide, so it goes at `x + 110`.
+- **A terminal below that card** goes at `x + 150 - (40 + 8 × label characters) / 2`,
+  counting another 21px of width when the terminal carries an icon. A
+  five-character label makes a plain terminal 80px wide, so it goes at `x + 110`.
 
 Sideways the same trick does not work, because a card grows with its text and
 its vertical middle moves with it. So **for a terminal beside a card**, give the
-card end `align="start"`: the card then attaches 31px down, the terminal at its
-own middle, and putting the terminal 13px lower than the card runs the line
+card end `align="start"`: the card then attaches 30px down, the terminal at its
+own middle, and putting the terminal 12px lower than the card runs the line
 straight.
 
 ## Connections
@@ -144,8 +152,12 @@ downward flow wants.
   valid?" can branch into `circle-check` and `circle-xmark`. A word earns its
   badge when the branch carries something a mark cannot: a third outcome, a
   retry, a reason such as "expired" or "over quota", or a condition whose
-  wording leaves which side is which open. Either way it is a badge, so give it
-  the 100px from the table rather than the 60px a plain connector gets by.
+  wording leaves which side is which open. Decide it once for the branches of a
+  diagram rather than per connector, so two arms of one question never come out
+  as a mark and a word; a straight run between two steps stays bare either way.
+  Either way it is a badge, so give it
+  the 91px from the table rather than the 60px a plain connector gets by, and a
+  word costs more again: 105px down a column, 210px across one.
 - `markerStart` / `markerEnd`: what the line ends in at the `from` and at the `to`
   end, a dot and a chevron by default. Give the end `none` whenever it meets a
   junction or a gate: those shapes already are the point where the paths come
@@ -153,6 +165,11 @@ downward flow wants.
   18px junction it lands on top of it. The other end of that same connector keeps
   its marker.
 - `color`: use it to separate a failure path from the happy path.
+
+A connection whose `from` and `to` name the same node draws a loop beside that
+node, which is how a retry says it retries without a second card. It needs no
+space between two nodes, so the spacing check leaves it alone; give the node
+itself room on the side the loop swings out to.
 
 ```vue
 <FluxFlowConnection from="check" to="rejected" from-side="right" to-side="left" from-align="start" to-align="start" label="No" color="danger"/>
@@ -173,9 +190,13 @@ So budget for the frame, not for the nodes:
   measured from the bottom of the one above. Normal spacing puts the frame within
   a few pixels of it.
 - Leave about 60px below the last node in the group.
-- A labelled connection leaving the group needs enough length that its middle
-  clears the frame, since that is where the badge sits. About 120px between the
-  frame and the node below it keeps the badge off the dashed border.
+- A labelled connection needs enough length that its middle clears the frame,
+  since that is where the badge sits. Going out of the group, about 120px between
+  the frame and the node below it keeps the badge off the dashed border. Coming
+  in, the badge has the whole title band to clear as well: the frame starts 81px
+  above the first node inside, so the two nodes want more than 190px between them,
+  not the 90px a plain connection gets by with. An icon needs a shade less, and
+  an unlabelled connection none of it.
 
 Two stacked groups need roughly 100px between them, or their frames nearly touch.
 
@@ -210,7 +231,7 @@ gate is the same shape of thing and takes the same treatment, even though it is
 
 Read your own coordinates back. Every node in a column shares one `x`, and each
 row's `y` is the previous `y` plus that card's height plus the spacing. Walk
-these five:
+these six:
 
 1. Does every pair of connected nodes have the space from the table above,
    counted from the bottom of the upper card rather than from its top?
