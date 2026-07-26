@@ -82,15 +82,16 @@ That is the usual skill path; if this skill lives elsewhere, run the
 | `--language` | code | A shiki language name, such as `ts` or `python` |
 | `--format` | no | A table's format, `csv` or `json`; auto-detected when left out |
 | `--folder` | no | File the item under a folder, created on first use (Pro) |
-| `--path` | no | Publish onto an existing page, as its `<code>/<slug>` path or its `/p/<code>` short link |
+| `--path` | no | Publish onto an existing page, as its `/p/<code>/<slug>` path or its `/p/<code>` short link |
 | `--new` | no | Force a fresh URL even when the title was published before |
 | `--check` | no | Check a diagram's spacing and stop; publishes nothing |
 | `--force` | no | Publish a diagram the spacing check objects to |
 
-Reporting the link is the point of the operation. A page leads with a short
-`/p/<code>` link and that is the one to hand back; a file leads with its long
-URL instead, because only that one spells out the extension a markdown image
-needs. Neither follows from the title, since the slug ends in a code of its own,
+Reporting the link is the point of the operation. Everything lives under
+`/p/<code>/<slug>`, and dropping the slug lands on the same page. A page leads
+with that short `/p/<code>` link and that is the one to hand back; a file leads
+with its full URL instead, because only that one spells out the extension a
+markdown image needs. Neither follows from the title, since the code is random,
 so take both from the output rather than assembling one.
 
 The lines after it say whether a page was replaced, which tags it carries and,
@@ -118,7 +119,7 @@ replace anything, say so and offer `--new`.
 - An upload always takes a fresh URL unless `--path` names one to replace, and
   the replacement has to carry the same extension. Its path carries that
   extension too, so it goes in whole:
-  `--path 4hydssm/delivery-states-nyjvfg.svg`.
+  `--path p/4hydssmk2nq/delivery-states.svg`.
 
 `--title` is required either way, and on a replacement it becomes the page's new
 title while the URL stays exactly as it was. So a page can end up with a slug
@@ -126,9 +127,9 @@ that no longer reads like its title, which is fine: only the code resolves it.
 There is no way to read a title or a set of tags back before overwriting them
 (bar a doc's markdown, below), so when either matters, ask rather than guess.
 
-Appending `.md` to a doc's long URL hands back the markdown it was published
-from, so an earlier page can be read before it is rewritten rather than
-republished from memory.
+Appending `.md` to a doc's URL hands back the markdown it was published from, so
+an earlier page can be read before it is rewritten rather than republished from
+memory.
 
 ### Tags
 

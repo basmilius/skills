@@ -3,10 +3,10 @@
 On top of GitHub-flavoured markdown a doc may use the components below. Three
 rules make all of them work: a block component always closes with `::`, props
 are always double-quoted, and an internal target is a path rather than a URL.
-Derive that path from the long URL the script printed, dropping the scheme and
-domain (`k3f9dqm/login-flow-h4p2nx`); a `/p/<code>` short link works just as
-well, since the code is what resolves it. On GitHub or in a raw view these
-degrade to visible marker lines with the target still readable.
+Derive that path from the URL the script printed, dropping the scheme and domain
+(`p/k3f9dqmn2xr/login-flow`); the shorter `p/<code>` form works just as well,
+since the code is what resolves it. On GitHub or in a raw view these degrade to
+visible marker lines with the target still readable.
 
 Inline markdown works inside a component's body, so bold, links and code spans
 come through; where block content is refused it says so below. An `icon` prop,
@@ -23,7 +23,7 @@ nothing but the path; body text replaces the description. An `icon` prop
 overrides the kind icon it would pick itself.
 
 ```markdown
-::card{to="k3f9dqm/login-flow-h4p2nx"}
+::card{to="p/k3f9dqmn2xr/login-flow"}
 ::
 
 ::card{to="https://flux-ui.dev" icon="paintbrush"}
@@ -36,9 +36,9 @@ extra colon on the wrapper:
 
 ```markdown
 :::cards
-::card{to="k3f9dqm/login-flow-h4p2nx"}
+::card{to="p/k3f9dqmn2xr/login-flow"}
 ::
-::card{to="t7b3wqn/checkout-flow-m2xk4p"}
+::card{to="p/t7b3wqnk4pd/checkout-flow"}
 ::
 :::
 ```
@@ -50,7 +50,7 @@ the full page. Body text becomes the caption. Without a `height` the frame takes
 the reader's own viewport ratio; pass one only when a diagram wants less room.
 
 ```markdown
-::diagram{path="t7b3wqn/checkout-flow-m2xk4p"}
+::diagram{path="p/t7b3wqnk4pd/checkout-flow"}
 The checkout flow, embedded.
 ::
 ```
@@ -174,7 +174,7 @@ out of the text column, and the title becomes its caption. Upload the image
 first as `--type file`, then write the doc around the URL it printed.
 
 ```markdown
-![Dashboard sketch](https://dropoff.sh/p7c2rjs/dashboard-sketch-9wq4mn.png "The caption"){.wide}
+![Dashboard sketch](https://dropoff.sh/p/p7c2rjsw9qm/dashboard-sketch.png "The caption"){.wide}
 ```
 
 ## YouTube
