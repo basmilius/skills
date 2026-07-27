@@ -2,20 +2,25 @@
 name: dropoff
 description: >-
   Publish a doc, a diagram, a code snippet, a table, a diff or a small file from
-  the terminal, which answers with an unlisted URL. Use when the user asks to
-  publish, post or put something online ("publiceer dit plan op dropoff.sh", "zet
-  dit diagram online"), to update something published earlier, to upload a small
-  image, to show a code change as a rich diff ("publiceer deze diff"), or wants a
-  diagram of a process, flow, pipeline or architecture ("maak een diagram van het
+  the terminal, which answers with an unlisted URL, and read back or update
+  anything published before. Use when the user asks to publish, post or put
+  something online, including as a clause on the end of other work ("publiceer
+  dit plan op dropoff.sh", "zet dit diagram online", "... en publiceer dit",
+  "plaats dit online", "and publish it when you are done"); when a dropoff.sh
+  link appears in the prompt, which is a page to read before answering ("wat
+  staat er in deze pagina", "werk deze review bij"); to upload a small image; to
+  show a code change as a rich diff ("publiceer deze diff"); or when a process,
+  flow, pipeline or architecture wants a diagram ("maak een diagram van het
   inlogproces", "teken deze pipeline").
 license: MIT
 ---
 
-# Publishing to dropoff
+# Dropoff
 
-`publish.ts` takes a file and hands back a link. It is the whole interface: run
-it, read what it prints, report that. Everything it refuses or warns about it
-says in words, so there is no need to open the script or guess at the host.
+`dropoff.ts` takes a file and hands back a link, reads a published page back, and
+lists what is already up there. It is the whole interface: run it, read what it
+prints, report that. Everything it refuses or warns about it says in words, so
+there is no need to open the script or guess at the host.
 
 ## Setup
 
@@ -34,6 +39,19 @@ project's `.claude/settings.json`, which is committed. If the token is missing,
 or the account still has to confirm its email address, the script says so and
 stops. Report that rather than inventing a value or writing a config file: there
 is no config file to write.
+
+## Reading the ask
+
+Publishing is usually the last clause of a longer sentence rather than the whole
+of it. "Analyse the auth flow and publish it", "zet dit online" on the end of a
+review: the work comes first and the page is what it leaves behind. So do the
+work, publish its result, and put the link at the end of the reply. Only a plan
+meant to be agreed before it is carried out gets published first, and the user
+says so when that is what they want.
+
+A dropoff link in the prompt is the other half of the same thing. It is a page to
+read before answering rather than a string to repeat back, and `--read` opens it.
+Whoever handed it over left the context there on purpose.
 
 ## Choosing a type
 
@@ -60,7 +78,7 @@ shell argument. Run the script from the project the page is about, since that is
 where the project tag comes from.
 
 ```shell
-bun ~/.claude/skills/dropoff/publish.ts \
+bun ~/.claude/skills/dropoff/dropoff.ts \
     --type doc \
     --title "Login flow" \
     --description "How a session is issued, end to end." \
@@ -69,7 +87,7 @@ bun ~/.claude/skills/dropoff/publish.ts \
 ```
 
 That is the usual skill path; if this skill lives elsewhere, run the
-`publish.ts` that sits next to this file.
+`dropoff.ts` that sits next to this file.
 
 | Argument | Required | Notes |
 | --- | --- | --- |
@@ -82,10 +100,13 @@ That is the usual skill path; if this skill lives elsewhere, run the
 | `--language` | code | A shiki language name, such as `ts` or `python` |
 | `--format` | no | A table's format, `csv` or `json`; auto-detected when left out |
 | `--folder` | no | File the item under a folder, created on first use (Pro) |
-| `--path` | no | Publish onto an existing page, as its `/p/<code>/<slug>` path or its `/p/<code>` short link |
+| `--path` | no | Publish onto an existing page, named by its link in any shape |
 | `--new` | no | Force a fresh URL even when the title was published before |
 | `--check` | no | Check a diagram's spacing and stop; publishes nothing |
 | `--force` | no | Publish a diagram the spacing check objects to |
+
+The script does two other things, each below: `--read` opens a page that is
+already up, and `--list` says what is.
 
 Reporting the link is the point of the operation. Everything lives under
 `/p/<code>/<slug>`, and dropping the slug lands on the same page. A page leads
@@ -108,41 +129,96 @@ it, so relay that instead of retrying.
 
 A page is keyed on its title and its type, so publishing the same title again
 lands on the same URL and keeps its original date, while a doc and a diagram of
-the same name stay two pages. Pick a title specific enough not to collide, and
-if the output says `(replaced the existing page)` when you did not mean to
-replace anything, say so and offer `--new`.
+the same name stay two pages. The title is trimmed before it is matched, so
+stray space around it makes no second page. Pick a title specific enough not to
+collide, and if the output says `(replaced the existing page)` when you did not
+mean to replace anything, say so and offer `--new`.
 
-- The user gives a URL to update: pass everything after the domain as `--path`.
-  The code is what lands it on the page it names, so the slug beside it need not
-  match.
+- The user gives a URL to update: hand it to `--path` whole. The full URL, the
+  `/p/<code>` short link and the bare code all name the same page, since only the
+  code resolves it and the slug beside it is decoration.
 - The user wants a second page under the same title: pass `--new`.
 - An upload always takes a fresh URL unless `--path` names one to replace, and
-  the replacement has to carry the same extension. Its path carries that
-  extension too, so it goes in whole:
-  `--path p/4hydssmk2nq/delivery-states.svg`.
+  the replacement has to carry the same extension as the file already there.
 
 `--title` is required either way, and on a replacement it becomes the page's new
 title while the URL stays exactly as it was. So a page can end up with a slug
-that no longer reads like its title, which is fine: only the code resolves it.
-There is no way to read a title or a set of tags back before overwriting them
-(bar a doc's markdown, below), so when either matters, ask rather than guess.
+that no longer reads like its title, which is fine.
 
-Appending `.md` to a doc's URL hands back the markdown it was published from, so
-an earlier page can be read before it is rewritten rather than republished from
-memory.
+A replacement rewrites a page rather than patching it, so anything the command
+leaves out would be cleared. The script reads the page first and carries across
+its tags, its description, a code page's language and a table's format; naming
+any of them on the command line still replaces it outright. Two things it cannot
+carry across, and both are worth a word to the user before doing them: `--type`
+overwrites the page's type, so publishing a code snippet onto a doc's link turns
+it into a code page, and the expiry is recomputed from scratch, so republishing
+pushes an expiring page further out.
 
 ### Tags
 
 Tags are what make something findable again. The script adds one for the
 repository it runs in; add two or three of your own with `--tags` for the
-subject or the kind of work, such as `auth`, `review` or `incident`. Publishing
-replaces a page's tags rather than adding to them, so pass them again when
-republishing something that carried tags worth keeping.
+subject or the kind of work, such as `auth`, `review` or `incident`. The host
+sorts them and drops anything that normalises away, so they come back in a
+different order than they went out, which means nothing went wrong.
+
+Replacing a page keeps the tags it had, the project tag included or excluded
+exactly as it was, so a republish that names none changes none. `--tags` sets the
+whole list instead: what it names, plus the project tag again unless
+`--no-project-tag`. That is also the only way to take a tag off a page, since
+nothing subtracts one, and `--tags ""` leaves a page with none at all.
 
 That project tag only helps while the page really is about the project you are
 standing in. When it is not, a scratch demo or something written for someone
 else, pass `--no-project-tag`: a tag naming the wrong project is worse than no
 tag at all, since it files the page with work it has nothing to do with.
+
+## Reading a page back
+
+`--read` takes a link in any shape and prints what is behind it on two streams at
+once. The source goes to standard output, exactly as it was published; everything
+about it goes beside it on standard error, as parenthesised lines naming the
+title, the type, the description, the tags, a code page's language and the dates.
+Together on a terminal they read as one thing, but redirecting the command writes
+the source alone, byte for byte, ready to hand straight back through `--file`.
+Nothing needs cutting off the top.
+
+```shell
+bun ~/.claude/skills/dropoff/dropoff.ts --read https://dropoff.sh/p/4hydssmk2nq
+```
+
+That is the source a republish should start from, so a page gets continued rather
+than rewritten from memory.
+
+It reaches every type, a diagram's template and a table's CSV included, and
+unwraps what the host stores around them. Only an upload has nothing to hand
+back: its bytes are its own URL, and that is what it says instead. A link
+belonging to somebody else still opens when it is a doc, since every doc serves
+its markdown publicly, and the output says so; anything else of theirs is out of
+reach.
+
+`--list` is the other way in, for when the page is known to exist but its link is
+not at hand. It prints the account's pages, most recently changed first, and
+narrows on `--tags`, `--type`, `--query` and `--limit`. Prefer it over asking the
+user to go and find a URL.
+
+## Keeping a page current
+
+A page an agent worked out of should not be left describing a world that has
+moved on. Read it, do the work, and publish the result back over it with
+`--path`, which keeps the link, its date and everything the command did not
+mention, bar the expiry above.
+
+Whether to is a judgement about what the page is for. A plan, a review, a
+checklist, a handover, a status page: these are read for what is true now, and
+going stale is the one way they fail, so bring them up to date as soon as the
+work lands and mention that you did. A record of what happened at a point in
+time, an incident write-up or a summary of a session, is worth what it froze, and
+rewriting it destroys that. When a page could be read either way, ask. Asked
+outright to update something, update it, whichever kind it is.
+
+Report the link again afterwards. It has not changed, but the page has, and the
+person you hand it to has no other way of knowing.
 
 ## Writing a doc
 

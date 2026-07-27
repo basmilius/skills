@@ -32,6 +32,11 @@ card grows with its text, so a fixed distance between tops quietly eats the room
 the connector needs, and the taller the card the less is left. The next node
 goes at `y + height + spacing`.
 
+Edge to edge, on both axes. Sideways it is the right edge of one node to the left
+edge of the next, `x + width + spacing`, not a distance between their lefts and
+not a column you measure from. A terminal is as wide as its label, so a column of
+them lines up on nothing at all.
+
 | Between | Space |
 | --- | --- |
 | Two stacked nodes | 60px |
@@ -67,6 +72,17 @@ a two-line card stacked at `x = 0` with plain connections:
 
 A fixed increment (0, 160, 320, ...) only happens to work while every card has
 the same height.
+
+A branch off that column works the same way, one axis at a time. Hanging a
+`delivered` terminal off the right of `check`, on a connection labelled `yes`:
+
+| | Arithmetic |
+| --- | --- |
+| `x` | `check` sits at 0 and is 300 wide, and a labelled sideways connection wants 210, so `0 + 300 + 210 = `**510** |
+| `y` | the card end takes `from-align="start"`, so the terminal goes 12px below the card: `96 + 12 = `**108** |
+
+The `y` is the sideways rule below rather than a centring sum, because a card's
+vertical middle moves as its text grows and the terminal's does not.
 
 Keep the happy path in one straight column and branch sideways. A reader follows
 a single spine far more easily than a balanced tree.
@@ -206,7 +222,7 @@ though it is 60px and hides it better.
 5. Does every end touching a junction or a gate carry `marker-start="none"` or
    `marker-end="none"`, whichever end that is?
 
-`publish.ts --check --file <path>` does the first two and the last for you and
+`dropoff.ts --check --file <path>` does the first two and the last for you and
 names every connector it objects to, which is faster than counting by hand. It
 runs on every diagram published as well, and refuses the publish when something
 is crowded or a marker is left on. The two it cannot do are the ones about where

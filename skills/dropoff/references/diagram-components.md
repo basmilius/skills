@@ -52,7 +52,12 @@ A prop in **bold** is one the component will not do without.
 
 The card body is the default slot, so
 `<FluxFlowActionCard>Send the code</FluxFlowActionCard>` is the normal way to
-write one. Use `title` when a card needs a heading above its body as well.
+write one. Every card carries a header whether or not you say so, and `title` is
+what that header reads, replacing the default rather than adding a band above it.
+So a title costs no height and the sizes in `diagram-layout.md` already hold. A
+card's `subtitle` is the exception, on every card that takes one: it puts a second
+line in the header that those sizes do not count, so leave it out unless you add
+the room yourself, since the spacing check will not notice it is missing.
 
 `FluxFlowGroup` is decoration: it renders behind every card, takes no pointer,
 and nothing connects to it. Its `nodes` is an array of node ids and has to be
