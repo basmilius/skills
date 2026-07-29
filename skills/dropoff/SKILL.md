@@ -305,7 +305,8 @@ GitHub-flavoured markdown works throughout: tables, task lists, footnotes,
 strikethrough, and a code fence highlighted for every language shiki knows. On
 top of that a doc may use components: cards, an embedded diagram, callouts,
 collapsibles, progress bars, stat tiles, badges, file trees, steps, a facts
-panel, tabbed code groups and rich diffs. A page that updates while you work
+panel, a folded read-more passage, an activity feed, tabbed code groups and rich
+diffs. A page that updates while you work
 needs nothing special written into it: `- [ ]` boxes say what is left, `::steps`
 reads as the route being walked and takes a `current` to say which step is being
 worked on now, and `::progress` says how far along the whole thing is. Keep the

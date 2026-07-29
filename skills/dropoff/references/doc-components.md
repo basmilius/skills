@@ -99,6 +99,52 @@ Another answer.
 :::
 ```
 
+## Read more
+
+Clamps a long passage to a few lines with a toggle under it, for a paragraph
+that matters to some readers and would push the rest of the page down for
+everyone else. `lines` defaults to 3, `label-more` and `label-less` name the
+toggle. Inline markdown only, and the toggle only shows itself when the text
+really is longer than the clamp.
+
+```markdown
+::read-more{lines="2" label-more="Show the whole story" label-less="Fold it back"}
+A long passage the reader may open, with **bold** and a [link](https://flux-ui.dev)
+coming through as usual.
+::
+```
+
+## Activity feed
+
+A timeline of what happened: who did what and when. Note the extra colon on the
+wrapper. The body of an item is the action, `actor` the name in front of it,
+`when` the time next to it and `date-time` the machine-readable timestamp behind
+that. A marker is either an `icon`, an avatar (`initials`, optionally
+`avatar-src` with an image URL) or, with neither, a plain dot; `color` tints it
+and takes the badge colors.
+
+Items with the same `day` are grouped under one heading, in the order they are
+written, so put the newest day first and write the day exactly the same on every
+item that belongs to it. Leave `day` off entirely for an ungrouped list.
+
+```markdown
+:::activity
+::activity-item{actor="Bas" when="09:12" date-time="2026-07-29T09:12:00Z" day="Today" icon="circle-check" color="success"}
+published the doc and copied the link.
+::
+::activity-item{actor="Claude" when="09:20" day="Today" icon="pen" color="info"}
+rewrote the **summary** paragraph.
+::
+::activity-item{actor="Bas" when="17:40" day="Yesterday" initials="BM"}
+opened the review.
+::
+:::
+```
+
+`avatar-src` is fetched by every reader's browser from wherever it points, which
+tells that host the page is being read; prefer `initials`, or an image published
+here as `--type file`, over a URL on somebody else's domain.
+
 ## Progress bar
 
 States how far something is. `status` is the label, `min` and `max` default to 0
