@@ -14,8 +14,20 @@ type FlowConnection = {
     readonly icon: string;
     readonly markerStart: string;
     readonly markerEnd: string;
+    readonly fromSide: string | undefined;
+    readonly toSide: string | undefined;
+    readonly fromAlign: string;
+    readonly toAlign: string;
     readonly vertical: boolean | null;
     readonly around: boolean;
+};
+
+type FlowAnchor = {
+    readonly node: string;
+    readonly side: string;
+    readonly align: string;
+    readonly incoming: boolean;
+    readonly connection: FlowConnection;
 };
 
 type FlowGroup = {
@@ -92,6 +104,7 @@ export default function checkFlowGeometry(source: string): string[] {
     const groups = readGroups(source, nodes);
     const axis = readAxis(source);
     const problems: string[] = [];
+    const anchors: FlowAnchor[] = [];
 
     for (const connection of readConnections(source)) {
         const from = nodes.get(connection.from);
@@ -116,11 +129,21 @@ export default function checkFlowGeometry(source: string): string[] {
         // arrives on the same side swings around the nodes the same way, which is
         // how a retry gets back to the step above it, and measuring the axis that
         // side names would report two nodes in one column as overlapping.
+        const vertical = connection.vertical ?? axis ?? isVertical(from, to);
+
+        // A self-loop leaves and arrives on the node it belongs to, so both of
+        // its ends sitting there is the shape rather than a clash.
+        if (connection.from !== connection.to) {
+            const [fromSide, toSide] = resolveSides(connection, from, to, vertical);
+
+            anchors.push({node: from.id, side: fromSide, align: connection.fromAlign, incoming: false, connection});
+            anchors.push({node: to.id, side: toSide, align: connection.toAlign, incoming: true, connection});
+        }
+
         if (connection.from === connection.to || connection.around) {
             continue;
         }
 
-        const vertical = connection.vertical ?? axis ?? isVertical(from, to);
         const gap = vertical
             ? distance(from.y, from.height, to.y, to.height)
             : distance(from.x, from.width, to.x, to.width);
@@ -138,7 +161,64 @@ export default function checkFlowGeometry(source: string): string[] {
         }
     }
 
+    problems.push(...checkAnchors(anchors));
+
     return problems;
+}
+
+/**
+ * Every point where a line both arrives and leaves. Flow attaches both ends at
+ * the same spot, so the incoming chevron lands on the outgoing dot and the flow
+ * appears to go back the way it came instead of carrying on. Two lines leaving
+ * one point is a branch and two arriving is a merge, both of which read fine, so
+ * only the mixed pair is reported.
+ */
+function checkAnchors(anchors: FlowAnchor[]): string[] {
+    const points = new Map<string, FlowAnchor[]>();
+
+    for (const anchor of anchors) {
+        const key = `${anchor.node}|${anchor.side}|${anchor.align}`;
+
+        points.set(key, [...(points.get(key) ?? []), anchor]);
+    }
+
+    const problems: string[] = [];
+
+    for (const sharing of points.values()) {
+        const arriving = sharing.find(anchor => anchor.incoming);
+        const leaving = sharing.find(anchor => !anchor.incoming);
+
+        if (arriving === undefined || leaving === undefined) {
+            continue;
+        }
+
+        const where = arriving.align === 'center' ? `the ${arriving.side} of` : `the ${arriving.align} of the ${arriving.side} side of`;
+
+        problems.push(`${leaving.connection.from} -> ${leaving.connection.to}: it leaves ${where} "${arriving.node}", where ${arriving.connection.from} -> ${arriving.connection.to} already arrives. Send one of the two out of another side.`);
+    }
+
+    return problems;
+}
+
+/**
+ * Which side of each node a connection actually touches, naming the sides Flow
+ * itself would pick when the markup leaves them out: a connection running down
+ * the page leaves the bottom and arrives at the top, one running across leaves
+ * the right and arrives at the left, and either flips when the target sits the
+ * other way round.
+ */
+function resolveSides(connection: FlowConnection, from: FlowNode, to: FlowNode, vertical: boolean): [string, string] {
+    const forward = vertical
+        ? to.y + to.height / 2 >= from.y + from.height / 2
+        : to.x + to.width / 2 >= from.x + from.width / 2;
+
+    const automatic = vertical
+        ? (forward ? 'bottom' : 'top')
+        : (forward ? 'right' : 'left');
+
+    const fromSide = connection.fromSide ?? (connection.toSide === undefined ? automatic : opposite(connection.toSide)!);
+
+    return [fromSide, connection.toSide ?? opposite(fromSide)!];
 }
 
 /**
@@ -321,6 +401,10 @@ function readConnections(source: string): FlowConnection[] {
             icon: attribute(attributes, 'icon') ?? '',
             markerStart: attribute(attributes, 'marker-start') ?? 'dot',
             markerEnd: attribute(attributes, 'marker-end') ?? 'chevron',
+            fromSide,
+            toSide,
+            fromAlign: attribute(attributes, 'from-align') ?? 'center',
+            toAlign: attribute(attributes, 'to-align') ?? 'center',
             vertical: side === undefined ? null : (side === 'top' || side === 'bottom'),
             around: fromSide !== undefined && fromSide === toSide
         });

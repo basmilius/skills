@@ -149,6 +149,27 @@ a downward flow wants. Props are kebab-case in markup: `from-side`, not
   junction the marker lands on top of it. The other end keeps its marker.
 - `color`: use it to separate a failure path from the happy path.
 
+## One side, one direction
+
+A node has four attachment points and both ends of a connector land dead on one
+of them, so a line arriving at a side and a line leaving that same side start
+and end at the same pixel: the incoming chevron sits on top of the outgoing dot
+and the flow reads as though it turns round and goes back the way it came.
+
+Count the sides before you place the connections. A node in the middle of a
+flow takes its incoming line on one side and sends its outgoing one out of
+another; a terminal that a branch feeds from the right passes the flow on
+downwards, `from-side="bottom"`, not out of the right it just came in through.
+
+```vue
+<FluxFlowConnection from="check" to="fetch" from-side="left" to-side="right" label="No"/>
+<FluxFlowConnection from="fetch" to="store" from-side="bottom" to-side="top"/>
+```
+
+Sharing a side is only a problem when the two disagree about direction. Two
+lines leaving one point is a branch and two arriving is a merge, and both read
+as one; it is the pair that clashes.
+
 A connection whose `from` and `to` name the same node draws a loop beside that
 node, which is how a retry says it retries without a second card. It needs no
 space between two nodes, so the check leaves it alone; give the node itself room
@@ -221,11 +242,12 @@ though it is 60px and hides it better.
    connection, and horizontal middles lined up on a vertical one?
 5. Does every end touching a junction or a gate carry `marker-start="none"` or
    `marker-end="none"`, whichever end that is?
+6. Does any node take a line in and send one out through the same side?
 
-`dropoff.ts --check --file <path>` does the first two and the last for you and
-names every connector it objects to, which is faster than counting by hand. It
-runs on every diagram published as well, and refuses the publish when something
-is crowded or a marker is left on. The two it cannot do are the ones about where
-a connector lands rather than how much room it has: nothing measures whether a
-junction sits at the middle of what follows it, or whether two nodes line up, so
-read those back yourself.
+`dropoff.ts --check --file <path>` does the first two and the last two for you
+and names every connector it objects to, which is faster than counting by hand.
+It runs on every diagram published as well, and refuses the publish when
+something is crowded, a marker is left on, or a side takes a line both ways. The
+two it cannot do are the ones about where a connector lands rather than which
+side it uses: nothing measures whether a junction sits at the middle of what
+follows it, or whether two nodes line up, so read those back yourself.
