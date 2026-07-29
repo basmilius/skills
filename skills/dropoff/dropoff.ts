@@ -16,7 +16,6 @@ type Options = Record<string, string | undefined> & {
 /** What the host answers a publish or an upload with, as far as this script reads it. */
 type Published = {
     readonly url: string;
-    readonly shortUrl: string | null;
     readonly replaced: boolean;
     readonly expiresAt: string | null;
     readonly tags?: readonly string[];
@@ -31,7 +30,6 @@ type Item = {
     readonly kind: string;
     readonly path: string;
     readonly url: string;
-    readonly shortUrl: string;
     readonly title: string;
     readonly description: string | null;
     readonly tags: readonly string[];
@@ -222,16 +220,9 @@ const tags = await resolveTags(replacing.item);
 const envelope = await inheritedEnvelope();
 const result = options.type === 'file' ? await uploadFile() : await publishPage();
 
-// A page leads with its short URL, since that is the link worth sharing; the
-// long one still follows, for a path a card or an embed needs. A file carries a
-// short URL too, but only its long one spells out the extension a markdown image
-// wants, so a file leads with that instead.
-if (result.shortUrl && options.type !== 'file') {
-    console.log(result.shortUrl);
-    console.log(`(also at ${result.url})`);
-} else {
-    console.log(result.url);
-}
+// One URL is all there is: /p/<code>, with a file's extension after it. It is
+// the link to hand back and the path a card or an embed needs.
+console.log(result.url);
 
 console.log(result.replaced ? '(replaced the existing page)' : '(new page)');
 
@@ -331,7 +322,7 @@ async function pushLiveUpdate(): Promise<void> {
     // Two lines, deliberately. This command comes round ten times in a session
     // and the link is not news any of those times; reporting it again after each
     // one buries the work it is meant to be showing.
-    console.log(result.body.shortUrl ?? result.body.url);
+    console.log(result.body.url);
     console.log(options.file === undefined ? '(live session closed)' : '(live update)');
 
     if (done && options.file !== undefined) {
@@ -452,7 +443,7 @@ async function readItem(target: string): Promise<void> {
     const code = shortCodeOf(target);
 
     if (code === null) {
-        fail(`"${target}" does not name an item. Pass its URL, its /p/<code> short link, or the code itself.`);
+        fail(`"${target}" does not name an item. Pass its URL or the code itself.`);
     }
 
     const own = token ? await itemByCode(code) : {item: null, failed: false};
@@ -508,7 +499,7 @@ async function readItem(target: string): Promise<void> {
         console.error('(live: readers are following this page, and the session is still open)');
     }
 
-    console.error(`(at ${item.shortUrl}, updated ${item.updatedAt.slice(0, 10)})`);
+    console.error(`(at ${item.url}, updated ${item.updatedAt.slice(0, 10)})`);
 
     if (item.expiresAt) {
         console.error(`(expires ${item.expiresAt.slice(0, 10)})`);
@@ -593,7 +584,7 @@ async function listItems(): Promise<void> {
     for (const item of page.items) {
         const tags = item.tags.length > 0 ? `  (${item.tags.join(', ')})` : '';
 
-        console.log(`${item.shortUrl}  ${item.kind.padEnd(7)}  ${item.updatedAt.slice(0, 10)}  ${item.title}${tags}`);
+        console.log(`${item.url}  ${item.kind.padEnd(7)}  ${item.updatedAt.slice(0, 10)}  ${item.title}${tags}`);
     }
 
     console.log(`(${page.items.length} of ${page.total})`);
@@ -691,17 +682,17 @@ function codeOrFail(value: string): string {
     const code = shortCodeOf(value);
 
     if (code === null) {
-        fail(`"${value}" does not name a page. Pass its URL, its /p/<code> short link, or the code itself.`);
+        fail(`"${value}" does not name a page. Pass its URL or the code itself.`);
     }
 
     return code;
 }
 
 /**
- * The short code behind whatever was handed over: a full URL, the canonical
- * /p/<code>/<slug> path, the /p/<code> short link, or the bare code, with or
- * without the .md a markdown link carries. Every one of those shapes gets pasted
- * at some point, and the host takes only the last of them.
+ * The short code behind whatever was handed over: a full URL, the /p/<code> path
+ * or the bare code, with or without the extension a file or a markdown link
+ * carries. A link from before the slug was dropped is read too, since one of
+ * those still gets pasted; the host takes only the code.
  */
 function shortCodeOf(target: string): string | null {
     const segments = target

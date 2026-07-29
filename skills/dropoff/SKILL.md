@@ -102,7 +102,7 @@ out when you are not certain.
 | Argument | Required | Notes |
 | --- | --- | --- |
 | `--type` | yes | `doc`, `diagram`, `file`, `code`, `table` or `diff` |
-| `--title` | yes | The page heading, and what the slug comes from. At most 200 characters |
+| `--title` | yes | The page heading. At most 200 characters |
 | `--file` | yes | Path to the source |
 | `--description` | no | One sentence, for link previews. At most 300 characters |
 | `--tags` | no | Comma separated, on top of the project tag |
@@ -122,11 +122,9 @@ The script does two other things, each below: `--read` opens a page that is
 already up, and `--list` says what is.
 
 Reporting the link is the point of the operation. Everything lives under
-`/p/<code>/<slug>`, and dropping the slug lands on the same page. A page leads
-with that short `/p/<code>` link and that is the one to hand back; a file leads
-with its full URL instead, because only that one spells out the extension a
-markdown image needs. Neither follows from the title, since the code is random,
-so take both from the output rather than assembling one.
+`/p/<code>`, and a file carries its extension after it, `/p/<code>.png`. That is
+the whole URL, so hand back exactly what the output prints; it does not follow
+from the title, since the code is random.
 
 The lines after it say whether a page was replaced, which tags it carries and,
 on a plan that expires pages, when this one goes. No expiry line means it stays.
@@ -147,16 +145,14 @@ stray space around it makes no second page. Pick a title specific enough not to
 collide, and if the output says `(replaced the existing page)` when you did not
 mean to replace anything, say so and offer `--new`.
 
-- The user gives a URL to update: hand it to `--path` whole. The full URL, the
-  `/p/<code>` short link and the bare code all name the same page, since only the
-  code resolves it and the slug beside it is decoration.
+- The user gives a URL to update: hand it to `--path` whole. The full URL and
+  the bare code both name the same page, since the code is what resolves it.
 - The user wants a second page under the same title: pass `--new`.
 - An upload always takes a fresh URL unless `--path` names one to replace, and
   the replacement has to carry the same extension as the file already there.
 
 `--title` is required either way, and on a replacement it becomes the page's new
-title while the URL stays exactly as it was. So a page can end up with a slug
-that no longer reads like its title, which is fine.
+title while the URL stays exactly as it was.
 
 A replacement rewrites a page rather than patching it, so anything the command
 leaves out would be cleared. The script reads the page first and carries across
