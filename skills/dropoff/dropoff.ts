@@ -8,6 +8,8 @@ type Options = Record<string, string | undefined> & {
     check?: boolean;
     force?: boolean;
     list?: boolean;
+    live?: boolean;
+    done?: boolean;
     'no-project-tag'?: boolean;
 };
 
@@ -36,6 +38,12 @@ type Item = {
     readonly updatedAt: string;
     readonly expiresAt: string | null;
 
+    /** Whether readers are following this page right now. */
+    readonly live?: boolean;
+
+    /** The model the page says wrote it, or null when it says nothing. */
+    readonly model?: string | null;
+
     /** Only a single-item read carries this, and only a file has none. */
     readonly source?: string | null;
 };
@@ -46,6 +54,11 @@ type Unwrapped = {
     readonly language?: string;
     readonly format?: string;
 };
+
+/** What a request came back as, when the caller wants to decide about a refusal itself. */
+type Sent<T> =
+    | {ok: true; body: T}
+    | {ok: false; status: string; code: string | null; error: string};
 
 /** What a lookup turned up, and whether the host answered it at all. */
 type Lookup = {
@@ -65,14 +78,29 @@ const MAX_TAGS = 10;
 // so a lookup pages through the list, and a bigger page is one request fewer.
 const PER_PAGE = 200;
 
-// Arguments that stand on their own rather than taking the next word.
-const FLAGS = ['new', 'check', 'force', 'list', 'no-project-tag'];
+// Arguments that stand on their own rather than taking the next word. An
+// argument missing from here swallows whatever follows it, so --live --path <url>
+// would quietly become {live: '--path'} with the URL dropped on the floor.
+const FLAGS = ['new', 'check', 'force', 'list', 'live', 'done', 'no-project-tag'];
+
+// Arguments that take a value. Together with FLAGS this is every argument there
+// is, which is what lets a typo be named rather than turned into a usage dump
+// that says nothing about the word that was actually wrong.
+const VALUES = [
+    'type', 'title', 'file', 'description', 'tags', 'folder', 'language',
+    'format', 'path', 'model', 'read', 'query', 'limit'
+];
 
 const TYPES = ['doc', 'diagram', 'file', 'code', 'table', 'diff'];
 
 // A short code is eleven characters, drawn from an alphabet with the shapes that
 // misread for one another left out: no l, no 0 and no 1.
 const SHORT_CODE = /^[a-km-z2-9]{11}$/;
+
+// Whether the host turned the live flag down, so the closing lines can say so.
+// Declared up here because those lines run before the function that sets it is
+// ever defined, and a let further down would still be in its dead zone.
+let liveRefused = false;
 
 const options = parseArguments(process.argv.slice(2));
 
@@ -97,17 +125,39 @@ if (options.list === true) {
     process.exit(0);
 }
 
+// A live update names a page and replaces what it holds. It branches here, before
+// the usage check below, because it needs neither a type nor a title: the page it
+// updates already has both, and asking for them again is how a link gets moved by
+// accident. Passing --live without --path is not this: that is an ordinary publish
+// that happens to mark the page live, and it falls through.
+if (options.path !== undefined && (options.live === true || options.done === true)) {
+    await pushLiveUpdate();
+    process.exit(0);
+}
+
+if (options.done === true) {
+    fail('--done closes a live session on a page, so name that page with --path.');
+}
+
+if (options.live === true && options.type === 'file') {
+    fail('An upload has no live updates; re-upload it with --path instead.');
+}
+
 if (!options.file || (!options.check && (!options.type || !options.title))) {
     fail([
         'Usage: dropoff.ts --type <doc|diagram|file|code|table|diff> --title <title> --file <path>',
         '                  [--description <text>] [--tags a,b] [--no-project-tag] [--folder <name>]',
         '                  [--language <lang>] [--format <csv|json>] [--path <url | p/code>] [--new] [--force]',
+        '                  [--model <name>] [--live]',
+        '       dropoff.ts --live --path <url | p/code> --file <path>',
+        '       dropoff.ts --done --path <url | p/code> [--file <path>]',
         '       dropoff.ts --check --file <path>',
         '       dropoff.ts --read <url | p/code | code>',
         '       dropoff.ts --list [--tags a,b] [--type <kind>] [--query <text>] [--limit <n>]',
         '',
         'code needs --language (e.g. ts, python); table takes --format (csv or json, else auto);',
-        'diff reads a single-file unified diff. --folder files the item under a folder (Pro).'
+        'diff reads a single-file unified diff. --folder files the item under a folder (Pro).',
+        '--live publishes a page readers follow and pushes updates to it (Pro); --done closes it.'
     ].join('\n'));
 }
 
@@ -204,8 +254,137 @@ for (const warning of result.warnings ?? []) {
     console.log(`(warning: ${warning})`);
 }
 
+// Said last, because it is about the publish rather than about the page: the
+// document went up either way, and only the following-along part did not.
+if (liveRefused) {
+    console.log('(note: live pages are a paid feature on this host, so this went up as an ordinary page)');
+} else if (options.live === true) {
+    console.log('(live: readers follow this page until you pass --done)');
+}
+
+/**
+ * Pushes a new version of a page that already exists, and nothing else. This is
+ * the cheap path: it takes the host's live route, which leaves the short code,
+ * the slug, the expiry, the tags and the folder exactly as they were, and it
+ * skips every lookup a republish needs to avoid clearing those. One request,
+ * where a --path republish costs two to four.
+ *
+ * That is what makes it usable step by step. Ticking a checklist through an
+ * afternoon over the publish route would re-read the page, re-resolve its tags
+ * and push its expiry forward on every tick; here nothing moves but the source.
+ */
+async function pushLiveUpdate(): Promise<void> {
+    const done = options.done === true;
+
+    for (const [argument, why] of [
+        ['tags', 'does not touch tags'],
+        ['no-project-tag', 'does not touch tags'],
+        ['folder', 'does not move a page between folders'],
+        ['new', 'never starts a second page']
+    ] as const) {
+        if (options[argument] !== undefined) {
+            fail(`A live update ${why}. Drop --live to republish the page in full, which does.`);
+        }
+    }
+
+    if (options.file === undefined && !done) {
+        fail('A live update needs --file, or --done on its own to close the session.');
+    }
+
+    if (!token) {
+        fail('DROPOFF_TOKEN is not set. It should hold the bearer token the host expects.');
+    }
+
+    const code = codeOrFail(options.path!);
+    const source = options.file === undefined ? undefined : readText(options.file);
+
+    const result = await trySend<Published>('live', {
+        method: 'POST',
+        headers: {
+            'authorization': `Bearer ${token}`,
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify({
+            path: code,
+            source,
+            title: options.title,
+            description: options.description,
+            language: options.language,
+            format: options.format,
+            type: options.type,
+            model: modelLabel(),
+            done
+        })
+    });
+
+    if (!result.ok) {
+        // A plan that lapsed mid-session is worth saying plainly rather than
+        // falling back on: a full republish would work, but it would also reset
+        // the expiry, which is a different thing than what was asked for.
+        if (result.code === 'live_not_available') {
+            fail(`${endpoint} answered 402: ${result.error} The page is still there; republish it with --path (without --live) to update it in full.`);
+        }
+
+        fail(`${endpoint} answered ${result.status}: ${result.error}`);
+    }
+
+    // Two lines, deliberately. This command comes round ten times in a session
+    // and the link is not news any of those times; reporting it again after each
+    // one buries the work it is meant to be showing.
+    console.log(result.body.shortUrl ?? result.body.url);
+    console.log(options.file === undefined ? '(live session closed)' : '(live update)');
+
+    if (done && options.file !== undefined) {
+        console.log('(live session closed)');
+    }
+
+    for (const warning of result.body.warnings ?? []) {
+        console.log(`(warning: ${warning})`);
+    }
+}
+
+/**
+ * The model that wrote this, as the caller named it. There is no way to work it
+ * out: a Claude Code session carries CLAUDECODE and AI_AGENT, which say which
+ * harness is running, and nothing at all that names the model. So it is passed
+ * in or it is left out, and a guess is worse than nothing, because a made-up
+ * name in a page footer reads exactly as authoritative as a real one.
+ */
+function modelLabel(): string | undefined {
+    const named = options.model?.trim()
+        || process.env.DROPOFF_MODEL?.trim()
+        || process.env.ANTHROPIC_MODEL?.trim();
+
+    return named || undefined;
+}
+
 async function publishPage(): Promise<Published> {
-    return await send<Published>('publish', {
+    const result = await publishRequest(options.live === true);
+
+    if (result.ok) {
+        return result.body;
+    }
+
+    // The one retry in this script, and it earns its place: the document is
+    // written and would otherwise be lost to a plan limit that has nothing to do
+    // with it. It goes on the code rather than on the status, because the other
+    // 402 a publish can hit is the item limit, and retrying that one would
+    // publish in a loop.
+    if (result.code === 'live_not_available') {
+        const plain = await publishRequest(false);
+
+        if (plain.ok) {
+            liveRefused = true;
+
+            return plain.body;
+        }
+    }
+
+    return fail(`${endpoint} answered ${result.status}: ${result.error}`);
+}
+
+function publishRequest(live: boolean): Promise<Sent<Published>> {
+    return trySend<Published>('publish', {
         method: 'POST',
         headers: {
             'authorization': `Bearer ${token}`,
@@ -223,7 +402,9 @@ async function publishPage(): Promise<Published> {
             new: options.new === true,
             language: options.language ?? envelope?.language,
             format: options.format ?? envelope?.format,
-            folder: options.folder
+            folder: options.folder,
+            model: modelLabel(),
+            live: live ? true : undefined
         })
     });
 }
@@ -315,6 +496,16 @@ async function readItem(target: string): Promise<void> {
 
     if (item.tags.length > 0) {
         console.error(`(tagged ${item.tags.join(', ')})`);
+    }
+
+    if (item.model) {
+        console.error(`(model: ${item.model})`);
+    }
+
+    // Worth knowing before republishing over it: somebody has this page open, and
+    // the session behind it is still somebody's to close.
+    if (item.live) {
+        console.error('(live: readers are following this page, and the session is still open)');
     }
 
     console.error(`(at ${item.shortUrl}, updated ${item.updatedAt.slice(0, 10)})`);
@@ -675,7 +866,13 @@ function projectTag(): string | null {
     return name === '' ? null : name;
 }
 
-async function send<T>(path: string, init: RequestInit = {}): Promise<T> {
+/**
+ * The same request, with the refusal handed back as a value instead of ending the
+ * run. Only a caller that has something else to try needs this; everything else
+ * goes through send, which is this with the refusal turned into the one-line exit
+ * every other failure gets, so the wording lives in one place.
+ */
+async function trySend<T>(path: string, init: RequestInit = {}): Promise<Sent<T>> {
     let response: Response;
 
     // A host that cannot be reached at all, a DNS failure or a refused connection,
@@ -692,27 +889,42 @@ async function send<T>(path: string, init: RequestInit = {}): Promise<T> {
     // The edge can answer a 5xx with an HTML page rather than JSON, so the body is
     // read as text first and parsed defensively: a failed parse leaves an empty
     // result and the status below carries the message, not an uncaught TypeError.
-    let result = {} as T & {error?: string};
+    let result = {} as T & {error?: string; code?: string};
 
     try {
-        result = JSON.parse(body) as T & {error?: string};
+        result = JSON.parse(body) as T & {error?: string; code?: string};
     } catch {
         // Not JSON; the status is what the caller gets told about instead.
     }
 
-    if (!response.ok) {
-        // A rate limit says when to come back in a header rather than the body, so
-        // it is surfaced next to the status when it is there. Retry-After is either
-        // a number of seconds or an HTTP date, and only the former gets a unit.
-        const retryAfter = response.status === 429 ? response.headers.get('retry-after') : null;
-        const when = retryAfter === null
-            ? ''
-            : `, retry after ${/^\d+$/.test(retryAfter) ? `${retryAfter}s` : retryAfter}`;
-
-        fail(`${endpoint} answered ${response.status}${when}: ${result.error ?? 'unknown error'}`);
+    if (response.ok) {
+        return {ok: true, body: result};
     }
 
-    return result;
+    // A rate limit says when to come back in a header rather than the body, so
+    // it is surfaced next to the status when it is there. Retry-After is either
+    // a number of seconds or an HTTP date, and only the former gets a unit.
+    const retryAfter = response.status === 429 ? response.headers.get('retry-after') : null;
+    const when = retryAfter === null
+        ? ''
+        : `, retry after ${/^\d+$/.test(retryAfter) ? `${retryAfter}s` : retryAfter}`;
+
+    return {
+        ok: false,
+        status: `${response.status}${when}`,
+        code: result.code ?? null,
+        error: result.error ?? 'unknown error'
+    };
+}
+
+async function send<T>(path: string, init: RequestInit = {}): Promise<T> {
+    const result = await trySend<T>(path, init);
+
+    if (!result.ok) {
+        fail(`${endpoint} answered ${result.status}: ${result.error}`);
+    }
+
+    return result.body;
 }
 
 function parseArguments(argv: string[]): Options {
@@ -730,6 +942,10 @@ function parseArguments(argv: string[]): Options {
         if (FLAGS.includes(name)) {
             parsed[name] = true;
             continue;
+        }
+
+        if (!VALUES.includes(name)) {
+            fail(`Unknown argument "${argument}".`);
         }
 
         parsed[name] = argv[++index];

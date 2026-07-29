@@ -8,6 +8,11 @@ Derive that path from the URL the script printed, dropping the scheme and domain
 since the code is what resolves it. On GitHub or in a raw view these degrade to
 visible marker lines with the target still readable.
 
+A `color` prop, wherever one appears, takes one of the six names listed with the
+badge below and never a hex value or a CSS colour: the account's own palette
+decides what those names look like, and a literal colour would sit outside it and
+break the moment a reader opens the page in the other theme.
+
 Inline markdown works inside a component's body, so bold, links and code spans
 come through; where block content is refused it says so below. An `icon` prop,
 wherever one appears, takes a kebab-case Font Awesome Duotone name such as
@@ -140,6 +145,20 @@ how-tos.
 ::steps
 1. Install Bun.
 2. Run the script.
+::
+```
+
+`current` marks where the work has got to, counting from one: the steps before it
+read as done, the named one as under way, and the rest as still ahead. It is what
+makes a step list worth following on a live page, where the question is not what
+is done but what is happening now. A number past the end of the list, or no
+`current` at all, leaves every step unmarked.
+
+```markdown
+::steps{current="2"}
+1. Install Bun.
+2. Run the script.
+3. Check the output.
 ::
 ```
 

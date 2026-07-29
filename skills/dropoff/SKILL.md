@@ -9,9 +9,11 @@ description: >-
   "plaats dit online", "and publish it when you are done"); when a dropoff.sh
   link appears in the prompt, which is a page to read before answering ("wat
   staat er in deze pagina", "werk deze review bij"); to upload a small image; to
-  show a code change as a rich diff ("publiceer deze diff"); or when a process,
+  show a code change as a rich diff ("publiceer deze diff"); when a process,
   flow, pipeline or architecture wants a diagram ("maak een diagram van het
-  inlogproces", "teken deze pipeline").
+  inlogproces", "teken deze pipeline"); or to keep a page updating while the work
+  runs, a checklist ticked off or a plan walked through ("houd dit bij terwijl je
+  bezig bent", "zet de voortgang online").
 license: MIT
 ---
 
@@ -89,6 +91,14 @@ bun ~/.claude/skills/dropoff/dropoff.ts \
 That is the usual skill path; if this skill lives elsewhere, run the
 `dropoff.ts` that sits next to this file.
 
+Pass `--model` with the identifier you are running as, such as `claude-opus-5`,
+and the footer says quietly which model wrote the page. It is worth having:
+a document that later turns out to be wrong is read differently once its reader
+knows what produced it. Nothing about the environment gives this away, so the
+flag is the only source there is, and a name arrived at by guessing is worse than
+no name at all, since it reads exactly as authoritative as a real one. Leave it
+out when you are not certain.
+
 | Argument | Required | Notes |
 | --- | --- | --- |
 | `--type` | yes | `doc`, `diagram`, `file`, `code`, `table` or `diff` |
@@ -102,6 +112,9 @@ That is the usual skill path; if this skill lives elsewhere, run the
 | `--folder` | no | File the item under a folder, created on first use (Pro) |
 | `--path` | no | Publish onto an existing page, named by its link in any shape |
 | `--new` | no | Force a fresh URL even when the title was published before |
+| `--model` | no | The model identifier you run as, shown quietly in the page footer |
+| `--live` | no | Publish a page readers follow, or with `--path`, push an update to one (Pro) |
+| `--done` | no | Close a live page's session; names the page with `--path` |
 | `--check` | no | Check a diagram's spacing and stop; publishes nothing |
 | `--force` | no | Publish a diagram the spacing check objects to |
 
@@ -188,7 +201,9 @@ bun ~/.claude/skills/dropoff/dropoff.ts --read https://dropoff.sh/p/4hydssmk2nq
 ```
 
 That is the source a republish should start from, so a page gets continued rather
-than rewritten from memory.
+than rewritten from memory. A live page says so among its metadata, which is
+worth noticing before publishing over it: somebody has it open, and the session
+is still somebody's to close.
 
 It reaches every type, a diagram's template and a table's CSV included, and
 unwraps what the host stores around them. Only an upload has nothing to hand
@@ -220,11 +235,64 @@ outright to update something, update it, whichever kind it is.
 Report the link again afterwards. It has not changed, but the page has, and the
 person you hand it to has no other way of knowing.
 
+### A page that updates while you work
+
+Some pages are read while the work they describe is still going on: the steps of
+a migration being ticked off, a checklist somebody is watching from another room,
+a status page during an incident. Those are worth putting up before the work is
+done rather than after, and `--live` says so. The page is marked live, whoever
+has it open sees each new version arrive without reloading, and it stays that way
+until you close it.
+
+```shell
+bun ~/.claude/skills/dropoff/dropoff.ts \
+    --type doc \
+    --title "Auth migration run" \
+    --live \
+    --file /tmp/run.md
+```
+
+An update is that same file again, sent whole. There are no partial edits: you
+rewrite the source with the box ticked and hand the whole thing over. What
+`--live` beside `--path` changes is the route it takes, which leaves the link,
+the tags, the folder and the expiry alone and replaces only what is on the page.
+
+```shell
+bun ~/.claude/skills/dropoff/dropoff.ts \
+    --live --path https://dropoff.sh/p/4hydssmk2nq --file /tmp/run.md
+```
+
+`--done` closes the session, and doing it matters: a page still marked live after
+the work finished promises a reader something that is never coming. Send the last
+version and close in one go by passing `--done` with `--file`, or close a page
+whose content is already right by passing `--done` on its own.
+
+Update when a step actually finishes, not while it is being worked on. A reader
+watching a bar creep forward learns nothing that the finished step would not have
+told them, and the host counts how often you push. If it says you are going too
+fast, let the next real step carry the update rather than trying again: every
+push sends the whole source, so nothing is lost by skipping one.
+
+Report the link once when the page goes live and once when you close it. The
+updates in between are work, not news, and pasting the same URL after each one
+tells the person reading your reply nothing.
+
+Live pages belong to the paid plan. If the host says so on the first publish the
+page still goes up, as an ordinary one, and the script says that is what
+happened; say it back rather than retrying, and keep the page current the
+ordinary way, with `--path`.
+
 ## Writing a doc
 
 The page carries its own house style, so write none: no HTML, no inline styles,
-no headings used for visual effect. Punctuate with hyphens, commas, colons or
-parentheses, never en or em dashes.
+no headings used for visual effect, and no colours of your own. Where a component
+takes a `color` it takes one of a fixed set of names, `success` or `warning`
+rather than a hex value, and what those look like is the account's business
+rather than the document's. For the same reason, never point at a colour in the
+running text: a paragraph about the red box stops making sense the moment
+somebody changes the palette, and readers see the page in a light or a dark theme
+depending on what their own system asks for. Punctuate with hyphens, commas,
+colons or parentheses, never en or em dashes.
 
 Start the markdown at `##`, since `--title` is already rendered as the page
 heading, and give the h2 and h3 headings meaning: they become the side
@@ -237,7 +305,12 @@ GitHub-flavoured markdown works throughout: tables, task lists, footnotes,
 strikethrough, and a code fence highlighted for every language shiki knows. On
 top of that a doc may use components: cards, an embedded diagram, callouts,
 collapsibles, progress bars, stat tiles, badges, file trees, steps, a facts
-panel, tabbed code groups and rich diffs. **Read `references/doc-components.md`
+panel, tabbed code groups and rich diffs. A page that updates while you work
+needs nothing special written into it: `- [ ]` boxes say what is left, `::steps`
+reads as the route being walked and takes a `current` to say which step is being
+worked on now, and `::progress` says how far along the whole thing is. Keep the
+shape of the document steady between updates and change only what the work
+changed, so a reader looking twice recognises the page. **Read `references/doc-components.md`
 before writing one**; the syntax is unforgiving about closing markers and
 quoting.
 
