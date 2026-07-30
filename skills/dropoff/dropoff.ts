@@ -22,6 +22,12 @@ type Published = {
 
     /** Only a doc carries these, and none of them stopped it from being published. */
     readonly warnings?: readonly string[];
+
+    /** Present when the publish carried a menu: what the host made of it. */
+    readonly site?: {
+        readonly entries: number;
+        readonly unresolved: number;
+    };
 };
 
 /** One row of the account's own index, as far as this script reads it. */
@@ -44,6 +50,9 @@ type Item = {
 
     /** Only a single-item read carries this, and only a file has none. */
     readonly source?: string | null;
+
+    /** Only a single-item read carries this, and only a site's index has one. */
+    readonly menu?: string | null;
 };
 
 /** A stored source, and whatever the host wrapped around it to render it. */
@@ -86,7 +95,7 @@ const FLAGS = ['new', 'check', 'force', 'list', 'live', 'done', 'no-project-tag'
 // that says nothing about the word that was actually wrong.
 const VALUES = [
     'type', 'title', 'file', 'description', 'tags', 'folder', 'language',
-    'format', 'path', 'model', 'read', 'query', 'limit'
+    'format', 'path', 'model', 'read', 'query', 'limit', 'menu'
 ];
 
 const TYPES = ['doc', 'diagram', 'file', 'code', 'table', 'diff'];
@@ -141,12 +150,18 @@ if (options.live === true && options.type === 'file') {
     fail('An upload has no live updates; re-upload it with --path instead.');
 }
 
+// Only a doc carries a menu, so a menu on anything else is a mistake worth
+// naming rather than a field the host quietly drops.
+if (options.menu !== undefined && options.type !== 'doc') {
+    fail('Only a doc can carry a menu, since only a doc shows the column it draws.');
+}
+
 if (!options.file || (!options.check && (!options.type || !options.title))) {
     fail([
         'Usage: dropoff.ts --type <doc|diagram|file|code|table|diff> --title <title> --file <path>',
         '                  [--description <text>] [--tags a,b] [--no-project-tag] [--folder <name>]',
         '                  [--language <lang>] [--format <csv|json>] [--path <url | p/code>] [--new] [--force]',
-        '                  [--model <name>] [--live]',
+        '                  [--model <name>] [--live] [--menu <path>]',
         '       dropoff.ts --live --path <url | p/code> --file <path>',
         '       dropoff.ts --done --path <url | p/code> [--file <path>]',
         '       dropoff.ts --check --file <path>',
@@ -155,12 +170,19 @@ if (!options.file || (!options.check && (!options.type || !options.title))) {
         '',
         'code needs --language (e.g. ts, python); table takes --format (csv or json, else auto);',
         'diff reads a single-file unified diff. --folder files the item under a folder (Pro).',
-        '--live publishes a page readers follow and pushes updates to it (Pro); --done closes it.'
+        '--live publishes a page readers follow and pushes updates to it (Pro); --done closes it.',
+        '--menu makes this doc the index of a mini site, and every doc it links carries that menu (Pro).'
     ].join('\n'));
 }
 
 // An upload is bytes rather than text, and is read further down.
 const source = options.type === 'file' ? '' : readText(options.file!);
+
+// The menu that makes this doc the index of a mini site. Left out it is
+// undefined, which the host reads as "keep the menu this page already has", so
+// an ordinary republish of an index never has to repeat it. `--menu ""` is the
+// one way to say the opposite, and it takes the site apart.
+const menu = options.menu === undefined ? undefined : options.menu === '' ? '' : readText(options.menu);
 
 // Nothing in Flow lays a diagram out, so a coordinate that leaves two nodes too
 // close for the connector between them only shows up once the page is live.
@@ -239,10 +261,14 @@ if (reported.length > 0) {
 }
 
 // A doc may come back with warnings: a card pointing at nothing yet, an unknown
-// component, an unknown icon. None of them block the publish, but the author
-// should hear them.
+// component, an unknown icon, an entry in a menu that names no page of this
+// account. None of them block the publish, but the author should hear them.
 for (const warning of result.warnings ?? []) {
     console.log(`(warning: ${warning})`);
+}
+
+if (result.site) {
+    console.log(menuLine(result.site.entries, result.site.unresolved));
 }
 
 // Said last, because it is about the publish rather than about the page: the
@@ -271,7 +297,8 @@ async function pushLiveUpdate(): Promise<void> {
         ['tags', 'does not touch tags'],
         ['no-project-tag', 'does not touch tags'],
         ['folder', 'does not move a page between folders'],
-        ['new', 'never starts a second page']
+        ['new', 'never starts a second page'],
+        ['menu', 'never touches the menu of a site']
     ] as const) {
         if (options[argument] !== undefined) {
             fail(`A live update ${why}. Drop --live to republish the page in full, which does.`);
@@ -395,7 +422,8 @@ function publishRequest(live: boolean): Promise<Sent<Published>> {
             format: options.format ?? envelope?.format,
             folder: options.folder,
             model: modelLabel(),
-            live: live ? true : undefined
+            live: live ? true : undefined,
+            menu
         })
     });
 }
@@ -503,6 +531,15 @@ async function readItem(target: string): Promise<void> {
 
     if (item.expiresAt) {
         console.error(`(expires ${item.expiresAt.slice(0, 10)})`);
+    }
+
+    // The menu of a site's index, so it can be changed rather than written out
+    // again from memory. On stderr with the rest of what the page is, since
+    // stdout is the source and has to stay redirectable on its own.
+    if (item.menu) {
+        console.error('');
+        console.error('(menu:)');
+        console.error(item.menu.trimEnd());
     }
 
     // An upload has no source to hand back: its bytes are its own URL, which is
@@ -965,6 +1002,28 @@ function run(command: string, args: string[]): string | null {
     const result = Bun.spawnSync([command, ...args], {stderr: 'ignore'});
 
     return result.success ? result.stdout.toString().trim() : null;
+}
+
+/**
+ * What the host made of the menu. Nothing in it is the same answer for two
+ * different questions, so the empty case says which one it was: an emptied menu
+ * takes the site apart on purpose, while a menu whose every entry was refused
+ * has the warnings above it saying why.
+ */
+function menuLine(entries: number, unresolved: number): string {
+    if (menu === '') {
+        return '(menu: removed, so this is no longer a site)';
+    }
+
+    if (entries === 0) {
+        return '(menu: nothing in it could be used, so this is not a site)';
+    }
+
+    const pages = entries === 1 ? '1 page' : `${entries} pages`;
+
+    return unresolved === 0
+        ? `(menu: ${pages})`
+        : `(menu: ${pages}, ${unresolved} not resolving yet)`;
 }
 
 function readText(path: string): string {

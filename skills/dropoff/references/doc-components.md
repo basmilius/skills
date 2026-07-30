@@ -48,6 +48,11 @@ extra colon on the wrapper:
 :::
 ```
 
+Cards link one page to another from inside the text. To give a whole set of
+pages one menu instead, shown beside every doc in it, see
+`references/site-menu.md`: that is a `--menu` file rather than a component, so
+nothing about it goes in the markdown.
+
 ## Embedded diagram
 
 Shows a published diagram inside the doc, in an interactive frame with a link to

@@ -113,6 +113,7 @@ out when you are not certain.
 | `--path` | no | Publish onto an existing page, named by its link in any shape |
 | `--new` | no | Force a fresh URL even when the title was published before |
 | `--model` | no | The model identifier you run as, shown quietly in the page footer |
+| `--menu` | no | Doc only. Makes this doc the index of a mini site; `--menu ""` takes the site apart (Pro) |
 | `--live` | no | Publish a page readers follow, or with `--path`, push an update to one (Pro) |
 | `--done` | no | Close a live page's session; names the page with `--path` |
 | `--check` | no | Check a diagram's spacing and stop; publishes nothing |
@@ -163,6 +164,49 @@ overwrites the page's type, so publishing a code snippet onto a doc's link turns
 it into a code page, and the expiry is recomputed from scratch, so republishing
 pushes an expiring page further out.
 
+### Making a mini site
+
+Several pages that belong together can share one menu, shown as a column beside
+every doc in it. One doc is the index: whichever one you pass `--menu` to, which
+points at a file holding the menu. Give the site a front page of its own rather
+than promoting one of the content pages to index, unless the user asked for one
+of them to be the front.
+
+Publish the pages first and keep the codes the script prints, then publish the
+index with the menu naming them:
+
+```bash
+bun ~/.claude/skills/dropoff/dropoff.ts --type doc --title "Installation" --file install.md
+bun ~/.claude/skills/dropoff/dropoff.ts --type doc --title "Configuration" --file config.md
+bun ~/.claude/skills/dropoff/dropoff.ts --type doc --title "Deploy guide" --file index.md --menu menu.md
+```
+
+The menu is a nested list of ordinary markdown links, two levels at most; the
+full grammar is in `references/site-menu.md`. The index's own `/p/<code>` is the
+site's front page, and it is a normal doc: write it as one.
+
+- **Only docs carry the menu.** A code, table, diff, diagram or file entry is a
+  link out of the site, and the reader lands on a page without the column. Say so
+  if the user expects otherwise.
+- **A page belongs to one site.** A second menu that names it is warned about,
+  the page stays where it was, and the entry is left out of the new menu
+  altogether rather than shown greyed out. Take it out of the first menu before
+  adding it to the second. For the same reason a doc that
+  is already in someone's menu cannot become an index itself: that is refused
+  with a 409, and nothing is published.
+- **Do not list the index in its own menu.** The menu already opens with it, and
+  on a first publish its link does not exist yet.
+- **Changing the menu** means publishing the index again with a new `--menu`.
+  Republishing without `--menu` at all keeps the menu untouched, so ordinary
+  updates to the index need not repeat it. `--menu ""` takes the site apart and
+  leaves the pages as ordinary ones.
+- **An entry naming a page that does not exist yet** comes back as a warning and
+  renders greyed out. It starts working once that page exists and the menu is
+  published again, so publishing the menu first and filling it in later is fine.
+- **Mini sites are a paid feature.** A host that refuses answers
+  `sites_not_available`, and the doc is not published. Relay that; do not retry
+  without the menu unless the user asks.
+
 ### Tags
 
 Tags are what make something findable again. The script adds one for the
@@ -199,7 +243,8 @@ bun ~/.claude/skills/dropoff/dropoff.ts --read https://dropoff.sh/p/4hydssmk2nq
 That is the source a republish should start from, so a page gets continued rather
 than rewritten from memory. A live page says so among its metadata, which is
 worth noticing before publishing over it: somebody has it open, and the session
-is still somebody's to close.
+is still somebody's to close. The index of a mini site prints its menu among that
+metadata too, which is what a change to the menu starts from.
 
 It reaches every type, a diagram's template and a table's CSV included, and
 unwraps what the host stores around them. Only an upload has nothing to hand
