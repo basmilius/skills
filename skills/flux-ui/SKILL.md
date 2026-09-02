@@ -42,9 +42,11 @@ mixed libraries: stop and use the `Flux`-prefixed Vue component.
 Full install, Vite preset, FluxRoot, icons and tokens: `references/conventions.md`.
 The traps worth knowing up front:
 
-- **Vue 3.6 beta peer.** Flux 3.x needs `vue@^3.6.0-beta.13`, NOT `vue@latest`
-  (3.5.x fails the peer). Install Flux and `@basmilius/vite-preset` with the
-  `@latest` dist-tag, not a guessed caret range.
+- **Vue 3.6 pre-release peer.** Flux 3.x does not accept `vue@latest` (3.5.x fails
+  the peer). The accepted range moves as 3.6 approaches stable, so read it from the
+  package itself (`npm view @flux-ui/components peerDependencies`) instead of a
+  build named here. Install Flux and `@basmilius/vite-preset` with the `@latest`
+  dist-tag, not a guessed caret range.
 - **One Vite plugin per Flux package** (`flux()`, `fluxApplication()`,
   `fluxStatistics()`). A missing plugin resolves that package to dist with unimported
   CSS, giving an **unstyled shell / charts**.

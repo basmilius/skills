@@ -18,9 +18,10 @@ bun add @flux-ui/components@latest sass-embedded @basmilius/vite-preset@latest
 
 **Peer dependencies** (not bundled; missing ones fail the build or make charts throw):
 
-- **`vue`** → Flux 3.x requires **Vue 3.6**, currently in **beta**. Install
-  `vue@^3.6.0-beta.13` (or newer beta); **`vue@latest` (3.5.x) does NOT satisfy the
-  peer** and mis-resolves.
+- **`vue`** → Flux 3.x requires a **Vue 3.6 pre-release**. The exact range moves as
+  3.6 approaches stable, so take it from `npm view @flux-ui/components
+  peerDependencies` rather than a build pinned here; **`vue@latest` (3.5.x) does NOT
+  satisfy the peer** and mis-resolves.
 - `@flux-ui/components` → **`luxon`** (dates; TS: add `@types/luxon`).
 - `@flux-ui/application` → **`luxon`** and **`vue-router`** (the shell is route-driven).
 - `@flux-ui/statistics` → **`echarts`**, **`lodash-es`**, and **`vue-i18n`** (must be
