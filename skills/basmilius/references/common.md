@@ -9,9 +9,9 @@ Vue Router and Pinia, and unlocks its data composables when
 root. Full catalogs live in `common-reference.md`; worked code in
 `common-patterns.md`.
 
-**Versions (package.json is the source of truth):** `pinia@^4`,
-`vue-router@^5`, `vue@^3.6.0-beta`. The docs' `installation.md` still says
-pinia 3 / vue-router 4; ignore that.
+**Versions (package.json is the source of truth):** `pinia@^4`, `vue-router@^5`,
+and a Vue 3.6 pre-release whose exact range you read from the package. The docs'
+`installation.md` still says pinia 3 / vue-router 4; ignore that.
 
 ## 1. Stores: `defineStore` returns refs
 

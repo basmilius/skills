@@ -26,8 +26,8 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
   production build, add the `dtoNames()` plugin from `@basmilius/http-client/vite`
   to `vite.config.ts`. DTO rehydration is keyed by class name, which minifiers
   rename. See `http-client-patterns.md`.
-- **Peers:** `vue@^3.6.0-beta`, `luxon`. (`vite` is an optional peer, only for the
-  plugin.)
+- **Peers:** a Vue 3.6 pre-release (range per the package), `luxon`. (`vite` is an
+  optional peer, only for the plugin.)
 
 ## 2. DTOs (`@dto`)
 

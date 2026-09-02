@@ -35,9 +35,10 @@ guide in `references/`:
    `useDtoForm`, a large composable catalog and thin `vue-router` wrappers.
    Assumes Pinia and Vue Router, builds on both packages above.
 
-Shared assumptions: `vue@^3.6.0-beta` where Vue is involved, `luxon` as a peer
-for dates. `@flux-ui/*` is a separate library with its own skill (`flux-ui`);
-`@basmilius/vite-preset` is deliberately not covered.
+Shared assumptions: a Vue 3.6 pre-release where Vue is involved (exact range per
+the package's `peerDependencies`), `luxon` as a peer for dates. `@flux-ui/*` is a
+separate library with its own skill (`flux-ui`); `@basmilius/vite-preset` is
+deliberately not covered.
 
 ## Routing: read the package guide before writing code
 
