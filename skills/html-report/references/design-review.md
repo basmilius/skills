@@ -40,6 +40,7 @@ looks correct.
 | Thin icon beside heavy text | Match stroke weight to the text role |
 | Separate colored assets per icon state | Use inline SVG with `currentColor` and CSS states |
 | Filled icons compete with the content | Use outlines by default, fill for meaningful active state |
+| Hardcoded color unreadable in one color scheme | Use the template tokens; add a new token to both schemes |
 | Every hover or keystroke starts an entrance | Use immediate feedback or a minimal color/opacity change |
 
 ## Findings

@@ -26,13 +26,27 @@ suits a home or environment project; blue can suit a technical service. These ar
 examples, not domain rules. Make the choice without a color research phase or a
 mandatory question. A sentence in the handoff is enough to explain it.
 
-Set `--accent` in the template to a dark, readable version of that color. The page,
-panels, text, borders, diagram strokes and focus ring derive from it. The green
-starter uses `#236746`; `#285e91` is a blue alternative. Keep success, warning and
-error tokens independent so project color never changes their meaning. Check text
-contrast after changing colors; aim for 4.5:1 for ordinary text and 3:1 for large
-text and meaningful graphic strokes. Do not copy a bright logo color directly
-into small text.
+Set `--brand` in the template to a dark, readable version of that color. `--accent`
+and the page, panels, text, borders, diagram strokes and focus ring derive from it.
+The green starter uses `#236746`; `#285e91` is a blue alternative. Keep success,
+warning and error tokens independent so project color never changes their meaning.
+Check text contrast after changing colors; aim for 4.5:1 for ordinary text and 3:1
+for large text and meaningful graphic strokes. Do not copy a bright logo color
+directly into small text.
+
+## Light and dark mode
+
+The template follows `prefers-color-scheme`. A `screen` media block overrides the
+color tokens for dark mode. It derives `--accent` from `--brand` at a fixed OKLCH
+lightness with a little extra chroma, which keeps contrast steady for any hue.
+It also swaps the neutrals, reference color and shadows for dark versions and
+uses separate semantic colors. Print always uses the light tokens. Check contrast
+in both schemes; when the derived dark accent clashes with the brand, replace its
+`oklch()` with a hand-picked color.
+
+Style new elements with the tokens only. A hardcoded `#fff`, black shadow or
+light background breaks one of the two schemes. When a pattern needs a color the
+tokens lack, add a token to both `:root` and the dark block.
 
 ## Compose the report
 
@@ -84,8 +98,8 @@ the report rather than adding every pattern to every document.
 2. Align icons optically when geometric centering looks wrong. Try 2px less
    padding on the icon side of a button; prefer a shared SVG correction for
    asymmetric glyphs.
-3. Use borders for section separation, table structure and state. Use layered
-   transparent shadows for controls or panels that need elevation.
+3. Use borders for section separation, table structure and state. Use the
+   `--shadow-border` tokens for controls or panels that need elevation.
 4. Use interruptible CSS transitions for interactive state changes. Reserve
    keyframes for an occasional sequence that runs once.
 5. When an explicitly requested presentation sequence helps explain hierarchy,
@@ -101,8 +115,8 @@ the report rather than adding every pattern to every document.
    outputs. Keep units and rounding consistent.
 10. Balance headings and use natural paragraph wrapping. Use `pretty` for short
     and medium prose, and normal wrapping for long excerpts and evidence.
-11. Give images a subtle 1px pure-black outline on light backgrounds, or pure
-    white in an explicitly requested dark report. Never tint it with the accent.
+11. Give images a subtle 1px pure-black outline in light mode and pure white in
+    dark mode through `--image-outline`. Never tint it with the accent.
 12. Use a subtle 0.96 scale for button presses; never go below 0.95. Allow
     `data-static` to disable it when movement distracts or affects dragging.
 13. Keep initial report content visible and still. Put initial control states in
@@ -139,7 +153,7 @@ Use descriptive alt text, captions, table headers and labels. Match the document
 language and translate navigation and accessibility labels with it.
 
 Check local links and anchors, placeholder removal, keyboard access, a narrow
-viewport and print output. Disclosures containing evidence start open so their
+viewport, light and dark mode and print output. Disclosures containing evidence start open so their
 contents remain available without JavaScript and in print. Interactive examples
 need meaningful initial values and a written explanation when scripts are off.
 Inspect a rendered report when the environment permits; report any checks that

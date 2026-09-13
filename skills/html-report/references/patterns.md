@@ -96,10 +96,17 @@ match the actual process. Leave enough width for translated labels; widen the
 viewBox or wrap SVG text explicitly when needed. The caption supplies a prose
 reading of the diagram.
 
+Give each SVG a `width` equal to its viewBox width, so 16px labels stay close to
+the body text instead of growing with the section. A `.diagram` shrinks on narrow
+screens. Add `.plot` inside a scrollable `.table` wrapper when shrinking would make
+the labels too small; the SVG then keeps its width and scrolls, and only shrinks
+in print. Use `.label` for secondary text such as
+edge labels, and `.reference` for a baseline shape next to an accent `.series`.
+
 ```html
 <figure class="panel">
   <div class="table" role="region" aria-label="{{DIAGRAM_SCROLL_LABEL}}" tabindex="0">
-    <svg class="diagram plot" viewBox="0 0 720 160" role="img" aria-labelledby="flow-title flow-description">
+    <svg class="diagram plot" width="720" viewBox="0 0 720 160" role="img" aria-labelledby="flow-title flow-description">
       <title id="flow-title">{{DIAGRAM_TITLE}}</title>
       <desc id="flow-description">{{FLOW_DESCRIPTION}}</desc>
       <defs><marker id="flow-arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path class="arrow" d="M0 0 L8 4 L0 8 Z"/></marker></defs>
@@ -126,7 +133,7 @@ conditions in the caption; a chart is not evidence by itself.
 ```html
 <figure class="panel">
   <div class="table" role="region" aria-label="Example chart" tabindex="0">
-    <svg class="diagram plot" viewBox="0 0 560 240" role="img" aria-labelledby="plot-title plot-description">
+    <svg class="diagram plot" width="560" viewBox="0 0 560 240" role="img" aria-labelledby="plot-title plot-description">
       <title id="plot-title">Demonstration values</title>
       <desc id="plot-description">Illustrative values, not measurements. A is 20 units and B is 35 units on a scale from 0 to 40.</desc>
       <path class="grid" d="M65 35 H520 M65 110 H520"/>

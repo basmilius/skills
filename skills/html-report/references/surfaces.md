@@ -60,40 +60,27 @@ Keep borders that separate report sections, table rows and evidence, or indicate
 focus and selection. Use soft layered shadows when an element needs elevation,
 such as a floating control or an elevated download button.
 
+The template defines `--shadow-border` and `--shadow-border-hover` for both color
+schemes. In light mode the first shadow supplies a ring, the second a small lift
+and the third ambient depth. In dark mode a white ring replaces them, because dark
+shadows barely show on a dark page.
+
 ```css
-:root {
-  --shadow-border:
-    0 0 0 1px rgb(0 0 0 / 6%),
-    0 1px 2px -1px rgb(0 0 0 / 6%),
-    0 2px 4px rgb(0 0 0 / 4%);
-  --shadow-border-hover:
-    0 0 0 1px rgb(0 0 0 / 8%),
-    0 1px 2px -1px rgb(0 0 0 / 8%),
-    0 2px 4px rgb(0 0 0 / 6%);
-}
-
 .elevated-control {
+  border: 0;
   box-shadow: var(--shadow-border);
-  transition: box-shadow 150ms ease-out;
+  transition: background-color 120ms ease, scale 120ms ease, box-shadow 150ms ease-out;
 }
 
-.elevated-control:hover {
+.elevated-control:hover:not(:disabled) {
   box-shadow: var(--shadow-border-hover);
 }
 ```
 
-The first shadow supplies a ring, the second a small lift, and the third ambient
-depth. Avoid adding hover elevation to static cards that have no action.
-
-If the user requests a dark report, a white ring can define elevation more
-clearly than dark shadows. Connect the rule to the report's actual theme state.
-
-```css
-[data-theme="dark"] {
-  --shadow-border: 0 0 0 1px rgb(255 255 255 / 8%);
-  --shadow-border-hover: 0 0 0 1px rgb(255 255 255 / 13%);
-}
-```
+The ring replaces the template's button border, so remove the border to avoid a
+double edge. A `transition` declaration replaces the button's own transitions;
+repeat them next to `box-shadow`. Avoid adding hover elevation to static cards
+that have no action.
 
 | Element | Treatment |
 | --- | --- |
@@ -105,17 +92,15 @@ clearly than dark shadows. Connect the rule to the report's actual theme state.
 ## Image outlines
 
 Give screenshots and images a subtle 1px inset outline. Use pure black in light
-reports and pure white in dark reports. Keep the outline independent of the
-project accent, ink and tinted neutral palette.
+mode and pure white in dark mode. Keep the outline independent of the project
+accent, ink and tinted neutral palette.
+
+The template sets `--image-outline` for both color schemes.
 
 ```css
 figure img {
-  outline: 1px solid rgb(0 0 0 / 10%);
+  outline: 1px solid var(--image-outline);
   outline-offset: -1px;
-}
-
-[data-theme="dark"] figure img {
-  outline-color: rgb(255 255 255 / 10%);
 }
 ```
 
