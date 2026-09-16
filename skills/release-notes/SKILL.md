@@ -84,7 +84,47 @@ files/endpoints/components are likely breaking, and renamed/removed props,
 params or response fields are breaking; inspect with
 `git -C <dir> diff <base>..origin/main -- <file>`.
 
-## 3. Classify
+## 3. Fold follow-ups on work introduced in this range
+
+Release notes describe the state at `origin/main` relative to the state at
+`<base>`, not the commit history. A feature added after `<base>` and then
+tuned, fixed or restyled before release is still just that feature: the reader
+never saw it behave differently, so those follow-up commits are **not** fixes,
+performance work or style changes. Fold them before classifying.
+
+Detect what already existed at the base, then check which files each commit
+touches:
+
+```bash
+git -C <dir> ls-tree -r --name-only <base> > /tmp/base-files
+git -C <dir> log --name-only --format='@@%h %s' <base>..origin/main
+```
+
+For every `fix`, `perf`, `style` or `refactor` commit:
+
+- All touched files absent from `base-files` (or the entry carries the same
+  `(scope)` as a `feat` in this range and that scope did not exist at the
+  base): the commit only touches new work. **Drop it silently.** If it changes
+  what the feature does, the feature's line describes the final behaviour.
+- Some touched files existed at the base: keep only the part that affects
+  pre-existing behaviour as a separate entry; inspect the diff to split it.
+- Unsure whether a commit touches pre-existing behaviour: read the diff
+  (`git -C <dir> show <hash>`), do not guess.
+
+Also apply the same "final state" reading to features themselves:
+
+- A feature (or component/module/file) added and removed again within the range
+  is omitted entirely.
+- A feature added and then renamed within the range is listed once, under its
+  final name.
+- A `!` marker or `BREAKING CHANGE:` footer on something that did not exist at
+  the base is not breaking; treat the entry as part of the new feature.
+- A fix to a feature that **did** exist at the base stays a fix, even when that
+  feature was also extended in this range.
+
+Keep a count of folded commits per feature for step 5.
+
+## 4. Classify
 
 Assume **Conventional Commits**. A squashed subject often concatenates several
 `type(scope): ...` entries on one line: split them first, then **dedupe**
@@ -93,7 +133,7 @@ identical entries across commits. Map each entry to a section:
 | Signal | Section |
 |---|---|
 | `!` after type (`feat!:`, `fix!:`), a `BREAKING CHANGE:` footer, a deleted exported/component file, or a removed/renamed public API, prop, param or response field | **⚠️ Breaking changes** |
-| An added component/module/public file/package | **✨ New components** (noun adapts, see step 4) |
+| An added component/module/public file/package | **✨ New components** (noun adapts, see step 5) |
 | `feat(scope): ...` adding features, props, slots, methods, behaviour | **🚀 Features** (grouped by scope/area) |
 | Any entry about a11y (accessibility, aria, role, keyboard, focus, roving tabindex, screen reader) | **♿ Accessibility** |
 | `fix: ...` | **🐛 Fixes** |
@@ -112,7 +152,7 @@ Rules:
 - A project may add or rename domain sections (e.g. **📊 Statistics**) via its
   `## Releasing` notes; use those and drop generic sections that do not fit.
 
-## 4. Render
+## 5. Render
 
 Output **one fenced ` ```markdown ` code block** (copy-pasteable), in
 **English**, using only the sections that have content, in this order:
@@ -175,9 +215,11 @@ Output **one fenced ` ```markdown ` code block** (copy-pasteable), in
   that already exists, use that tag instead of `origin/main`. Drop the
   pre-release banner and the breaking-changes mention when they do not apply.
 
-## 5. After the block
+## 6. After the block
 
-Below the code block, add 2 to 4 short bullets in the user's language: the
+Below the code block, add 2 to 5 short bullets in the user's language: the
 resolved range (`<base> -> origin/main` for `<slug>`), the most important
-breaking changes, whether a11y items were summarised or listed per component,
-and an offer to expand any section. Do **not** create the release.
+breaking changes, how many follow-up commits were folded into which features
+(step 3, so the user can verify), whether a11y items were summarised or listed
+per component, and an offer to expand any section. Do **not** create the
+release.

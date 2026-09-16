@@ -130,7 +130,7 @@ If the check fails, **stop** and show the output.
 
 ## 4. Generate the release notes
 
-Follow the **release-notes** skill, steps 2 to 4 (gather, classify, render), for
+Follow the **release-notes** skill, steps 2 to 5 (gather, fold, classify, render), for
 `<dir>` / `<slug>`; its emoji house format is mandatory here too. Read
 `../release-notes/SKILL.md` first if it is not in context. Release-specific
 settings:
@@ -202,5 +202,5 @@ that.
 A consuming project's `CLAUDE.md` / `AGENTS.md` may override detection with a
 `## Releasing` section. Recognised hints: the build/test check command (step 3),
 a candidate-repo filter for workspace mode (step 0), extra or renamed changelog
-sections (release-notes step 3), a one-line description of what CI publishes
+sections (release-notes step 4), a one-line description of what CI publishes
 (step 7), and the default branch if not `main`.
