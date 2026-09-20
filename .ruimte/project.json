@@ -1,0 +1,26 @@
+{
+  "version": 3,
+  "name": "Skills",
+  "color": "#7c74ff",
+  "icon": {"kind":"lucide","value":"zap"},
+  "views": [
+    {"id":"view-x9p1a8m9","name":"Lees mij","titleSource":"user","icon":{"kind":"lucide","value":"compass"},"kind":"file","path":"README.md"},
+    {"kind":"separator","id":"separator-0h934htk"},
+    {"kind":"subheader","id":"subheader-pq0esfp2","name":"Werk"},
+    {"id":"chat-8fkayhp7","name":"Algemeen","titleSource":"user","icon":{"kind":"lucide","value":"box"},"kind":"chat","node":{"provider":"claude","providerFixed":true}},
+    {"id":"terminal-80qiulh7","name":"Terminal","titleSource":"user","kind":"terminal","node":{}},
+    {
+      "id": "view-67p1s8ou",
+      "name": "Canvas",
+      "kind": "canvas",
+      "nodes": [
+        {"id":"terminal-z9g560z9","kind":"terminal","title":"Claude Code","x":1920,"y":-264,"w":568,"h":368,"provider":"claude"}
+      ],
+      "texts": [
+        {"id":"text-3jw29sdo","x":1920,"y":-304,"text":"Claude is nice","size":20,"font":"hand","bold":true,"italic":false,"underline":false,"strikethrough":false,"align":"left"}
+      ],
+      "edges": [],
+      "layouts": []
+    }
+  ]
+}
