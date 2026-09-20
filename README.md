@@ -49,6 +49,7 @@ See [vercel-labs/skills](https://github.com/vercel-labs/skills) and
 | [`dropoff`](skills/dropoff/SKILL.md) | Publish a markdown doc, a diagram, a code snippet, a sortable table, a single-file diff or a small file from the terminal to your own host, tagged so it can be found back, and lay the diagram out so its connectors actually line up. Reads a published page back and republishes over it, so a plan or a review stays current instead of going stale. Host and token come from configuration. |
 | [`release`](skills/release/SKILL.md) | Cut a GitHub release from a bump keyword (`major`/`minor`/`patch`/`stable`, optionally `beta`) and let CI publish; works on a single repo or a sibling-repo workspace. |
 | [`release-notes`](skills/release-notes/SKILL.md) | Generate a copy-pasteable changelog by diffing a base tag against `origin/main`; read-only, creates nothing. |
+| [`review-threads`](skills/review-threads/SKILL.md) | Working through the open review comments on a pull request: gathering every unresolved thread, judging which ones deserve a change, replying as Claude in the language of each comment, and resolving what is settled. Replies only by default, writes and commits the fixes with `fix`, and everything remote waits behind one confirmation gate. |
 | [`unslop`](skills/unslop/SKILL.md) | Editing prose so it stops reading as AI generated: the tells to cut (puffery, "not just X but Y", em dashes, rule of three, hedging, abstract metaphor nouns) and the voice to put back. |
 | [`code-comments`](skills/code-comments/SKILL.md) | Keeping comments and doc blocks worth reading: the test a comment has to pass, the ones to delete (restating the code, listing fields, copied boilerplate, a comment that drifted off its line), cutting a long one down, and what belongs in a doc block. |
 | [`html-report`](skills/html-report/SKILL.md) | Standalone HTML reports with a calm editorial layout, a project-specific accent color, automatic dark mode and optional evidence, comparisons, charts and action plans. |
@@ -58,8 +59,10 @@ uses Flux. The `basmilius` skill covers the `@basmilius/*` sibling libraries
 with a guide per package. The `release` and `release-notes`
 skills are project-neutral: they
 auto-detect the repo, build check and CI, and read optional overrides from a
-`## Releasing` section in the project's `CLAUDE.md` / `AGENTS.md`. `unslop`
-covers writing rather than code, so it applies to any prose the agent produces:
+`## Releasing` section in the project's `CLAUDE.md` / `AGENTS.md`.
+`review-threads` is GitHub specific: it answers and resolves review threads, and
+with `fix` it also writes and commits the changes those threads ask for. `unslop` covers
+writing rather than code, so it applies to any prose the agent produces:
 docs, release notes, commit bodies and UI copy. `code-comments` is its counterpart
 inside the code and is language-neutral, so it applies to every file the agent
 touches.
