@@ -9,6 +9,7 @@ description: >-
   email or announcement. Use also when asked to write, rewrite, tighten, shorten
   or "make this sound less AI", when reviewing someone else's draft, and when
   another skill hands back text for delivery. Not for code or command output.
+license: MIT
 ---
 
 # Unslop
@@ -55,7 +56,7 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 
 ### Style
 
-13. **Em dash overuse.** Avoid em dashes entirely. Use periods or commas only (no parentheses, no en dashes, no hyphen-as-dash substitutes). Em dashes are an AI tell, and reaching for parentheses instead just trades one tell for another. If a thought needs separation, end the sentence or use a comma.
+13. **Em dash overuse.** Avoid em dashes and en dashes entirely, and do not stand a hyphen in for one. If a thought needs separation, end the sentence or use a comma. Parentheses are fine for a genuine aside, but turning every dash into a bracketed clause trades one tell for another.
 14. **Colon overuse.** Colons are fine before a list or example. Not as mid-sentence connectors. "If you're coming from traditional automation: instead of registering event handlers, you describe conditions" adds nothing with the colon. Rewrite to let the point stand on its own without comparison framing. "Describing when the scheduler should fire works best as plain English." Same meaning, no crutch punctuation.
 15. **Boldface overuse.** Don't bold every proper noun or acronym.
 16. **Inline-header lists.** The tell is a bold label and colon that restates the line: "**Performance:** Performance improved...". Convert those to prose. A bold lead-in that ends in a period, names the item, and is followed by genuinely new detail ("**Schema in TypeScript.** Tables live in one file.") is fine, not a tell.
@@ -87,3 +88,9 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 30. **Cut adverbs, or use a stronger verb.** "runs quickly" becomes "is fast" or the number. "significantly improves" becomes the measured delta. An adverb propping up a weak verb means the verb is wrong.
 31. **Prefer the plain word.** "utilize" becomes "use", "leverage" becomes "use", "facilitate" becomes "help", "numerous" becomes "many", "in the event that" becomes "if". The fancier synonym is rarely clearer.
 
+## Related skills
+
+- **`code-comments`** - the same instinct inside the code: cut the comment that
+  restates the line, keep the reason.
+- The repo's **`CLAUDE.md` / `AGENTS.md`** - project rules on language, tone and
+  terminology, which override the defaults here.

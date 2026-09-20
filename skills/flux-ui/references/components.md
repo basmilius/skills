@@ -110,5 +110,5 @@ when applying). Worked skeleton: `references/patterns.md` §3.
 
 ## Expand / collapse
 
-`FluxExpandable` (+ `FluxExpandableGroup` for accordion behaviour;
+`FluxExpandable` (+ `FluxExpandableGroup` for accordion behavior;
 `useExpandableGroupInjection` for custom triggers).

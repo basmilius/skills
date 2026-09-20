@@ -224,7 +224,7 @@ function resolveSides(connection: FlowConnection, from: FlowNode, to: FlowNode, 
 /**
  * The clear space a connector needs. Without a badge that is only the markers and
  * a stretch of line. With one it is what the badge punches out of the middle plus
- * the room around it, and a labelled connector never goes below what Flow's own
+ * the room around it, and a labeled connector never goes below what Flow's own
  * layout leaves for one, however short the label.
  */
 function requiredGap(connection: FlowConnection, badge: number | null, vertical: boolean): number {
@@ -238,7 +238,7 @@ function requiredGap(connection: FlowConnection, badge: number | null, vertical:
 }
 
 // How much of the line the badge covers, or null when there is no badge at all. A
-// labelled badge is one line tall whichever way the connector runs, but as wide as
+// labeled badge is one line tall whichever way the connector runs, but as wide as
 // its text, so a long label pushes two columns further apart; an icon beside that
 // label widens it again. A bare icon is square and asks for the same on both axes.
 function badgeSize(connection: FlowConnection, vertical: boolean): number | null {
@@ -297,7 +297,7 @@ function shape(node: FlowNode): string {
 // found back in the template.
 function describe(connection: FlowConnection): string {
     if (connection.label) {
-        return `a connector labelled "${connection.label}"`;
+        return `a connector labeled "${connection.label}"`;
     }
 
     return connection.icon ? `a connector carrying the icon "${connection.icon}"` : 'a connector';
@@ -349,7 +349,7 @@ function readAxis(source: string): boolean | null {
 }
 
 // Mirrors `autoSides` in Flow: without explicit sides, a connection runs along
-// whichever axis separates the two centres most.
+// whichever axis separates the two centers most.
 function isVertical(from: FlowNode, to: FlowNode): boolean {
     const dx = (to.x + to.width / 2) - (from.x + from.width / 2);
     const dy = (to.y + to.height / 2) - (from.y + from.height / 2);

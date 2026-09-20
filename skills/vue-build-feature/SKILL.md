@@ -10,6 +10,7 @@ description: >-
   `.vue` into smaller components, adding a data model/service, and wiring a
   router route. Single component's internals: `vue-component-anatomy`; Flux UI
   library: `flux-ui`.
+license: MIT
 ---
 
 # Vue build feature

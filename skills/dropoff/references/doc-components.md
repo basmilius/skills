@@ -1,6 +1,6 @@
 # Doc components
 
-On top of GitHub-flavoured markdown a doc may use the components below. Three
+On top of GitHub-flavored markdown a doc may use the components below. Three
 rules make all of them work: a block component always closes with `::`, props
 are always double-quoted, and an internal target is a path rather than a URL.
 Derive that path from the URL the script printed, dropping the scheme and domain
@@ -9,8 +9,8 @@ since the code is what resolves it. On GitHub or in a raw view these degrade to
 visible marker lines with the target still readable.
 
 A `color` prop, wherever one appears, takes one of the six names listed with the
-badge below and never a hex value or a CSS colour: the account's own palette
-decides what those names look like, and a literal colour would sit outside it and
+badge below and never a hex value or a CSS color: the account's own palette
+decides what those names look like, and a literal color would sit outside it and
 break the moment a reader opens the page in the other theme.
 
 Inline markdown works inside a component's body, so bold, links and code spans
@@ -268,7 +268,7 @@ const x = 1;
 ```
 ````
 
-A **code group** turns consecutive fences into tabs, labelled by their titles:
+A **code group** turns consecutive fences into tabs, labeled by their titles:
 
 ````markdown
 :::code-group

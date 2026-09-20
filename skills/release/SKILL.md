@@ -20,7 +20,7 @@ license: MIT
 
 Cut a GitHub release from a bump keyword (`major` / `minor` / `patch`, optionally
 `beta`, or `stable`), with an explicit version number as escape hatch. Nothing is
-hardcoded: repo, build command and CI behaviour are detected, with optional
+hardcoded: repo, build command and CI behavior are detected, with optional
 overrides in a `## Releasing` section of the project's `CLAUDE.md` / `AGENTS.md`
 (see the end of this file). Ask the user only when detection is ambiguous.
 
@@ -163,7 +163,7 @@ Two deviations from release-notes' rendering step:
 
 Show the generated changelog (inside a ```` ```markdown ```` block) and state the
 plan in one line: **repo**, **version**, **pre-release or stable**, **target SHA
-(short)**, and the labelled **base** (e.g. `base: 1.4.0-beta.5 (previous beta)`).
+(short)**, and the labeled **base** (e.g. `base: 1.4.0-beta.5 (previous beta)`).
 
 Then ask for explicit confirmation. Do **not** run `gh release create` until the
 user clearly approves ("yes", "ja", "ship it"). Edits requested -> revise the
@@ -200,7 +200,7 @@ that.
 ## Optional `## Releasing` overrides
 
 A consuming project's `CLAUDE.md` / `AGENTS.md` may override detection with a
-`## Releasing` section. Recognised hints: the build/test check command (step 3),
+`## Releasing` section. Recognized hints: the build/test check command (step 3),
 a candidate-repo filter for workspace mode (step 0), extra or renamed changelog
 sections (release-notes step 4), a one-line description of what CI publishes
 (step 7), and the default branch if not `main`.

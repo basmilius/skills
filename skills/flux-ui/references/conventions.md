@@ -297,4 +297,4 @@ The guide's Patterns section shows idiomatic end-to-end wiring:
 - Filterable data table - `https://flux-ui.dev/guide/patterns/filterable-data-table`
 - Stepper wizard - `https://flux-ui.dev/guide/patterns/stepper-wizard`
 - Programmatic dialogs - `https://flux-ui.dev/guide/patterns/programmatic-dialogs`
-  (also summarised in `references/dialogs-and-feedback.md`)
+  (also summarized in `references/dialogs-and-feedback.md`)

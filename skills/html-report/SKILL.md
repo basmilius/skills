@@ -5,6 +5,7 @@ description: >-
   project-appropriate accent color. Use for reviews, findings, status reports,
   measurement reports and action plans, or when asked to reuse this report style.
   Not for application screens or reports that require another file format.
+license: MIT
 ---
 
 # HTML report

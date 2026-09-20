@@ -253,7 +253,7 @@ if (result.expiresAt) {
 }
 
 // The host is what a page is actually tagged with: it sorts them and drops
-// anything that normalises away, so its list is the one to report.
+// anything that normalizes away, so its list is the one to report.
 const reported = result.tags ?? tags;
 
 if (reported.length > 0) {

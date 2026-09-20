@@ -1,21 +1,21 @@
 ---
 name: basmilius
 description: >-
-  Use when a project depends on a package in the `@basmilius` npm scope (by Bas
-  Milius): `@basmilius/utils` (standalone Luxon-based date, number, color,
-  download, DOM, timing, geo and PRNG helpers), `@basmilius/http-client` (the
-  typed DTO data layer) and `@basmilius/common` (Vue 3 app primitives on Pinia
-  and Vue Router). Trigger on any `@basmilius/*` import; on formatDate /
+  Use when a project imports from the `@basmilius` npm scope (by Bas
+  Milius): `@basmilius/utils` (Luxon date, number, color, download, DOM,
+  timing, geo and PRNG helpers), `@basmilius/http-client` (the typed DTO
+  data layer) and `@basmilius/common` (Vue 3 app primitives on Pinia and Vue
+  Router). Trigger on any `@basmilius/*` import; on formatDate /
   formatNumber, hexToRGB / hslToRGB, debounce / waitFor, downloadBlob,
-  mulberry32, getSeason / getMoonPhase; on `@dto` / `@adapter`, `HttpClient`,
-  `RequestBuilder`, `BaseService`, `BaseResponse`, `Paginated`, `.runAdapter`,
+  mulberry32, getSeason / getMoonPhase; on `@dto` / `@adapter`,
+  `HttpClient`, `RequestBuilder`, `BaseService`, `Paginated`, `.runAdapter`,
   `RequestError` / `ValidationError`, `serialize` / `deserialize`, the
   `dtoNames` Vite plugin; on the ref-returning `defineStore`, `useService` /
   `guarded`, `useDataTable` / `useDataReport`, `useDtoForm`, `useUrlState`,
-  `persistentRef`, its composables (useClickOutside, useHotKey, ...), router
-  helpers (useRouteParam, useNavigate, ...) and exceptions
-  (ForbiddenException, HandledException, ...). NOT for `@flux-ui/*` (see
-  `flux-ui`); `@basmilius/vite-preset` is intentionally out of scope.
+  `persistentRef`, composables (useClickOutside, useHotKey), router helpers
+  (useRouteParam, useNavigate) and exceptions (ForbiddenException,
+  HandledException). NOT for `@flux-ui/*` (see `flux-ui`);
+  `@basmilius/vite-preset` is out of scope.
 license: MIT (skill content); @basmilius/utils, @basmilius/http-client and @basmilius/common are MIT, by Bas Milius
 ---
 

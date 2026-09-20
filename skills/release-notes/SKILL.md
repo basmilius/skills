@@ -105,10 +105,10 @@ For every `fix`, `perf`, `style` or `refactor` commit:
 - All touched files absent from `base-files` (or the entry carries the same
   `(scope)` as a `feat` in this range and that scope did not exist at the
   base): the commit only touches new work. **Drop it silently.** If it changes
-  what the feature does, the feature's line describes the final behaviour.
+  what the feature does, the feature's line describes the final behavior.
 - Some touched files existed at the base: keep only the part that affects
-  pre-existing behaviour as a separate entry; inspect the diff to split it.
-- Unsure whether a commit touches pre-existing behaviour: read the diff
+  pre-existing behavior as a separate entry; inspect the diff to split it.
+- Unsure whether a commit touches pre-existing behavior: read the diff
   (`git -C <dir> show <hash>`), do not guess.
 
 Also apply the same "final state" reading to features themselves:
@@ -134,14 +134,14 @@ identical entries across commits. Map each entry to a section:
 |---|---|
 | `!` after type (`feat!:`, `fix!:`), a `BREAKING CHANGE:` footer, a deleted exported/component file, or a removed/renamed public API, prop, param or response field | **⚠️ Breaking changes** |
 | An added component/module/public file/package | **✨ New components** (noun adapts, see step 5) |
-| `feat(scope): ...` adding features, props, slots, methods, behaviour | **🚀 Features** (grouped by scope/area) |
+| `feat(scope): ...` adding features, props, slots, methods, behavior | **🚀 Features** (grouped by scope/area) |
 | Any entry about a11y (accessibility, aria, role, keyboard, focus, roving tabindex, screen reader) | **♿ Accessibility** |
 | `fix: ...` | **🐛 Fixes** |
 | `perf: ...` | **⚡ Performance** |
 | `style(...)`, styling/token/`.scss`- or `.css`-only changes | **🎨 Styles** |
 
 Rules:
-- An a11y-flavoured `feat` goes under **Accessibility**, not Features.
+- An a11y-flavored `feat` goes under **Accessibility**, not Features.
 - Omit pure docs/examples/test/CI/dep-bump churn unless user-facing. A notable
   dependency or maintenance line a repo does want goes under `## 🧹 Chores` as a
   single line, never as a bare `### Chores`.
@@ -181,7 +181,7 @@ Output **one fenced ` ```markdown ` code block** (copy-pasteable), in
 
 ## 🐛 Fixes
 
-- <fixed behaviour>, now <correct behaviour>.
+- <fixed behavior>, now <correct behavior>.
 
 ## ⚡ Performance
 
@@ -207,7 +207,7 @@ Output **one fenced ` ```markdown ` code block** (copy-pasteable), in
   repo's own emoji releases demonstrably do; rewrite each commit subject as a
   complete sentence instead of copying it verbatim (`feat(form): add ...`).
 - **Never** use em dashes or en dashes; do not separate a name from its
-  description with a dash. Use "now" for behavioural and fix entries; commas,
+  description with a dash. Use "now" for behavioral and fix entries; commas,
   parentheses or separate sentences elsewhere.
 - Do **not** mirror a previous release that lacks emoji; this template is
   authoritative, so bring such a repo up to it.
@@ -220,6 +220,13 @@ Output **one fenced ` ```markdown ` code block** (copy-pasteable), in
 Below the code block, add 2 to 5 short bullets in the user's language: the
 resolved range (`<base> -> origin/main` for `<slug>`), the most important
 breaking changes, how many follow-up commits were folded into which features
-(step 3, so the user can verify), whether a11y items were summarised or listed
+(step 3, so the user can verify), whether a11y items were summarized or listed
 per component, and an offer to expand any section. Do **not** create the
 release.
+
+## Related skills
+
+- **`release`** - cutting the actual GitHub release from a bump keyword. It
+  reuses step 0 and steps 2 to 5 of this skill for the changelog, so keep the
+  two in sync when either changes.
+- **`unslop`** - a final pass over the prose in the notes before they ship.

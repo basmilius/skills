@@ -436,7 +436,7 @@ Two LayerPane caveats:
 - Put the **`FluxPaneFooter` as a direct child of the `FluxLayerPane`** (sibling of the
   `FluxPane`), not inside it: as a direct child it loses its background/border and
   blends into the tinted layer, flush at the bottom. Inside a `FluxPane` it keeps the
-  standard grey footer chrome.
+  standard gray footer chrome.
 
 ```vue
 <FluxLayerPane>

@@ -45,7 +45,7 @@ is no config file to write.
 ## Reading the ask
 
 Publishing is usually the last clause of a longer sentence rather than the whole
-of it. "Analyse the auth flow and publish it", "zet dit online" on the end of a
+of it. "Analyze the auth flow and publish it", "zet dit online" on the end of a
 review: the work comes first and the page is what it leaves behind. So do the
 work, publish its result, and put the link at the end of the reply. Only a plan
 meant to be agreed before it is carried out gets published first, and the user
@@ -212,7 +212,7 @@ site's front page, and it is a normal doc: write it as one.
 Tags are what make something findable again. The script adds one for the
 repository it runs in; add two or three of your own with `--tags` for the
 subject or the kind of work, such as `auth`, `review` or `incident`. The host
-sorts them and drops anything that normalises away, so they come back in a
+sorts them and drops anything that normalizes away, so they come back in a
 different order than they went out, which means nothing went wrong.
 
 Replacing a page keeps the tags it had, the project tag included or excluded
@@ -265,7 +265,7 @@ moved on. Read it, do the work, and publish the result back over it with
 `--path`, which keeps the link, its date and everything the command did not
 mention, bar the expiry above.
 
-Whether to is a judgement about what the page is for. A plan, a review, a
+Whether to is a judgment about what the page is for. A plan, a review, a
 checklist, a handover, a status page: these are read for what is true now, and
 going stale is the one way they fail, so bring them up to date as soon as the
 work lands and mention that you did. A record of what happened at a point in
@@ -326,14 +326,16 @@ ordinary way, with `--path`.
 ## Writing a doc
 
 The page carries its own house style, so write none: no HTML, no inline styles,
-no headings used for visual effect, and no colours of your own. Where a component
+no headings used for visual effect, and no colors of your own. Where a component
 takes a `color` it takes one of a fixed set of names, `success` or `warning`
 rather than a hex value, and what those look like is the account's business
-rather than the document's. For the same reason, never point at a colour in the
+rather than the document's. For the same reason, never point at a color in the
 running text: a paragraph about the red box stops making sense the moment
 somebody changes the palette, and readers see the page in a light or a dark theme
 depending on what their own system asks for. Punctuate with hyphens, commas,
-colons or parentheses, never en or em dashes.
+colons or parentheses, never en or em dashes. A published page is read by
+somebody else, so give the prose the `unslop` pass before it goes up where that
+skill is available.
 
 Start the markdown at `##`, since `--title` is already rendered as the page
 heading, and give the h2 and h3 headings meaning: they become the side
@@ -342,7 +344,7 @@ the work decide which rather than the request. A repository whose code and
 comments are English gets an English page even when the ask for it came in
 another language.
 
-GitHub-flavoured markdown works throughout: tables, task lists, footnotes,
+GitHub-flavored markdown works throughout: tables, task lists, footnotes,
 strikethrough, and a code fence highlighted for every language shiki knows. On
 top of that a doc may use components: cards, an embedded diagram, callouts,
 collapsibles, progress bars, stat tiles, badges, file trees, steps, a facts
@@ -352,7 +354,7 @@ needs nothing special written into it: `- [ ]` boxes say what is left, `::steps`
 reads as the route being walked and takes a `current` to say which step is being
 worked on now, and `::progress` says how far along the whole thing is. Keep the
 shape of the document steady between updates and change only what the work
-changed, so a reader looking twice recognises the page. **Read `references/doc-components.md`
+changed, so a reader looking twice recognizes the page. **Read `references/doc-components.md`
 before writing one**; the syntax is unforgiving about closing markers and
 quoting.
 
@@ -396,7 +398,7 @@ junction. Where a connector lands is yours to get right: a junction belongs at
 the middle of the node after it, and two nodes line up only when you line them
 up. A silent check means nothing is crowded, not that the diagram reads well.
 
-The viewer opens every diagram full screen, centred, on a dotted canvas, and
+The viewer opens every diagram full screen, centered, on a dotted canvas, and
 makes it draggable and zoomable, so leave those props out. It rejects a
 component or an icon it cannot resolve, since both would render as nothing at
 all and the warning never reaches a live page.

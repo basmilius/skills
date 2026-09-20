@@ -28,7 +28,7 @@ overlay and `router.push` instead. All `show*` specs share `title` (**required**
 success `showSnackbar`. Worked code: `references/patterns.md` §4.
 
 **`showPrompt` → `Promise<string | false>`** (resolves to the string, or **`false`**
-when cancelled, not `null`). Adds `fieldLabel` (required), optional `fieldPlaceholder`
+when canceled, not `null`). Adds `fieldLabel` (required), optional `fieldPlaceholder`
 / `fieldType`. Guard with `if (name !== false)`.
 
 **`showAlert` → `Promise<void>`** for fatal errors / forced acknowledgement. Spec:

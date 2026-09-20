@@ -3,7 +3,7 @@
 Coordinates are pixels, `x` to the right and `y` down, and they address a node's
 top left corner. Nothing moves them for you, so every number here is one to plan
 rather than discover after rendering. A fraction is allowed where the arithmetic
-lands on one, so a node whose width is odd can still sit dead centre under a
+lands on one, so a node whose width is odd can still sit dead center under a
 card at `:x="75.5"`.
 
 The measurements come from reading the renderer's own geometry, not from
@@ -41,13 +41,13 @@ them lines up on nothing at all.
 | --- | --- |
 | Two stacked nodes | 60px |
 | Two stacked nodes, connection carrying an icon | 91px |
-| Two stacked nodes, labelled connection | 105px |
+| Two stacked nodes, labeled connection | 105px |
 | Two columns | 60px |
 | Two columns, connection carrying an icon | 91px |
-| Two columns, labelled connection | 210px, and more once the label is long |
+| Two columns, labeled connection | 210px, and more once the label is long |
 | Node above a titled group, to the first node inside it | 90px |
 | Into a titled group, connection carrying an icon | 194px |
-| Into a titled group, labelled connection | 202px |
+| Into a titled group, labeled connection | 202px |
 | Last node in a group, to the node below it | ~60px |
 | Two stacked groups | ~100px |
 | Above and below a junction | ~100px |
@@ -74,11 +74,11 @@ A fixed increment (0, 160, 320, ...) only happens to work while every card has
 the same height.
 
 A branch off that column works the same way, one axis at a time. Hanging a
-`delivered` terminal off the right of `check`, on a connection labelled `yes`:
+`delivered` terminal off the right of `check`, on a connection labeled `yes`:
 
 | | Arithmetic |
 | --- | --- |
-| `x` | `check` sits at 0 and is 300 wide, and a labelled sideways connection wants 210, so `0 + 300 + 210 = `**510** |
+| `x` | `check` sits at 0 and is 300 wide, and a labeled sideways connection wants 210, so `0 + 300 + 210 = `**510** |
 | `y` | the card end takes `from-align="start"`, so the terminal goes 12px below the card: `96 + 12 = `**108** |
 
 The `y` is the sideways rule below rather than a centring sum, because a card's
@@ -103,7 +103,7 @@ line with a small kink in it is the most common flaw in a hand-placed diagram.
 
 On a vertical connection keep the default `center` alignment and do the lining
 up with coordinates: both ends attach at their horizontal middle, so a narrower
-node above or below a wider one belongs at the wider one's centre,
+node above or below a wider one belongs at the wider one's center,
 `x + (wide - narrow) / 2`. Two cases come up constantly:
 
 - **A junction below a 300px card at `x`** goes at `x + 141`: the card's middle
@@ -202,7 +202,7 @@ connector and the frame starts 81px above the first node inside. The two nodes
 therefore need twice that clearance: 202px for a label, 194px for an icon, and
 90px for a plain connection, which only has to keep the node itself off the
 frame. An untitled group asks for none of it, since 21px of padding is less than
-a labelled connector already needs. Leaving a group is the same story and works
+a labeled connector already needs. Leaving a group is the same story and works
 out lower again, so the ordinary spacing covers it.
 
 ## Junctions

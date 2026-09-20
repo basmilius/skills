@@ -10,6 +10,7 @@ description: >-
   already says. Also covers the comments that always stay: todos, license
   headers, security boundaries, workarounds, and references to an external spec.
   Apply on every code change, not only when asked to clean up comments.
+license: MIT
 ---
 
 # Code comments

@@ -149,3 +149,12 @@ Never assume a prop exists: open the component's doc page (every URL is in
   and their real return types, notices and inline feedback.
 - `references/ecosystem.md` - the sibling packages `@flux-ui/application` (app shell)
   and `@flux-ui/statistics` (KPIs/charts), with their export surface.
+
+## Related skills
+
+- **`vue-component-anatomy`** - how each `.vue` file around these components is
+  built: block order, macro order, prop and emit typing.
+- **`vue-build-feature`** - splitting a feature across a view, components,
+  composables and a route; Flux supplies the components it composes.
+- **`basmilius`** - the `@basmilius/*` packages (same author, separate scope)
+  that usually sit behind a Flux UI: DTO services, stores, `useDataTable`.

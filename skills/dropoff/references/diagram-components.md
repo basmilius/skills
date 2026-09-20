@@ -41,7 +41,7 @@ A prop in **bold** is one the component will not do without.
 | `FluxFlowActionCard` | A step that does something | `title`, default slot |
 | `FluxFlowConditionCard` | A decision that branches | `title`, default slot |
 | `FluxFlowCard` | A step that fits none of the above | `title`, `subtitle`, `icon`, `color`, `active` |
-| `FluxFlowPill` | A compact labelled step | **`label`**, **`icon`**, `color` |
+| `FluxFlowPill` | A compact labeled step | **`label`**, **`icon`**, `color` |
 | `FluxFlowStep` | A numbered marker down a trunk | `value` |
 | `FluxFlowNote` | An aside explaining a step | `title`, default slot |
 | `FluxFlowGroup` | A frame around related nodes | **`nodes`**, `title`, `color`, `padding` |
@@ -93,14 +93,14 @@ different values.
 | `interactive` | Fills its container as a pannable, zoomable viewport |
 | `align` | `start` or `center`: where an interactive viewport opens horizontally |
 | `axis` | `vertical` or `horizontal`: the axis every connection leaves and enters on, unless it names a side itself |
-| `start` | Id of a node to centre the viewport on, both axes, at 100% zoom |
+| `start` | Id of a node to center the viewport on, both axes, at 100% zoom |
 
-`start` centres on both axes, so pointing it at the first node of a downward
+`start` centers on both axes, so pointing it at the first node of a downward
 flow leaves half a screen of air above it. To open at the top, use `align`.
 
-## Colours and icons
+## Colors and icons
 
-Colours are `primary`, `info`, `success`, `warning` and `danger`. Use `success`
+Colors are `primary`, `info`, `success`, `warning` and `danger`. Use `success`
 for a completed end and `danger` for a failure path, and leave the rest untinted
 so the tinted ones mean something.
 

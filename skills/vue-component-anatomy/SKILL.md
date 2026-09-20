@@ -3,14 +3,16 @@ name: vue-component-anatomy
 description: >-
   Use when writing, editing, or reviewing a single Vue 3 Single File Component
   (a `.vue` file with `<script setup lang="ts">`). Covers block order and
-  template root, the compiler-macro order (defineEmits -> defineModel ->
-  defineProps -> defineSlots, defineExpose last), the ordering inside `<script
-  setup>` (imports -> macros -> constants -> stores -> state -> composables ->
-  computed -> watch -> lifecycle -> functions), function-vs-arrow style, prop and
-  emit typing, v-model via defineModel, and scoped/module styling. Triggers on
-  editing any `.vue` file, on defineProps/defineEmits/defineModel/defineSlots, on
-  script-setup ordering questions, and on prop typing. Feature-level splitting:
+  template root, the compiler-macro order (defineOptions -> defineEmits ->
+  defineModel -> defineProps -> defineSlots, defineExpose last), the ordering
+  inside `<script setup>` (imports -> macros -> constants -> stores -> state ->
+  composables -> computed -> watch -> lifecycle -> functions),
+  function-vs-arrow style, prop and emit typing, v-model via defineModel, and
+  scoped/module styling. Triggers on editing any `.vue` file, on
+  defineProps/defineEmits/defineModel/defineSlots, on script-setup ordering
+  questions, and on prop typing. Feature-level splitting:
   `vue-build-feature`; Flux UI library: `flux-ui`.
+license: MIT
 ---
 
 # Vue component anatomy
@@ -66,7 +68,7 @@ Order the body top to bottom so state is declared before it is used:
 3. **module constants** (`ALL_CAPS`: config values, option lists, lookup maps)
 4. **stores** (`use*Store()` - shared state)
 5. **reactive state** (`ref`, `reactive`, `shallowRef`, and template refs)
-6. **composables** (`useRouter`, `useI18n`, other `use*` behaviour helpers)
+6. **composables** (`useRouter`, `useI18n`, other `use*` behavior helpers)
 7. **computed**
 8. **watch / watchEffect**
 9. **lifecycle hooks** (`onMounted`, `onUnmounted`, ...)
@@ -79,7 +81,7 @@ Order the body top to bottom so state is declared before it is used:
   make it a `computed` in step 7.
 - **Stores sit above the reactive state, composables below it.** A store is
   shared state and reads together with the component's own state; a composable
-  provides behaviour or derived data and may build on that state. Rule of thumb:
+  provides behavior or derived data and may build on that state. Rule of thumb:
   a `use*Store()` from the store layer is a store, every other `use*` call is a
   composable.
 - **Template refs use `useTemplateRef('name')`** (Vue 3.5+) and sit with the
