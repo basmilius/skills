@@ -1,0 +1,246 @@
+<title>Motion reel</title>
+<script>
+/*THEME*/
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet"><!-- PROJECT TYPE: the same families as fonts.css -->
+<style>
+:root {
+    --font-display: "Geist", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", "Geist", Roboto, sans-serif;
+    --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+}
+
+* { box-sizing: border-box; background-clip: padding-box; }
+html { background: var(--bg); scroll-padding-top: 16px; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 400 16px/1.55 var(--font-sans); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { text-wrap: balance; margin: 0; }
+p { text-wrap: pretty; margin: 0; }
+button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 6px; }
+::selection { background: rgb(21 93 252 / 0.6); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.mono { font-family: var(--font-mono); }
+
+.wrap { max-width: 1240px; margin-inline: auto; padding-inline: 16px; }
+@media (min-width: 640px) { .wrap { padding-inline: 32px; } }
+
+/* Slate: the clapperboard that opens every take on a real reel. */
+.slate { margin-top: 24px; border: 1px solid var(--border-strong); border-radius: 12px; overflow: hidden; background: var(--surface); }
+.clapper { height: 16px; background: repeating-linear-gradient(-58deg, #d6d6de 0 16px, #08080a 16px 32px); border-bottom: 1px solid var(--border-strong); }
+.slate-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(104px, 1fr)); margin: 0; }
+.slate-grid > div { padding: 10px 16px 12px; border-left: 1px solid var(--border); margin-left: -1px; border-top: 1px solid var(--border); margin-top: -1px; }
+.slate-grid dt { font: 500 12px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+.slate-grid dd { margin: 2px 0 0; font: 500 16px/1.4 var(--font-display); color: var(--text); font-variant-numeric: tabular-nums; }
+
+.intro { display: grid; gap: 16px 48px; padding-block: 48px 32px; align-items: end; }
+@media (min-width: 900px) { .intro { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); } }
+.intro h1 { font: 600 56px/1 var(--font-display); letter-spacing: -0.045em; }
+.intro p { color: var(--muted); max-width: 60ch; }
+
+.fitting-label { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; font: 500 12px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+.fitting-label::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+.hero-preview { display: grid; gap: 24px; align-items: center; padding: 32px 24px; border-block: 1px solid var(--border-strong); }
+.hero-copy h3 { font: 600 clamp(40px, 5vw, 64px)/1.05 var(--font-display); letter-spacing: -0.045em; max-width: 12ch; }
+.hero-copy p { margin-top: 24px; max-width: 35ch; font-size: 18px; color: var(--muted); }
+.hero-copy .btn { margin-top: 28px; }
+.hero-visual { position: relative; width: 100%; max-width: 540px; margin-inline: auto; aspect-ratio: 560 / 500; }
+.hero-hint { position: absolute; inset-inline: 0; bottom: 0; text-align: center; font-size: 12px; color: var(--faint); pointer-events: none; }
+@media (min-width: 900px) { .hero-preview { grid-template-columns: 1fr 1fr; padding: 48px 32px; } }
+
+.take-canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; transition: opacity 0.45s ease; }
+.take-canvas.entering { opacity: 0; }
+.take-canvas.leaving { opacity: 0; }
+[data-error]::after { content: "This take stopped: " attr(data-error); position: absolute; inset: auto 12px 12px; padding: 8px 10px; border-radius: 8px; background: var(--sunken); color: #f87171; font: 12px/1.4 var(--font-mono); }
+
+/* Credits: the lower third of the take in the fitting room. */
+.credits { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px 24px; margin-top: 16px; padding: 20px; border: 1px solid var(--border); border-radius: 16px; background: var(--surface); }
+@media (min-width: 900px) { .credits { grid-template-columns: auto minmax(0, 1fr) auto; align-items: start; padding: 24px 28px; } }
+.credits-num { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; min-width: 64px; }
+.credits-num span { font: 500 12px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+.credits-num strong { font: 600 56px/0.9 var(--font-display); letter-spacing: -0.05em; font-variant-numeric: tabular-nums; }
+.credits-body h2 { font: 600 28px/1.15 var(--font-display); letter-spacing: -0.03em; }
+.credits-body .line { margin-top: 6px; color: var(--muted); max-width: 62ch; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 0; padding: 0; list-style: none; }
+.chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--border-strong); border-radius: 999px; font-size: 13px; color: var(--text); }
+.chip::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+.tech { margin-top: 12px; font: 500 12px/1.5 var(--font-mono); letter-spacing: 0.06em; text-transform: uppercase; color: var(--faint); }
+.credits-actions { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+@media (min-width: 900px) { .credits-actions { grid-column: auto; justify-content: flex-end; } }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; padding-inline: 14px; border: 1px solid var(--border-strong); border-radius: 999px; font-size: 14px; font-weight: 500; color: var(--text); transition: background-color 0.2s, border-color 0.2s, color 0.2s; }
+.btn:hover { background: var(--hover); }
+.btn svg { width: 16px; height: 16px; flex: none; }
+.btn-icon { width: 40px; padding: 0; }
+.btn-star[aria-pressed="true"] { border-color: color-mix(in srgb, var(--amber) 55%, transparent); color: var(--amber); }
+.btn-star[aria-pressed="true"] svg { fill: currentColor; }
+.btn-group { display: inline-flex; }
+.btn-group .btn:first-child { border-top-right-radius: 0; border-bottom-right-radius: 0; }
+.btn-group .btn:last-child { border-top-left-radius: 0; border-bottom-left-radius: 0; margin-left: -1px; }
+.keys { width: 100%; font-size: 12px; color: var(--faint); text-align: right; }
+@media (max-width: 899px) { .keys { display: none; } }
+kbd { font: 500 12px/1 var(--font-mono); padding: 2px 5px; border: 1px solid var(--border-strong); border-radius: 4px; color: var(--muted); }
+
+.section { padding-block: 80px 0; }
+.section-head { display: grid; gap: 12px 48px; margin-bottom: 32px; align-items: end; }
+@media (min-width: 900px) { .section-head { grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr); } }
+.section-head h2 { font: 600 40px/1.05 var(--font-display); letter-spacing: -0.04em; }
+.section-head p { color: var(--muted); max-width: 60ch; }
+
+/* Skills: the principles as a CV lists them, each with the takes that prove it. */
+.skill-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--border); display: grid; }
+@media (min-width: 900px) { .skill-list { grid-template-columns: 1fr 1fr; column-gap: 48px; } }
+.skill-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--border); }
+.skill { display: flex; align-items: center; gap: 12px; min-height: 36px; text-align: left; border-radius: 8px; }
+.skill-name { font: 500 16px/1.3 var(--font-display); letter-spacing: -0.01em; }
+.skill:hover .skill-name { color: var(--text); }
+.skill[aria-pressed="true"] .skill-name { color: var(--text); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 2px; text-underline-offset: 5px; }
+.meter { display: inline-flex; gap: 3px; }
+.meter i { width: 6px; height: 6px; border-radius: 1px; background: var(--hover); }
+.meter i.on { background: var(--text); }
+.skill-takes { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 4px; }
+.take-chip { min-width: 32px; height: 28px; padding-inline: 6px; border-radius: 6px; border: 1px solid var(--border); font: 500 12px/26px var(--font-mono); color: var(--muted); font-variant-numeric: tabular-nums; }
+.take-chip:hover { border-color: var(--border-strong); color: var(--text); background: var(--hover); }
+
+/* The reel: a contact sheet of every take, live while it is on screen. */
+.reel-head { display: flex; flex-wrap: wrap; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 24px; }
+.reel-head h2 { font: 600 40px/1.05 var(--font-display); letter-spacing: -0.04em; }
+.reel-tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.filter-state { font-size: 14px; color: var(--muted); }
+.filter-state button { color: var(--text); text-decoration: underline; text-decoration-color: var(--border-strong); text-underline-offset: 4px; }
+.grid { display: grid; gap: 32px 20px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 560px) { .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 1000px) { .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tile { display: flex; flex-direction: column; gap: 12px; transition: opacity 0.3s; }
+.tile.dim { opacity: 0.22; }
+.tile[hidden] { display: none; }
+.tile-frame { position: relative; display: block; width: 100%; aspect-ratio: 560 / 500; border: 1px solid var(--border); border-radius: 12px; overflow: hidden; background: radial-gradient(ellipse 80% 70% at 68% 38%, rgb(21 93 252 / 0.1), rgb(21 93 252 / 0) 70%), var(--bg); background-clip: padding-box; transition: border-color 0.2s; }
+.tile-frame:hover { border-color: var(--border-strong); }
+.tile.is-current .tile-frame { border-color: color-mix(in srgb, var(--accent) 75%, transparent); }
+.tile-badge { position: absolute; top: 10px; left: 10px; z-index: 1; display: none; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 999px; background: color-mix(in srgb, var(--accent) 22%, var(--sunken)); font-size: 12px; color: var(--text); }
+.tile.is-current .tile-badge { display: inline-flex; }
+.tile-meta { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; column-gap: 10px; align-items: baseline; }
+.tile-num { font: 500 12px/1 var(--font-mono); color: var(--faint); font-variant-numeric: tabular-nums; }
+.tile-title { font: 600 20px/1.2 var(--font-display); letter-spacing: -0.02em; }
+.tile-title button { text-align: left; border-radius: 4px; }
+.tile-title button:hover { color: var(--text); }
+.tile .star { align-self: center; width: 32px; height: 32px; display: inline-flex; align-items: center; justify-content: center; border-radius: 999px; color: var(--faint); }
+.tile .star:hover { color: var(--text); background: var(--hover); }
+.tile .star[aria-pressed="true"] { color: var(--amber); }
+.tile .star[aria-pressed="true"] svg { fill: currentColor; }
+.tile .star svg { width: 16px; height: 16px; }
+.tile-line { grid-column: 2 / -1; margin-top: 6px; font-size: 14px; line-height: 1.5; color: var(--muted); }
+.tile-principles { grid-column: 2 / -1; margin-top: 8px; font-size: 13px; color: var(--text); }
+.tile-tech { grid-column: 2 / -1; margin-top: 4px; font: 500 12px/1.5 var(--font-mono); letter-spacing: 0.05em; text-transform: uppercase; color: var(--faint); }
+.empty { padding: 48px 0; color: var(--muted); }
+.roll-head { grid-column: 1 / -1; display: grid; gap: 4px 24px; padding-top: 16px; border-top: 1px solid var(--border); }
+.roll-head:first-child { border-top: 0; padding-top: 0; }
+@media (min-width: 900px) { .roll-head { grid-template-columns: auto auto minmax(0, 1fr); align-items: baseline; } }
+.roll-name { font: 500 12px/1.4 var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--faint); }
+.roll-title { font: 600 28px/1.15 var(--font-display); letter-spacing: -0.03em; }
+.roll-note { color: var(--muted); }
+.roll-head[hidden] { display: none; }
+
+.colophon { margin-top: 96px; padding-block: 32px 48px; border-top: 1px solid var(--border); display: grid; gap: 12px 48px; font-size: 14px; color: var(--muted); }
+@media (min-width: 900px) { .colophon { grid-template-columns: 1fr 1fr; } }
+.colophon strong { color: var(--text); font-weight: 500; }
+
+@media (prefers-reduced-motion: reduce) {
+    .take-canvas, .tile, .hero-hint { transition: none; }
+}
+</style>
+
+<div class="wrap">
+    <!-- SLATE and INTRO: the project, the scene, the take count, the date. -->
+    <header class="slate" aria-label="Reel slate">
+        <div class="clapper" aria-hidden="true"></div>
+        <dl class="slate-grid">
+            <div><dt>Study</dt><dd>Motion</dd></div>
+            <div><dt>Scene</dt><dd>Hero visual</dd></div>
+            <div><dt>Takes</dt><dd id="slate-takes">0</dd></div>
+            <div><dt>Rolls</dt><dd id="slate-rolls">A</dd></div>
+            <div><dt>Frame</dt><dd>560 &times; 500</dd></div>
+            <div><dt>Theme</dt><dd id="slate-theme"></dd></div>
+        </dl>
+    </header>
+
+    <section class="intro">
+        <h1>Hero reel</h1>
+        <p>Animation studies for the space beside a headline. Try each in the hero, compare the motion, and shortlist the ones you want to keep.</p>
+    </section>
+
+    <section id="fitting" aria-labelledby="fitting-title">
+        <h2 id="fitting-title" class="fitting-label">Hero preview</h2>
+        <div class="hero-preview">
+            <div class="hero-copy">
+                <h3>A little room for motion.</h3>
+                <p>A quiet space to see how an animation sits beside a headline.</p>
+                <button type="button" class="btn" id="pill">Next animation <span id="pill-count"></span></button>
+            </div>
+            <div class="hero-visual" id="stage-host">
+                <p class="sr-only" id="stage-desc"></p>
+                <div class="hero-hint" id="stage-hint"></div>
+            </div>
+        </div>
+
+        <div class="credits" aria-live="polite">
+            <div class="credits-num"><span id="c-roll">Roll A</span><span>Take</span><strong id="c-num">01</strong><span id="c-of"></span></div>
+            <div class="credits-body">
+                <h2 id="c-title"></h2>
+                <p class="line" id="c-line"></p>
+                <ul class="chips" id="c-principles"></ul>
+                <p class="tech" id="c-tech"></p>
+            </div>
+            <div class="credits-actions">
+                <button type="button" class="btn btn-star" id="c-star" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 2.8a.56.56 0 0 1 1 0l2.56 5.18a.56.56 0 0 0 .42.31l5.72.83a.56.56 0 0 1 .31.96l-4.14 4.03a.56.56 0 0 0-.16.5l.98 5.7a.56.56 0 0 1-.82.59l-5.11-2.69a.56.56 0 0 0-.52 0l-5.11 2.69a.56.56 0 0 1-.82-.6l.98-5.69a.56.56 0 0 0-.16-.5L2.5 10.08a.56.56 0 0 1 .31-.96l5.72-.83a.56.56 0 0 0 .42-.31Z"/></svg>
+                    <span id="c-star-label">Shortlist</span>
+                </button>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-icon" id="prev" aria-label="Previous take"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg></button>
+                    <button type="button" class="btn btn-icon" id="next" aria-label="Next take"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></button>
+                </div>
+                <p class="keys"><kbd>&larr;</kbd> <kbd>&rarr;</kbd> to step through</p>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" aria-labelledby="skills-title">
+        <div class="section-head">
+            <h2 id="skills-title">Skills</h2>
+            <p>The twelve principles of animation, and the takes that put each one to work. Choose a principle to filter the reel, or a number to put that take in the hero.</p>
+        </div>
+        <ol class="skill-list" id="skills"></ol>
+    </section>
+
+    <section class="section" id="reel" aria-labelledby="reel-title">
+        <div class="reel-head">
+            <h2 id="reel-title">The reel</h2>
+            <div class="reel-tools">
+                <span class="filter-state" id="filter-state"></span>
+                <button type="button" class="btn btn-star" id="only-starred" aria-pressed="false">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><path d="M11.5 2.8a.56.56 0 0 1 1 0l2.56 5.18a.56.56 0 0 0 .42.31l5.72.83a.56.56 0 0 1 .31.96l-4.14 4.03a.56.56 0 0 0-.16.5l.98 5.7a.56.56 0 0 1-.82.59l-5.11-2.69a.56.56 0 0 0-.52 0l-5.11 2.69a.56.56 0 0 1-.82-.6l.98-5.69a.56.56 0 0 0-.16-.5L2.5 10.08a.56.56 0 0 1 .31-.96l5.72-.83a.56.56 0 0 0 .42-.31Z"/></svg>
+                    <span id="only-starred-label">Shortlist only</span>
+                </button>
+                <button type="button" class="btn" id="motion" aria-pressed="true">Motion on</button>
+            </div>
+        </div>
+        <div class="grid" id="grid"></div>
+        <p class="empty" id="empty" hidden>Nothing on the shortlist yet. Star a take to keep it here.</p>
+    </section>
+
+    <footer class="colophon">
+        <p>Watch each take beside the headline for a few loops. Use the shortlist to keep your favorites, then choose one to develop further.</p>
+        <p>Every take uses the same 560 by 500 frame and selected theme. <span id="tech-count"></span> Offscreen tiles pause. Reduced motion starts with still posters.</p>
+    </footer>
+</div>
+
+<script>
+/*HARNESS*/
+</script>
+<script>
+/*PIECES*/
+</script>
+<script>
+/*APP*/
+</script>
