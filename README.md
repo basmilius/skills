@@ -53,7 +53,11 @@ See [vercel-labs/skills](https://github.com/vercel-labs/skills) and
 | [`unslop`](skills/unslop/SKILL.md) | Editing prose so it stops reading as AI generated: the tells to cut (puffery, "not just X but Y", em dashes, rule of three, hedging, abstract metaphor nouns) and the voice to put back. |
 | [`code-comments`](skills/code-comments/SKILL.md) | Keeping comments and doc blocks worth reading: the test a comment has to pass, the ones to delete (restating the code, listing fields, copied boilerplate, a comment that drifted off its line), cutting a long one down, and what belongs in a doc block. |
 | [`motion-reel`](skills/motion-reel/SKILL.md) | Canvas and WebGL animation studies, a neutral hero preview, light or dark themes, and a shared runtime for comparing takes. |
+| [`motion-film`](skills/motion-film/SKILL.md) | Product films drawn in code: story variants, timed Canvas scenes, optional synthesized scores and 1080p MP4 delivery. |
 | [`html-report`](skills/html-report/SKILL.md) | Standalone HTML reports with a calm editorial layout, a project-specific accent color, automatic dark mode and optional evidence, comparisons, charts and action plans. |
+
+The `motion-*` skills share a namespace: `motion-reel` explores animation takes and `motion-film`
+turns a product story into a finished film. They work independently; films can reuse reel takes.
 
 The two `vue-*` skills are library-neutral and pair with `flux-ui` when a project
 uses Flux. The `basmilius` skill covers the `@basmilius/*` sibling libraries

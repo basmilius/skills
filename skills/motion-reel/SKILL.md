@@ -12,6 +12,9 @@ Use the requested number of takes. For an open-ended reel, twenty is a useful de
 be two. Match the scope of the brief, including whether the subject is a product or abstract motion.
 Porting a take into a site is a separate step after the person chooses it and requests integration.
 
+The `motion-*` family also includes **motion-film** for finished product films with a timed edit,
+optional music and MP4 delivery. A film can reuse this skill's takes. Each skill works independently.
+
 ## 1. Set the subject and theme
 
 For a product brief, read the relevant README, copy, components and design tokens. Collect the product's
