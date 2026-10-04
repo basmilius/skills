@@ -1,79 +1,88 @@
-# basmilius/skills
+<a href="https://bas.dev">
+    <img src="https://bmcdn.nl/assets/branding/logo.svg" alt="Bas Milius" height="48" />
+</a>
 
-A collection of [Agent Skills](https://vercel.com/docs/agent-resources/skills) by
-[Bas Milius](https://github.com/basmilius), installable with `npx skills`.
+---
 
-Skills are portable instructions that teach an AI coding agent (Claude Code,
-Cursor, Copilot, and many others) how to do a specific kind of work well.
+# Skills
 
-## Install
+Agent skills for the work I do across my projects: Vue and PHP development, GitHub releases and reviews, documentation and publishing. Each skill gives a coding agent instructions for a specific task, with conventions, examples and supporting files where needed.
 
-Install all skills:
+Install them with the [skills CLI](https://github.com/vercel-labs/skills) for Claude Code, Codex, Cursor, Copilot and other supported agents.
 
-```bash
+## Installation
+
+Choose the skills and agents to install for your project:
+
+```sh
 npx skills add basmilius/skills
 ```
 
 Install a single skill:
 
-```bash
+```sh
 npx skills add basmilius/skills --skill vue-component-anatomy
 ```
 
-List what the repo offers without installing:
-
-```bash
-npx skills add basmilius/skills --list
-```
-
-Update what you already installed, all of them or one by name:
-
-```bash
-npx skills update
-npx skills update dropoff
-```
-
-`npx skills` uses GitHub as its registry and installs each skill into your
-agent's skills directory (for example `.claude/skills/` or `.agents/skills/`).
-See [vercel-labs/skills](https://github.com/vercel-labs/skills) and
-[skills.sh](https://skills.sh).
+Add `--global` to make the skills available across projects. To browse the available skills before installing, run `npx skills add basmilius/skills --list`.
 
 ## Skills
 
-| Skill | What it covers |
-| --- | --- |
-| [`vue-component-anatomy`](skills/vue-component-anatomy/SKILL.md) | The internal anatomy of a single Vue 3 SFC: block order, macro order, `<script setup>` ordering, prop/emit typing, styling. |
-| [`vue-build-feature`](skills/vue-build-feature/SKILL.md) | Building a Vue 3 feature across multiple components and layers: view-orchestrates / components-present, feature folders and barrels, composables, routing, the build sequence. |
-| [`flux-ui`](skills/flux-ui/SKILL.md) | Building, editing and reviewing Vue 3 UIs with the [Flux](https://flux-ui.dev) design system: picking the right component, imports and composition, the naming traps. |
-| [`basmilius`](skills/basmilius/SKILL.md) | The `@basmilius` npm scope as one stack: the `@basmilius/utils` helper catalog, the `@basmilius/http-client` DTO data layer (`@dto` / `@adapter` / `BaseService`) and the `@basmilius/common` Vue 3 app primitives (`defineStore`, `useService`, `useDataTable`, composables). |
-| [`dropoff`](skills/dropoff/SKILL.md) | Publish a markdown doc, a diagram, a code snippet, a sortable table, a single-file diff or a small file from the terminal to your own host, tagged so it can be found back, and lay the diagram out so its connectors actually line up. Reads a published page back and republishes over it, so a plan or a review stays current instead of going stale. Host and token come from configuration. |
-| [`release`](skills/release/SKILL.md) | Cut a GitHub release from a bump keyword (`major`/`minor`/`patch`/`stable`, optionally `beta`) and let CI publish; works on a single repo or a sibling-repo workspace. |
-| [`release-notes`](skills/release-notes/SKILL.md) | Generate a copy-pasteable changelog by diffing a base tag against `origin/main`; read-only, creates nothing. |
-| [`review-threads`](skills/review-threads/SKILL.md) | Working through the open review comments on a pull request: gathering every unresolved thread, judging which ones deserve a change, replying as Claude in the language of each comment, and resolving what is settled. Replies only by default, writes and commits the fixes with `fix`, and everything remote waits behind one confirmation gate. |
-| [`unslop`](skills/unslop/SKILL.md) | Editing prose so it stops reading as AI generated: the tells to cut (puffery, "not just X but Y", em dashes, rule of three, hedging, abstract metaphor nouns) and the voice to put back. |
-| [`code-comments`](skills/code-comments/SKILL.md) | Keeping comments and doc blocks worth reading: the test a comment has to pass, the ones to delete (restating the code, listing fields, copied boilerplate, a comment that drifted off its line), cutting a long one down, and what belongs in a doc block. |
-| [`php-style`](skills/php-style/SKILL.md) | PHP conventions for whitespace, declarations, imports, attributes, callbacks and PHPDocs, with written rules and examples. |
-| [`html-report`](skills/html-report/SKILL.md) | Standalone HTML reports with a calm editorial layout, a project-specific accent color, automatic dark mode and optional evidence, comparisons, charts and action plans. |
+### Code
 
-The two `vue-*` skills are library-neutral and pair with `flux-ui` when a project
-uses Flux. The `basmilius` skill covers the `@basmilius/*` sibling libraries
-with a guide per package. The `release` and `release-notes`
-skills are project-neutral: they
-auto-detect the repo, build check and CI, and read optional overrides from a
-`## Releasing` section in the project's `CLAUDE.md` / `AGENTS.md`.
-`review-threads` is GitHub specific: it answers and resolves review threads, and
-with `fix` it also writes and commits the changes those threads ask for. `unslop` covers
-writing rather than code, so it applies to any prose the agent produces:
-docs, release notes, commit bodies and UI copy. `code-comments` is its counterpart
-inside the code and is language-neutral, so it applies to every file the agent
-touches. `php-style` defines the PHP formatting and documentation conventions
-through written rules and examples, while preserving project-specific instructions.
+| Skill | Purpose |
+| --- | --- |
+| [vue-component-anatomy](skills/vue-component-anatomy/SKILL.md) | Structure and conventions for a single Vue 3 component. |
+| [vue-build-feature](skills/vue-build-feature/SKILL.md) | Vue 3 features spanning views, components, composables and routing. |
+| [flux-ui](skills/flux-ui/SKILL.md) | Vue 3 interfaces with the `@flux-ui` component, application and statistics libraries. |
+| [basmilius](skills/basmilius/SKILL.md) | Helpers, DTOs, services and Vue app conventions for `@basmilius/utils`, `http-client` and `common`. |
+| [php-style](skills/php-style/SKILL.md) | PHP formatting, declarations, imports, attributes and documentation. |
+| [code-comments](skills/code-comments/SKILL.md) | Comments and doc blocks that explain reasons and constraints the code cannot. |
+
+The Vue skills work with any component library. Add `flux-ui` when the project uses Flux and `basmilius` when it uses the corresponding packages.
+
+### GitHub
+
+| Skill | Purpose |
+| --- | --- |
+| [release](skills/release/SKILL.md) | Prepare and create a GitHub release, then let the project's CI publish it. |
+| [release-notes](skills/release-notes/SKILL.md) | Release notes from changes between a base ref and `origin/main`. |
+| [review-threads](skills/review-threads/SKILL.md) | Assess and answer PR review comments, optionally applying the requested fixes. |
+
+`release` and `review-threads` prepare the work locally and ask for confirmation before their remote actions. `release-notes` only produces text. The release skills read project-specific overrides from a `## Releasing` section in `CLAUDE.md` or `AGENTS.md`.
+
+### Writing and publishing
+
+| Skill | Purpose |
+| --- | --- |
+| [unslop](skills/unslop/SKILL.md) | Edit prose to remove filler, inflated language and common AI writing patterns. |
+| [html-report](skills/html-report/SKILL.md) | Standalone HTML reports for findings, reviews and action plans, with light and dark themes. |
+| [dropoff](skills/dropoff/SKILL.md) | Publish documents, diagrams, snippets, tables, diffs and small files to Dropoff; read and update existing pages. |
+
+Dropoff requires Bun and a `DROPOFF_TOKEN`. Its [setup instructions](skills/dropoff/SKILL.md#setup) cover authentication and an optional custom host.
+
+## Usage
+
+Each skill's description tells the agent when to use it. You can also name a skill in your request:
+
+```text
+Use vue-build-feature to build a settings page with profile and notification preferences.
+```
+
+```text
+Use release-notes to draft the changelog since the latest release.
+```
+
+Each linked `SKILL.md` contains the full instructions and any setup requirements. Some skills also include reference guides, scripts or templates.
+
+Update installed skills with `npx skills update`, or update one by name with `npx skills update dropoff`.
 
 ## Contributing
 
-These skills are refined over time. Open an issue or a pull request with
-corrections or additions.
+Open an issue or pull request with a correction or addition. Include the task or example that the current instructions do not handle well.
+
+Each skill lives in `skills/<name>/SKILL.md`. Supporting files stay in that skill's directory. When adding a skill, include it in the overview above; when changing instructions, check that its description and examples still match.
 
 ## License
 
-[MIT](LICENSE) - Bas Milius
+[MIT](LICENSE). Copyright (c) Bas Milius.
