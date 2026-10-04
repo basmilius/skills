@@ -77,12 +77,6 @@ Each linked `SKILL.md` contains the full instructions and any setup requirements
 
 Update installed skills with `npx skills update`, or update one by name with `npx skills update dropoff`.
 
-## Contributing
-
-Open an issue or pull request with a correction or addition. Include the task or example that the current instructions do not handle well.
-
-Each skill lives in `skills/<name>/SKILL.md`. Supporting files stay in that skill's directory. When adding a skill, include it in the overview above; when changing instructions, check that its description and examples still match.
-
 ## License
 
 [MIT](LICENSE). Copyright (c) Bas Milius.
