@@ -43,8 +43,17 @@ use const PHP_EOL;
 
 ## Declarations and expressions
 
-- Named classes, interfaces, traits and enums put their opening brace on the
-  next line, including empty types. Type bodies always use multiline layout.
+- Nonempty named classes, interfaces, traits and enums put their opening brace
+  on the next line. Empty type bodies use ` {}` on the declaration line,
+  including empty anonymous classes:
+
+  ```php
+  class EmptyClass {}
+  interface MarkerInterface {}
+  trait EmptyTrait {}
+  enum EmptyEnum {}
+  ```
+
 - Nonempty methods and named functions also open on the next line. An empty
   method uses ` {}` on the declaration line, including promoted constructors.
   A multiline constructor ends with `) {}` when its body is empty.
@@ -82,10 +91,11 @@ use const PHP_EOL;
 
 ## Whitespace that separates the work
 
-- Put one blank line immediately inside both ends of every class, trait,
-  interface and enum body: after the opening `{` and before the closing `}`.
-  This includes anonymous and empty types. An empty type has one blank line
-  between its braces, not two. Keep empty methods and constructors compact.
+- Put one blank line immediately inside both ends of every nonempty class,
+  trait, interface and enum body: after the opening `{` and before the closing
+  `}`. This includes nonempty anonymous classes. Empty type bodies stay on the
+  declaration line as ` {}`; they have no padding. Keep empty methods and
+  constructors compact too.
 - One blank line between methods and named functions. Method, function, control
   and property-hook bodies have no padding inside their braces. Adjacent
   related fields can stay together.
