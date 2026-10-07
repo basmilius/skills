@@ -6,7 +6,7 @@
 
 # Skills
 
-Agent skills for the work I do across my projects: Vue and PHP development, GitHub releases and reviews, documentation and publishing. Each skill gives a coding agent instructions for a specific task, with conventions, examples and supporting files where needed.
+Agent skills for the work I do across my projects: Vue and PHP development, GitHub releases and reviews, and documentation. Each skill gives a coding agent instructions for a specific task, with conventions, examples and supporting files where needed.
 
 Install them with the [skills CLI](https://github.com/vercel-labs/skills) for Claude Code, Codex, Cursor, Copilot and other supported agents.
 
@@ -51,15 +51,12 @@ The Vue skills work with any component library. Add `flux-ui` when the project u
 
 `release` and `review-threads` prepare the work locally and ask for confirmation before their remote actions. `release-notes` only produces text. The release skills read project-specific overrides from a `## Releasing` section in `CLAUDE.md` or `AGENTS.md`.
 
-### Writing and publishing
+### Writing
 
 | Skill | Purpose |
 | --- | --- |
 | [unslop](skills/unslop/SKILL.md) | Edit prose to remove filler, inflated language and common AI writing patterns. |
 | [html-report](skills/html-report/SKILL.md) | Standalone HTML reports for findings, reviews and action plans, with light and dark themes. |
-| [dropoff](skills/dropoff/SKILL.md) | Publish documents, diagrams, snippets, tables, diffs and small files to Dropoff; read and update existing pages. |
-
-Dropoff requires Bun and a `DROPOFF_TOKEN`. Its [setup instructions](skills/dropoff/SKILL.md#setup) cover authentication and an optional custom host.
 
 ## Usage
 
@@ -75,7 +72,7 @@ Use release-notes to draft the changelog since the latest release.
 
 Each linked `SKILL.md` contains the full instructions and any setup requirements. Some skills also include reference guides, scripts or templates.
 
-Update installed skills with `npx skills update`, or update one by name with `npx skills update dropoff`.
+Update installed skills with `npx skills update`, or update one by name with `npx skills update vue-component-anatomy`.
 
 ## License
 
