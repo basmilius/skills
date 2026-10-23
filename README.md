@@ -38,6 +38,7 @@ Add `--global` to make the skills available across projects. To browse the avail
 | [basmilius](skills/basmilius/SKILL.md) | Helpers, DTOs, services and Vue app conventions for `@basmilius/utils`, `http-client` and `common`. |
 | [php-style](skills/php-style/SKILL.md) | PHP formatting, declarations, imports, attributes and documentation. |
 | [code-comments](skills/code-comments/SKILL.md) | Comments and doc blocks that explain reasons and constraints the code cannot. |
+| [test-audit](skills/test-audit/SKILL.md) | Gate new tests and audit duplicate coverage, implementation coupling and unnecessary test-only production code. |
 
 The Vue skills work with any component library. Add `flux-ui` when the project uses Flux and `basmilius` when it uses the corresponding packages.
 
