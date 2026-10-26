@@ -73,5 +73,5 @@ a helper.
   hood).
 - **`common.md`** - Vue app and state primitives (composables, store, data
   tables) built on top of these utils.
-- The **`vue-component-anatomy`** / **`vue-build-feature`** skills - the
+- The **`code-style`** / **`vue-build-feature`** skills - the
   library-neutral Vue patterns these helpers slot into.

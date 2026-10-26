@@ -152,7 +152,7 @@ Never assume a prop exists: open the component's doc page (every URL is in
 
 ## Related skills
 
-- **`vue-component-anatomy`** - how each `.vue` file around these components is
+- **`code-style`** - how each `.vue` file around these components is
   built: block order, macro order, prop and emit typing.
 - **`vue-build-feature`** - splitting a feature across a view, components,
   composables and a route; Flux supplies the components it composes.

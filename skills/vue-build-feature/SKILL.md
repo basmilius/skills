@@ -8,7 +8,7 @@ description: >-
   loading in composables, resetting shared state, router wiring and the build
   sequence. Triggers on building a new screen/view/feature, splitting a large
   `.vue` into smaller components, adding a data model/service, and wiring a
-  router route. Single component's internals: `vue-component-anatomy`; Flux UI
+  router route. Single component's internals: `code-style`; Flux UI
   library: `flux-ui`.
 license: MIT
 ---
@@ -18,7 +18,7 @@ license: MIT
 How to build a Vue 3 feature that does not fit in one component: a page and the
 components, composables, data access and route behind it, and how they wire
 together across files. It is library-neutral. For how each individual `.vue` file
-is built use `vue-component-anatomy`; for picking UI
+is built use the Vue reference of `code-style`; for picking UI
 components (if the project uses Flux) use `flux-ui`; project-specific rules
 (state library, permissions, i18n location) live in the repo's `CLAUDE.md` /
 `AGENTS.md`.
@@ -150,7 +150,7 @@ component/
 
 ## Related skills
 
-- **`vue-component-anatomy`** - how to build each `.vue` file this feature adds.
+- **`code-style`** - how to build each `.vue` file this feature adds.
 - **`flux-ui`** - selecting and composing components when the project uses Flux.
 - **`basmilius`** - if the project uses the `@basmilius/*` packages (by Bas
   Milius), the concrete data layer (DTO services) and the state/composable

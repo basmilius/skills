@@ -90,7 +90,7 @@ Removing patterns is half the job. Sterile, voiceless writing is just as obvious
 
 ## Related skills
 
-- **`code-comments`** - the same instinct inside the code: cut the comment that
+- **`code-style`** - the same instinct inside the code: cut the comment that
   restates the line, keep the reason.
 - The repo's **`CLAUDE.md` / `AGENTS.md`** - project rules on language, tone and
   terminology, which override the defaults here.

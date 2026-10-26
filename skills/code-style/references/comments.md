@@ -1,18 +1,3 @@
----
-name: code-comments
-description: >-
-  Use whenever writing, editing, or reviewing code that carries comments or doc
-  blocks, in any language. Covers the test a comment has to pass to earn its
-  place, the comments to delete (restating the code, listing fields a doc block
-  sits above, boilerplate copied across files, a comment that drifted away from
-  the line it explains), how to cut a four-line comment down to one without
-  losing the reason, and what belongs in a doc block versus what the signature
-  already says. Also covers the comments that always stay: todos, license
-  headers, security boundaries, workarounds, and references to an external spec.
-  Apply on every code change, not only when asked to clean up comments.
-license: MIT
----
-
 # Code comments
 
 Nothing compiles a comment and no test covers one, so comments drift away from

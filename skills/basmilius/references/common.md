@@ -121,5 +121,5 @@ caught centrally**, never constructed with messages. Per-exception meaning is in
   and `useDtoForm` build on.
 - **`utils.md`** - standalone helpers (this package uses `debounce` /
   `isHtmlElement` from it).
-- The **`vue-build-feature`** / **`vue-component-anatomy`** skills - the neutral
+- The **`vue-build-feature`** / **`code-style`** skills - the neutral
   Vue architecture and SFC patterns these primitives slot into.

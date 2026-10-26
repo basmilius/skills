@@ -57,7 +57,7 @@ each involved guide; they are short and cross-link where the layers meet.
 
 ## Related skills
 
-- **`vue-build-feature`** / **`vue-component-anatomy`** - the library-neutral
+- **`vue-build-feature`** / **`code-style`** - the library-neutral
   Vue architecture and SFC patterns these packages slot into; `common` is the
   concrete data/state layer `vue-build-feature` defers to.
 - **`flux-ui`** - the Flux UI component library (separate `@flux-ui` scope).

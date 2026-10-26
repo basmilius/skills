@@ -151,7 +151,7 @@ for the reply.
 - **Conventions first**: the project's `CLAUDE.md` / `AGENTS.md`, its
   `.editorconfig` and the surrounding code outrank the reviewer's phrasing. A
   suggestion written in another project's style gets the intent, not the letter.
-- **Comments and tests**: follow the `code-comments` skill, and add a test when
+- **Comments and tests**: follow the comment rules of the `code-style` skill, and add a test when
   the project has a suite and the comment is about behavior.
 - **A fix that turns out to be wrong** mid-way: revert that file
   (`git checkout -- <path>`), move the verdict to `disagree` or `question`, and

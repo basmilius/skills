@@ -21,7 +21,7 @@ npx skills add basmilius/skills
 Install a single skill:
 
 ```sh
-npx skills add basmilius/skills --skill vue-component-anatomy
+npx skills add basmilius/skills --skill code-style
 ```
 
 Add `--global` to make the skills available across projects. To browse the available skills before installing, run `npx skills add basmilius/skills --list`.
@@ -32,13 +32,10 @@ Add `--global` to make the skills available across projects. To browse the avail
 
 | Skill | Purpose |
 | --- | --- |
-| [vue-component-anatomy](skills/vue-component-anatomy/SKILL.md) | Structure and conventions for a single Vue 3 component. |
+| [code-style](skills/code-style/SKILL.md) | Style of TypeScript, Vue components, PHP and Rust, and the comments in any language. |
 | [vue-build-feature](skills/vue-build-feature/SKILL.md) | Vue 3 features spanning views, components, composables and routing. |
 | [flux-ui](skills/flux-ui/SKILL.md) | Vue 3 interfaces with the `@flux-ui` component, application and statistics libraries. |
 | [basmilius](skills/basmilius/SKILL.md) | Helpers, DTOs, services and Vue app conventions for `@basmilius/utils`, `http-client` and `common`. |
-| [php-style](skills/php-style/SKILL.md) | PHP formatting, declarations, imports, attributes and documentation. |
-| [rust-style](skills/rust-style/SKILL.md) | Rust blank lines, imports, naming and doc comments on top of rustfmt. |
-| [code-comments](skills/code-comments/SKILL.md) | Comments and doc blocks that explain reasons and constraints the code cannot. |
 | [test-audit](skills/test-audit/SKILL.md) | Gate new tests and audit duplicate coverage, implementation coupling and unnecessary test-only production code. |
 
 The Vue skills work with any component library. Add `flux-ui` when the project uses Flux and `basmilius` when it uses the corresponding packages.
@@ -74,7 +71,7 @@ Use release-notes to draft the changelog since the latest release.
 
 Each linked `SKILL.md` contains the full instructions and any setup requirements. Some skills also include reference guides, scripts or templates.
 
-Update installed skills with `npx skills update`, or update one by name with `npx skills update vue-component-anatomy`.
+Update installed skills with `npx skills update`, or update one by name with `npx skills update code-style`.
 
 ## License
 

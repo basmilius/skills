@@ -1,14 +1,3 @@
----
-name: rust-style
-description: >-
-  Use when writing, editing, or reviewing Rust code. Covers the blank lines
-  rustfmt leaves to you (between the steps of a function, around blocks,
-  before a return or tail expression, between documented fields and
-  variants, between items), imports, naming and doc comments, including
-  tests. Project instructions and existing conventions take precedence.
-license: MIT
----
-
 # Rust style
 
 Apply these Rust style conventions directly. Match the project's edition,
@@ -175,8 +164,8 @@ only restate the code or describe behavior that has changed.
 
 Read the relevant example when the short rules leave room for doubt:
 
-- [Functions, closures, guards and tail expressions](references/examples/placeholders.rs).
-- [Structs, enums, impls and a test module](references/examples/catalog.rs).
+- [Functions, closures, guards and tail expressions](examples/rust/placeholders.rs).
+- [Structs, enums, impls and a test module](examples/rust/catalog.rs).
 
 These are style examples from an isolated sample crate, not application code
 to add to the project.

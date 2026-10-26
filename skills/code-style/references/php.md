@@ -1,13 +1,3 @@
----
-name: php-style
-description: >-
-  Use when writing, editing, or reviewing PHP code. Covers whitespace,
-  imports, declarations, attributes, callbacks and PHPDocs, including tests
-  and preservation of existing @since versions. Project instructions and
-  existing conventions take precedence.
-license: MIT
----
-
 # PHP style
 
 Apply these PHP style conventions directly. Match the project's supported
@@ -74,6 +64,8 @@ use const PHP_EOL;
   use one space after commas. Do not align assignments or array keys in columns.
 - Use typed signatures and constructor promotion where appropriate. Do not
   introduce a different class design or newer PHP syntax just to format code.
+- A new class is `final` and, when its state does not change after
+  construction, `readonly`.
 - Place declaration attributes on their own lines above the declaration.
   Parameter attributes stay with the parameter, such as
   `#[FromQuery] public int $limit = 25`.
@@ -109,9 +101,10 @@ use const PHP_EOL;
 
 ## PHPDocs
 
-Follow the project's documentation requirements. Library classes, methods and
-properties should have the required PHPDocs; test files and fixtures get no
-PHPDocs unless the project explicitly requires them.
+Follow the project's documentation requirements. Without them, every new
+class, function and method gets a PHPDoc, private and protected included, and
+it is updated when a parameter changes. Test files and fixtures get no PHPDocs
+unless the project explicitly requires them.
 
 - Named type headings are `Class Name`, `Interface Name`, `Trait Name`, and `Enum Name`.
   A useful optional description follows the heading with a blank PHPDoc line
@@ -184,12 +177,12 @@ restate the code or describe behavior that has changed.
 
 Read the relevant example when the short rules leave room for doubt:
 
-- [Attributes](references/examples/CarrierTag.php) and
-  [multiline promoted arguments](references/examples/DeliveryRequest.php).
-- [Closures and an anonymous class](references/examples/DeliveryCallbacks.php).
-- [Property hooks and asymmetric visibility](references/examples/TrackingState.php).
-- [Existing and new version tags together](references/examples/LegacyLimit.php).
-- [Pest datasets without PHPDocs](references/examples/DeliveryFixturesTest.php).
+- [Attributes](examples/php/CarrierTag.php) and
+  [multiline promoted arguments](examples/php/DeliveryRequest.php).
+- [Closures and an anonymous class](examples/php/DeliveryCallbacks.php).
+- [Property hooks and asymmetric visibility](examples/php/TrackingState.php).
+- [Existing and new version tags together](examples/php/LegacyLimit.php).
+- [Pest datasets without PHPDocs](examples/php/DeliveryFixturesTest.php).
 
 These are style examples from an isolated sample library, not application
 code to add to the project. Their version numbers belong to those samples.
