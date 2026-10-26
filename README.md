@@ -37,6 +37,7 @@ Add `--global` to make the skills available across projects. To browse the avail
 | [flux-ui](skills/flux-ui/SKILL.md) | Vue 3 interfaces with the `@flux-ui` component, application and statistics libraries. |
 | [basmilius](skills/basmilius/SKILL.md) | Helpers, DTOs, services and Vue app conventions for `@basmilius/utils`, `http-client` and `common`. |
 | [php-style](skills/php-style/SKILL.md) | PHP formatting, declarations, imports, attributes and documentation. |
+| [rust-style](skills/rust-style/SKILL.md) | Rust blank lines, imports, naming and doc comments on top of rustfmt. |
 | [code-comments](skills/code-comments/SKILL.md) | Comments and doc blocks that explain reasons and constraints the code cannot. |
 | [test-audit](skills/test-audit/SKILL.md) | Gate new tests and audit duplicate coverage, implementation coupling and unnecessary test-only production code. |
 
