@@ -1,163 +1,140 @@
 ---
 name: html-report
 description: >-
-  Create or update standalone HTML reports with a calm editorial layout and a
-  project-appropriate accent color. Use for reviews, findings, status reports,
-  measurement reports and action plans, or when asked to reuse this report style.
-  Not for application screens or reports that require another file format.
+  Create or update a single-file HTML report, written in TSX on the components and
+  charts of adecore and built with Bun, in the brand color and icon of the project, with light and dark
+  mode. Use for reviews, findings, status reports, incident reviews, measurement
+  reports and action plans, or when asked to reuse this report style. Not for
+  application screens or reports that require another file format.
 license: MIT
 ---
 
 # HTML report
 
-Build a readable report with a softly tinted page, system fonts, a large title,
-rounded sections and restrained color. Start from [assets/report.html](assets/report.html).
-It contains the complete inline CSS and a small report skeleton. Keep the visual
-system while adapting the content, language and section order to the request.
+A report is written as a `.tsx` file and built into one HTML file:
 
-## Pick a project color quickly
+```sh
+bun <this skill>/scripts/build.ts report.tsx          # writes report.html next to it
+bun <this skill>/scripts/build.ts report.tsx --out reports/review.html
+```
 
-Use an explicit user color first. Otherwise inspect a few likely sources: an
-existing project report, the logo or README, and the app's theme or brand tokens.
-Prefer the actual product identity over a token merely named `accent`; scene
-materials, syntax highlighting and object colors are not brand palettes.
+The build renders the report to plain HTML and appends the runtime (React,
+`@adecore/ui`, `@adecore/charts`, the components, the Lucide icons the report uses)
+that brings it to life in the browser. It needs Bun and nothing else: no install, no
+project. The HTML file needs no network, so it opens offline and in sandboxed
+previews, at about 400 kB.
 
-If there is no clear brand, choose one muted accent that fits the project. Green
-suits a home or environment project; blue can suit a technical service. These are
-examples, not domain rules. Make the choice without a color research phase or a
-mandatory question. A sentence in the handoff is enough to explain it.
+The text of the report sits as ordinary HTML at the top of the file, so another
+agent, `grep` or a browser without JavaScript reads it directly; every chart carries
+its values as a table. After the line `<!-- html-report runtime ... -->` follow only
+the gzipped scripts; there is no need to read past it.
 
-Set `--brand` in the template to a dark, readable version of that color. `--accent`
-and the page, panels, text, borders, diagram strokes and focus ring derive from it.
-The green starter uses `#236746`; `#285e91` is a blue alternative. Keep success,
-warning and error tokens independent so project color never changes their meaning.
-Check text contrast after changing colors; aim for 4.5:1 for ordinary text and 3:1
-for large text and meaningful graphic strokes. Do not copy a bright logo color
-directly into small text.
+A report is frozen once it is built: it carries the runtime of that day and never
+changes with a later version of this skill. Keep the `.tsx` next to the HTML as the
+source for updates.
 
-## Light and dark mode
+```tsx
+import { Lead, Report, Row, Rows, Section, Status } from 'html-report';
 
-The template follows `prefers-color-scheme`. A `screen` media block overrides the
-color tokens for dark mode. It derives `--accent` from `--brand` at a fixed OKLCH
-lightness with a little extra chroma, which keeps contrast steady for any hue.
-It also swaps the neutrals, reference color and shadows for dark versions and
-uses separate semantic colors. Print always uses the light tokens. Check contrast
-in both schemes; when the derived dark accent clashes with the brand, replace its
-`oklch()` with a hand-picked color.
+export default (
+    <Report title="Review: session restore after restart" kind="Code review" model="Claude Opus 5.5" meta="27 October 2026 · PR #482" lang="en" brand={{ name: 'Ruimte', color: '#155dfc' }}>
+        <Lead>
+            <p>The conclusion first.</p>
+        </Lead>
+        <Section title="Blocking">
+            <Rows>
+                <Row title="Session starts twice after a crash" end={<Status tone="error">High</Status>}>
+                    Two windows read the state before either takes the lock.
+                </Row>
+            </Rows>
+        </Section>
+    </Report>
+);
+```
 
-Style new elements with the tokens only. A hardcoded `#fff`, black shadow or
-light background breaks one of the two schemes. When a pattern needs a color the
-tokens lack, add a token to both `:root` and the dark block.
+The default export is the `<Report>` element. Always set `lang` (`nl` or `en`) to the
+language of the report, and `model` to the name of the model writing it, such as
+`Claude Sonnet 5.5`; the report shows it with the logo of its provider. A report imports from `html-report`,
+`react` and `lucide-react` only; data can be computed in the file itself. Bun strips
+types without checking them. Read [references/components.md](references/components.md)
+for every component and the chart API. The [examples](examples) are complete reports
+to start from, each as source and built file:
+
+| Example | Shows |
+| --- | --- |
+| [performance.tsx](examples/performance.tsx) | Wide layout, three charts, notes in the margin |
+| [code-review.tsx](examples/code-review.tsx) | Code excerpts and a diff, verified and assumed findings, an open question as a card |
+| [status.tsx](examples/status.tsx) | Milestones with progress, pace against plan, risks, a decision as a card |
+| [incident.tsx](examples/incident.tsx) | A timeline, a chart with the incident marked, a table of actions |
+| [disk-usage.tsx](examples/disk-usage.tsx) | In English: a `Ranking` of long paths, sizes with `formatBytes`, cleanup steps with a condition for done, a numbered diff |
+
+## Brand
+
+The toolbar at the top shows the project's mark and name, the `kind` of report and
+the theme switch. Pass the brand as `brand` on `Report`; take each part
+(name, color, mark) from the first source that has it:
+
+1. What the user gives.
+2. The project's `.ruimte` folder: `name` and `color` from `project.json`, and as the
+   mark `.ruimte/icon.png` when it exists (`icon: '/path/to/project/.ruimte/icon.png'`),
+   otherwise the `icon` of `project.json`: `{ "kind": "lucide", "value": "gift" }`
+   goes in as `icon: 'gift'`.
+3. The product's own identity: a logo in the repository, the README, the app's theme
+   or brand tokens. A token merely named `accent`, syntax colors or scene materials
+   are not a brand.
+4. Nothing clear: the project name and one muted color that fits it. Say so in the
+   handoff.
+
+A logo goes in as it is, drawn at 22px in its own colors, so do not recolor it. Give
+a logo file by its path (absolute or relative to the report): the build embeds an SVG
+as markup and an image as a `data:` URL, scaled down to 64px on macOS. A Lucide icon takes the accent color. Without any mark
+the first letter of the name stands on the accent. The accent per theme is derived
+from `color` with enough contrast, so a bright brand color can go in as it is.
+Status colors stay independent of the brand.
+
+## Layout
+
+- `narrow` (default): a centered column of 720px. Fits almost every report.
+- `wide`: a centered column of 1000px with a margin beside each section for the
+  `aside` of `Section` and `Lead`. Use it for a detailed report with many charts,
+  where conditions, sources and remarks belong next to the figure they explain.
+
+The contents, built from the section titles, and the model stand at the right edge
+of the page when they fit beside the column (from 1280px for `narrow`, 1560px for
+`wide`); otherwise the contents are left out and the model closes the report. On a
+narrow screen a wide margin folds under its section.
+
+Sections run on the page without cards. Use a `Card` only for something that has to
+stand apart from the flow: a decision the reader has to make, an open question. One
+or two per report at most.
 
 ## Compose the report
 
-Lead with the conclusion, current situation or decision the reader needs. Put the
-date, scope and relevant source revision near the top. Use a short contents list
-when the report is long enough to benefit from navigation.
+- Lead with the conclusion, decision or current state. Put date, scope and revision
+  in `meta`. Follow with `Figures` when a few numbers carry the story.
+- One section per question the reader has. Keep evidence (a chart, an excerpt, a
+  measurement) in the section of the claim it supports.
+- In a review, separate verified findings from assumptions and open questions, and
+  tie each action to a condition for done (`Step done="..."`).
+- With measurements, keep units, conditions and sources. Mark superseded results as
+  historical instead of deleting them.
+- Write direct prose in the language of the request; set `lang` to match (`nl` or
+  `en`). Use the `unslop` skill for a final pass when it is available.
+- Copy the structure of an example, never its names, numbers or findings.
 
-Read [references/patterns.md](references/patterns.md) for optional building blocks:
-metrics, status badges, comparison panels, screenshot pairs with captions,
-scrollable tables, evidence disclosures, diagrams, plots, a slider with bars and
-numbered actions. Use only the blocks the material needs. There is no fixed
-section count, requirement to add interactivity or requirement to delegate work.
+## Theme
 
-For a review, distinguish verified findings, assumptions and open questions.
-Connect proposed work to the observed problem and a concrete acceptance condition.
-When measurements matter, retain units, conditions and source links. Keep earlier
-results visibly historical if newer work supersedes them. Copy the design, never
-old project names, bug lists, measurements, test counts or recommendations.
-
-Write direct prose. Keep evidence close to the claim it supports. Replace every
-`{{...}}` token with real content or remove the unused block; example values in
-the pattern guide are demonstrations, never evidence. Escape inserted text for
-HTML, especially code excerpts. Preserve useful existing report anchors on updates.
-
-If `unslop` is available, using it for the final prose pass is recommended, not
-required. Do not install it or stop when it is missing. Without it, remove filler,
-promotional claims, repeated conclusions and decorative headings; keep specific
-observations, active sentences and the reader's language.
-
-## Report design details
-
-Build report elements with plain HTML, CSS, inline SVG and small inline scripts
-when interaction serves the content. Keep the template's styling system. The
-references below contain implementation patterns; read the categories needed for
-the report rather than adding every pattern to every document.
-
-| Reference | Report use |
-| --- | --- |
-| [Typography](references/typography.md) | Headings, prose, captions, long labels and numeric comparisons |
-| [Surfaces](references/surfaces.md) | Nested panels, optical alignment, shadows, image outlines and hit areas |
-| [Animations](references/animations.md) | Optional state changes, icon swaps, press feedback and motion restraint |
-| [Icons](references/icons.md) | Inline SVG weight, states, sizing, accessible names and reading direction |
-| [Performance](references/performance.md) | Explicit transitions, compositing hints and responsive scenario updates |
-
-### Core principles
-
-1. For closely inset rounded surfaces, outer radius equals inner radius plus
-   inset. Treat generously spaced report sections as independent surfaces.
-2. Align icons optically when geometric centering looks wrong. Try 2px less
-   padding on the icon side of a button; prefer a shared SVG correction for
-   asymmetric glyphs.
-3. Use borders for section separation, table structure and state. Use the
-   `--shadow-border` tokens for controls or panels that need elevation.
-4. Use interruptible CSS transitions for interactive state changes. Reserve
-   keyframes for an occasional sequence that runs once.
-5. When an explicitly requested presentation sequence helps explain hierarchy,
-   reveal semantic groups about 100ms apart. Do not stagger routine filtering,
-   row hovers or repeated navigation.
-6. Keep contextual exits softer than entrances. Prefer a small fixed translation
-   and about 150ms with `ease-out`; remove immediately when motion adds no context.
-7. For occasional contextual icon swaps, cross-fade two inline SVGs using scale
-   0.25 to 1, opacity 0 to 1 and blur 4px to 0 over 300ms with
-   `cubic-bezier(0.2, 0, 0, 1)`. Keep both in the DOM and use no bounce.
-8. Apply font smoothing at the document root for consistent macOS rendering.
-9. Use tabular numerals for measurement columns, aligned metrics and updating
-   outputs. Keep units and rounding consistent.
-10. Balance headings and use natural paragraph wrapping. Use `pretty` for short
-    and medium prose, and normal wrapping for long excerpts and evidence.
-11. Give images a subtle 1px pure-black outline in light mode and pure white in
-    dark mode through `--image-outline`. Never tint it with the accent.
-12. Use a subtle 0.96 scale for button presses; never go below 0.95. Allow
-    `data-static` to disable it when movement distracts or affects dragging.
-13. Keep initial report content visible and still. Put initial control states in
-    HTML and CSS so loading the report does not replay state-change animations.
-14. Name transition properties explicitly. Never use `transition: all`.
-15. Add `will-change` only for an observed problem, usually involving transform,
-    opacity or filter. Avoid blanket promotion of report rows and cards.
-16. Give navigation and standalone controls 44 by 44 CSS pixel touch targets,
-    or 40 by 40 in dense desktop layouts. Keep expanded hit areas separate and
-    ordinary prose links inline.
-17. Match SVG weight to nearby text: roughly 1.5px beside regular text, 2px beside
-    semibold and 2.5px beside bold, on a 24px grid. Keep equivalent roles consistent.
-18. Use `currentColor` icons with CSS states. Prefer outlines by default and fill
-    for active states where useful. Keep text labels and accessible state attributes.
-19. Keep frequent interactions immediate or use a color/opacity transition of at
-    most 150ms. Every animated change needs static feedback. Respect reduced
-    motion and keep print output static and complete.
-
-For optional controls, inspect hover, focus, pressed, disabled and relevant empty
-or loading states. If motion is present and rendering is permitted, replay it at
-10% speed and check interrupted transitions. Add only states the report needs.
-
-When the user asks to review a report's visual design, use
-[references/design-review.md](references/design-review.md) for quick/full coverage,
-findings and verification. That review format is separate from the report's own
-subject matter; a measurement report does not need a design-audit section.
+The report follows the system's light or dark mode. The switch in the header
+overrides it per file and remembers the choice. Embedded in a host that sets
+`--background` (a Ruimte chat), the report takes that background and follows the
+host's appearance. Printing always uses light mode.
 
 ## Deliver and check
 
-Keep CSS, SVG and any small optional script inline; use no external fonts, CDN,
-build step or runtime dependency. Embed images when a single portable file is
-required, otherwise use stable relative paths and deliver the image files too.
-Use descriptive alt text, captions, table headers and labels. Match the document
-language and translate navigation and accessibility labels with it.
+Save the `.tsx` and the HTML where the user asks or in the project's existing report
+folder, and link to the HTML. When updating, edit the `.tsx`, keep the section ids
+and build again.
 
-Check local links and anchors, placeholder removal, keyboard access, a narrow
-viewport, light and dark mode and print output. Disclosures containing evidence start open so their
-contents remain available without JavaScript and in print. Interactive examples
-need meaningful initial values and a written explanation when scripts are off.
-Inspect a rendered report when the environment permits; report any checks that
-could not be performed. Save in the requested location or the project's existing
-report directory and link to the finished file. Publishing or implementing its
-action plan is separate work unless the user requested it.
+A mistake in the report fails the build with the file and line. Open the HTML in a
+browser to check it when the environment allows: both themes and a narrow window.
+Report which checks you could not do.

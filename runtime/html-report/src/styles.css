@@ -1,0 +1,15 @@
+@import 'tailwindcss/theme.css' layer(theme);
+@import 'tailwindcss/preflight.css' layer(base);
+@import 'tailwindcss/utilities.css' layer(utilities) source(none);
+@import '@adecore/ui/theme.css';
+@import './report.css';
+
+@source '../node_modules/@adecore/ui/dist';
+@source '../node_modules/@adecore/charts/dist';
+@source './';
+
+/* Layout utilities a report may use around the components; its own source is not scanned. */
+@source inline('{flex,inline-flex,grid,block,hidden,flex-col,flex-wrap,items-center,items-start,items-end,justify-between,justify-center,justify-end,w-full,min-w-0,grow,shrink-0}');
+@source inline('{gap,gap-x,gap-y,mt,mb,p,px,py}-{1,2,3,4,6,8}');
+@source inline('{sm:,md:,}grid-cols-{1,2,3,4}');
+@source inline('{text-xs,text-sm,text-base,text-lg,font-medium,font-semibold,font-mono,tabular-nums,text-text,text-text-muted,text-text-faint,text-accent,text-right,truncate}');
