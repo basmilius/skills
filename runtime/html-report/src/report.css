@@ -14,7 +14,6 @@ html[data-host-background] .report-toolbar { background: var(--background); }
 
 .report { box-sizing: content-box; max-width: 720px; margin: 0 auto; padding: 48px 24px 64px; }
 .report-wide { max-width: 1000px; }
-html[data-host-background] .report { padding-inline: 0; }
 .report-main { min-width: 0; }
 /* At the right edge of the page, apart from the centered column; only where it fits beside that column (see the media queries below). */
 .report-side { display: none; position: fixed; top: 96px; right: 24px; width: 200px; max-height: calc(100vh - 120px); overflow-y: auto; }
