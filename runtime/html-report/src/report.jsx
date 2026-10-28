@@ -2,7 +2,7 @@
  * The building blocks of a report, on @adecore/ui and @adecore/charts. Rendered to HTML when the report is built and
  * hydrated in the browser, so nothing here may touch the DOM outside an effect.
  */
-import { Children, createContext, isValidElement, useContext, useEffect, useRef, useState } from 'react';
+import { Children, cloneElement, createContext, isValidElement, useContext, useEffect, useRef, useState } from 'react';
 import i18next from 'i18next';
 import { Banner, Meter, PanelHeader, Pill, Segmented, Separator } from '@adecore/ui';
 import { ProviderLogo as AdecoreProviderLogo } from '@adecore/agents-react/providers';
@@ -416,6 +416,28 @@ function Contents({ headings, label }) {
     );
 }
 
+/*
+ * Puts every `<table>` the report writes in a frame that scrolls sideways, so a wide table never widens the page on
+ * a phone. Charts are left alone: their children are parts, and some take a function.
+ */
+function withScrollingTables(node) {
+    return Children.map(node, (child) => {
+        if (!isValidElement(child)) {
+            return child;
+        }
+
+        if (child.type === 'table') {
+            return <div className="report-table">{child}</div>;
+        }
+
+        if (child.type === Chart.Root || child.props.children === undefined || typeof child.props.children === 'function') {
+            return child;
+        }
+
+        return cloneElement(child, { children: withScrollingTables(child.props.children) });
+    });
+}
+
 /**
  * The page: header with the brand and the model that wrote the report, title, meta line, theme switch and contents
  * on the right. `brand` is `{ name, color, icon }`; `icon` is a Lucide name, inline SVG markup or an image URL.
@@ -466,7 +488,7 @@ export function Report({ title, kind, meta, model, provider, layout = 'narrow', 
                 <main ref={content} className="report-main">
                     <h1 className="report-title">{title}</h1>
                     {meta !== undefined && <p className="report-meta">{meta}</p>}
-                    {children}
+                    {withScrollingTables(children)}
                     {model !== undefined && (
                         <footer className="report-footer">
                             <ModelDetails model={model} provider={provider} words={words} />
@@ -842,6 +864,7 @@ export function Plot({ caption, xLabel, xFormat, children }) {
             {values !== null && (
                 <details className="report-values">
                     <summary>{wordsOf(lang).values}</summary>
+                    <div className="report-table">
                     <table>
                         <thead>
                             <tr>
@@ -864,6 +887,7 @@ export function Plot({ caption, xLabel, xFormat, children }) {
                             ))}
                         </tbody>
                     </table>
+                    </div>
                 </details>
             )}
         </figure>
