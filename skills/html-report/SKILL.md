@@ -138,3 +138,30 @@ and build again.
 A mistake in the report fails the build with the file and line. Open the HTML in a
 browser to check it when the environment allows: both themes and a narrow window.
 Report which checks you could not do.
+
+## Publish
+
+Publish a report only when the user asks for it in this conversation; the URL is
+public for anyone who has it. Build first, then:
+
+```sh
+bun <this skill>/scripts/publish.ts report.html               # prints https://<domain>/<id>
+bun <this skill>/scripts/publish.ts report.html --unpublish   # deletes it
+```
+
+The id goes into `report.publish.json` next to the HTML; publishing again after a
+rebuild updates the same URL within five minutes. Keep that file with the `.tsx`.
+Give the user the expiry date the script prints. The page carries `noindex`.
+
+The script uploads with `wrangler` to a Cloudflare R2 bucket that serves on a
+custom domain, configured in the environment:
+
+| Variable | Holds |
+| --- | --- |
+| `HTML_REPORT_PUBLISH_ACCOUNT_ID` | The Cloudflare account of the bucket |
+| `HTML_REPORT_PUBLISH_BUCKET` | The R2 bucket |
+| `HTML_REPORT_PUBLISH_DOMAIN` | The custom domain of the bucket, such as `reports.example.com` |
+| `HTML_REPORT_PUBLISH_EXPIRY_DAYS` | Optional: the days of the bucket's lifecycle rule, shown as the expiry |
+
+Without them the script refuses; tell the user publishing is not set up instead of
+choosing a bucket.
