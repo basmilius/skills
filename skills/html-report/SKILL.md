@@ -22,7 +22,8 @@ The build renders the report to plain HTML and appends the runtime (React,
 `@adecore/ui`, `@adecore/charts`, the components, the Lucide icons the report uses)
 that brings it to life in the browser. It needs Bun and nothing else: no install, no
 project. The HTML file needs no network, so it opens offline and in sandboxed
-previews, at about 400 kB.
+previews, at about 400 kB. Only the font, Geist, loads from `font.bmcdn.nl`; without
+network the report falls back to the system font.
 
 The text of the report sits as ordinary HTML at the top of the file, so another
 agent, `grep` or a browser without JavaScript reads it directly; every chart carries

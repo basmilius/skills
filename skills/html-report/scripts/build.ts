@@ -205,6 +205,8 @@ const html = `<!doctype html>
 <meta name="generator" content="html-report">
 ${typeof props.model === 'string' ? `<meta name="author" content="${escapeHtml(props.model)}">\n` : ''}<title>${escapeHtml(title)}</title>
 <script>${theme}</script>
+<link rel="preconnect" href="https://font.bmcdn.nl" crossorigin>
+<link rel="stylesheet" href="https://font.bmcdn.nl/css2?family=geist-variable">
 <style>${css.replace(/<\/style/gi, '<\\/style')}</style>
 </head>
 <body>
