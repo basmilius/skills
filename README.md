@@ -55,7 +55,7 @@ The Vue skills work with any component library. Add `flux-ui` when the project u
 | Skill | Purpose |
 | --- | --- |
 | [unslop](skills/unslop/SKILL.md) | Edit prose to remove filler, inflated language and common AI writing patterns. |
-| [html-report](skills/html-report/SKILL.md) | Single-file HTML reports in JSX on adecore's components and charts, in the project's brand, with light and dark themes. |
+| [html-report](skills/html-report/SKILL.md) | Single-file HTML reports in TSX on adecore's components and charts, in the project's brand, with light and dark themes. |
 
 ## Usage
 

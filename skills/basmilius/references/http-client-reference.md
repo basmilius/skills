@@ -1,6 +1,6 @@
 # @basmilius/http-client reference
 
-The full public surface. All symbols are named exports from the package root
+The full public API. All symbols are named exports from the package root
 (`@basmilius/http-client`); the Vite plugin is at `@basmilius/http-client/vite`.
 ESM-only.
 

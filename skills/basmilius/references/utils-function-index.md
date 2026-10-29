@@ -1,7 +1,7 @@
 # @basmilius/utils function index
 
 Every public export from `@basmilius/utils`, grouped by category with its exact
-signature. The public surface is `src/index.ts`: ~45 functions, 5 constants and a
+signature. The public API is `src/index.ts`: ~45 functions, 5 constants and a
 handful of types. Framework-agnostic (no Vue), with Luxon as the only peer, used
 by the date helpers. Import named from the root: `import { formatDate } from
 '@basmilius/utils'`.

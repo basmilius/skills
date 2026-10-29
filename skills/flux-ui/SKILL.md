@@ -27,8 +27,8 @@ reference file below; do not work from memory for exact props.
 
 ## 1. Disambiguation (read first)
 
-"Flux UI" is overloaded. This skill is ONLY **basmilius/flux**: Vue 3, npm
-`@flux-ui/components`, docs at flux-ui.dev. Do NOT apply it to, or mix syntax with:
+"Flux UI" is overloaded. This skill covers **basmilius/flux** only: Vue 3, npm
+`@flux-ui/components`, docs at flux-ui.dev. Do not apply it to, or mix its syntax with:
 
 - **livewire/flux** (fluxui.dev): a Laravel/Livewire/Blade kit using `flux:button`
   style tags. Different project.
@@ -54,11 +54,11 @@ The traps worth knowing up front:
   `showConfirm` / `showPrompt` / `showSnackbar`, `FluxOverlay` and `FluxTooltip`
   throw.
 
-## 3. The naming rule (most common trap)
+## 3. The naming rule
 
-Names are `Flux`-prefixed PascalCase. **Most** are just the doc path PascalCased
-(`form/field` → `FluxFormField`), but several groups deviate, and guessing those is
-the single most common mistake. Three patterns to distrust:
+Names are `Flux`-prefixed PascalCase. Most are the doc path PascalCased
+(`form/field` → `FluxFormField`), but several groups deviate, and a guessed name
+renders as an unknown tag. Three patterns to distrust:
 
 - **Variant moves to the front:** `button/primary` → `FluxPrimaryButton`,
   `pane/clickable` → `FluxClickablePane`.
@@ -120,7 +120,7 @@ a file:
 - **`gap` / spacing** = a number in pixels; **colors** = `FluxColor` tokens
   (`gray | primary | danger | info | success | warning`); dark mode is built in.
 - **Types** (`FluxIconName`, `FluxColor`, `FluxTo`, ...) import from
-  **`@flux-ui/types`**, NOT `@flux-ui/components` (type error otherwise).
+  **`@flux-ui/types`**, not `@flux-ui/components` (type error otherwise).
 - **Every component must be imported** or Vue renders the unknown tag literally and
   lowercased (silent, not a build error).
 
@@ -148,7 +148,7 @@ Never assume a prop exists: open the component's doc page (every URL is in
 - `references/dialogs-and-feedback.md` - overlay vs programmatic, the show* functions
   and their real return types, notices and inline feedback.
 - `references/ecosystem.md` - the sibling packages `@flux-ui/application` (app shell)
-  and `@flux-ui/statistics` (KPIs/charts), with their export surface.
+  and `@flux-ui/statistics` (KPIs/charts), with their exports.
 
 ## Related skills
 

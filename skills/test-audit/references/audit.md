@@ -18,9 +18,8 @@ a test has no value.
 
 Prefer a few high-confidence candidates. For broad audits, use separate discovery
 lanes for core/packages, plugins/extensions, UI/tooling, and cross-cutting
-patterns. Parallel agents are optional and require available tools and task
-authorization. Share ownership and evidence so lanes do not independently
-delete each other's remaining proof.
+patterns. Share ownership and evidence so lanes do not independently delete
+each other's remaining proof.
 
 Before treating production code as dead, check dynamic registration, reflection,
 generated consumers, configuration, and published entry points. No in-repository
@@ -86,8 +85,7 @@ Apply the main skill's focused-validation rules and the repository testing guide
    CI gate required by repository policy. Broaden validation when the changed
    production code affects other callers.
 4. Inspect the full diff, including newly created files, for accidental behavior
-   changes, lost independent coverage, or leftover test-only code. Use an
-   independent reviewer when available and authorized.
+   changes, lost independent coverage, or leftover test-only code.
 5. Inspect `git diff --numstat`; report production/tooling separately from tests
    and test support, with additions and deletions rather than a net total alone.
 

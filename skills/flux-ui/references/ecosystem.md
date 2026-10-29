@@ -96,7 +96,7 @@ slot (wrap items in `FluxStatisticsLegendScope`); the auto legend is just
 
 ## Other `@flux-ui` packages
 
-- **`@flux-ui/types`** - the shared TypeScript surface (`FluxIconName`, `FluxColor`,
+- **`@flux-ui/types`** - the shared TypeScript types (`FluxIconName`, `FluxColor`,
   `FluxTo`, the `*Object` / `*Injection` types). Not re-exported by
   `@flux-ui/components`; import types from here (see `references/conventions.md`).
 - **`@flux-ui/visuals`** - decorative visuals (`FluxVisual*`); reuse the components

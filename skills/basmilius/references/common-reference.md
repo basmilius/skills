@@ -1,6 +1,6 @@
 # @basmilius/common reference
 
-The full export surface. Named exports from the package root
+Every export, all named exports from the package root
 (`@basmilius/common`); one barrel over `composable`, `store`, `router`, `error`,
 `util`.
 

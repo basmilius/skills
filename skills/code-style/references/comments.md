@@ -155,9 +155,8 @@ it now. Three passes catch most of it:
 2. Is this about the line under it at all? Move or delete.
 3. Can this reason survive in half the words? Cut.
 
-On a heavily commented file, removing a third to a half of the comment lines is
-a normal outcome. If nothing came out, either the file was already tight or the
-passes were not honest.
+On a heavily commented file, a large cut is a normal outcome. A file that was
+already tight may lose nothing.
 
 ## Related skills
 

@@ -37,7 +37,9 @@ rebases, and never touches a branch other than the PR's head.
 ## 0. Resolve the pull request
 
 `<slug>` is `owner/name`, `<n>` the PR number. Run every GitHub command with
-`--repo <slug>`.
+`--repo <slug>`. Take both from the `url` that `gh pr view` returns
+(`https://github.com/<owner>/<name>/pull/<n>`), so a PR URL from another repo
+resolves to that repo.
 
 - **Argument given**: a number, a PR URL or a branch name; pass it straight to
   `gh pr view`.
@@ -45,7 +47,6 @@ rebases, and never touches a branch other than the PR's head.
 
 ```bash
 gh pr view <arg> --json number,url,title,state,headRefName,isDraft,author
-gh repo view --json nameWithOwner -q .nameWithOwner
 ```
 
 No PR found -> stop and say so. A closed or merged PR -> report the state and ask
@@ -78,7 +79,7 @@ gh api graphql -f query='
           nodes {
             id isResolved isOutdated path line
             comments(first: 50) {
-              nodes { author { login } body createdAt url }
+              nodes { databaseId author { login } body createdAt url }
             }
           }
         }
@@ -218,9 +219,8 @@ Then substitute each `<commit>` placeholder with the short SHA of the commit tha
 carries that thread's fix.
 
 Reply **in** the thread, never as a new top-level comment. `<comment-id>` is the
-first comment of the thread, from the REST list
-(`gh api repos/<slug>/pulls/<n>/comments`); GraphQL thread ids are not
-interchangeable with it.
+`databaseId` of the thread's first comment from step 1; the GraphQL thread `id`
+does not work here.
 
 ```bash
 gh api repos/<slug>/pulls/<n>/comments/<comment-id>/replies -F body=@<scratchpad>/reply-<comment-id>.md

@@ -75,12 +75,12 @@ Resolve the spec to a concrete `<version>`:
    Highest `N` -> `<version>` = `<target>-beta.<N+1>`; no matching tags ->
    `<target>-beta.0`.
 
-3. **`stable`** finalises the running beta: strip the pre-release part off the
+3. **`stable`** finalizes the running beta: strip the pre-release part off the
    highest beta line:
    ```bash
    git -C <dir> tag -l '*-beta.*' | sed -E 's/-beta\.[0-9]+$//' | sort -V | uniq | tail -1
    ```
-   No beta tag at all -> stop; nothing to finalise (point at `major|minor|patch`).
+   No beta tag at all -> stop; nothing to finalize (point at `major|minor|patch`).
    A second token is not valid here. (With parallel beta lines this picks the
    highest-overall line; fine for a linear flow.)
 

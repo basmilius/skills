@@ -95,7 +95,7 @@ Signatures in `common-reference.md`. Grouped by what they do:
 Thin `vue-router@5` wrappers: `useRouteParam`, `useRouteMeta` (merges matched
 records' `meta`, inner wins), `useRouteNames`, `useIsView`, `useNavigate`
 (wrappable `push` / `replace`), `useNamedRoute` / `useRouteView` (named-view
-depth). **Overlay / modal routing is NOT here** - that lives in the separate
+depth). **Overlay / modal routing is not here** - that lives in the separate
 `@basmilius/routing` package, which builds on these primitives. Until a dedicated
 skill covers `@basmilius/routing`, model overlays by hand per `vue-build-feature`
 section 7 (child route + nested `<RouterView>`).

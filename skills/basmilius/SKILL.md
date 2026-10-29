@@ -48,7 +48,7 @@ matching guide first**, then dip into the signature/pattern files as needed:
 | Working on | Read first | Then as needed |
 | --- | --- | --- |
 | A date/number/color/download/DOM helper, or anything imported from `@basmilius/utils` | `references/utils.md` | `references/utils-function-index.md` (every function with exact signatures and the browser-vs-pure split) |
-| DTOs, adapters, services, requests, (de)serialization, the Vite plugin, tsconfig decorator flags | `references/http-client.md` | `references/http-client-reference.md` (full export surface), `references/http-client-patterns.md` (worked DTO -> adapter -> service recipes, error handling, dirty-save) |
+| DTOs, adapters, services, requests, (de)serialization, the Vite plugin, tsconfig decorator flags | `references/http-client.md` | `references/http-client-reference.md` (every export), `references/http-client-patterns.md` (worked DTO -> adapter -> service recipes, error handling, dirty-save) |
 | Stores, data tables/reports, forms, URL state, composables, router helpers, exceptions | `references/common.md` | `references/common-reference.md` (composable catalog with signatures), `references/common-patterns.md` (worked stores, `useService`, `useDataTable` view, `useDtoForm`, `useUrlState`) |
 
 Tasks often span layers: a data table view touches `common` (`useDataTable`),

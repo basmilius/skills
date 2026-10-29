@@ -93,7 +93,7 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
 
 ## Reference files
 
-- `http-client-reference.md` - the full export surface: decorators, DTO helpers,
+- `http-client-reference.md` - every export: decorators, DTO helpers,
   `RequestBuilder` runners and config, `BaseResponse`, `QueryString`, the value
   classes (`Paginated`, `BlobResponse`, `RequestError`, `ValidationError`),
   guards, `HttpAdapter`, types and the Vite plugin options.

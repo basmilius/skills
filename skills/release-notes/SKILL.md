@@ -96,7 +96,7 @@ Detect what already existed at the base, then check which files each commit
 touches:
 
 ```bash
-git -C <dir> ls-tree -r --name-only <base> > /tmp/base-files
+git -C <dir> ls-tree -r --name-only <base> > <scratchpad>/base-files
 git -C <dir> log --name-only --format='@@%h %s' <base>..origin/main
 ```
 
@@ -191,29 +191,31 @@ Output **one fenced ` ```markdown ` code block** (copy-pasteable), in
 
 - <change>.
 
-**Full Changelog:** https://github.com/<slug>/compare/<base>...origin/main
+**Full Changelog:** https://github.com/<slug>/compare/<base>...main
 ````
 
-**The emoji house format is mandatory, not a style choice:**
+The emoji house format holds in every repo, so releases read alike across
+projects:
 
-- Every `##` header MUST start with its house emoji (`⚠️`, `✨`, `🚀`, `♿`,
-  `🐛`, `⚡`, `🎨`, `🧹`); the noun after it adapts to the repo's domain
+- Every `##` header starts with its house emoji (`⚠️`, `✨`, `🚀`, `♿`, `🐛`,
+  `⚡`, `🎨`, `🧹`); the noun after it adapts to the repo's domain
   (`New components` for a component library, `New packages` for a package
   workspace, `New modules` otherwise).
-- **Never** emit the generic GitHub / Keep-a-Changelog style: no `What's
-  Changed`, no `What's new`, no bare `### Added` / `### Changed` / `### Removed`
-  / `### Fixed` / `### Features` / `### Fixes` / `### Chores` without the emoji.
-- **Never** append PR or commit numbers (`(#26)`, `(#5389625)`) unless the
-  repo's own emoji releases demonstrably do; rewrite each commit subject as a
-  complete sentence instead of copying it verbatim (`feat(form): add ...`).
-- **Never** use em dashes or en dashes; do not separate a name from its
-  description with a dash. Use "now" for behavioral and fix entries; commas,
-  parentheses or separate sentences elsewhere.
-- Do **not** mirror a previous release that lacks emoji; this template is
-  authoritative, so bring such a repo up to it.
-- Build the compare link from the slug and refs; when preparing notes for a tag
-  that already exists, use that tag instead of `origin/main`. Drop the
-  pre-release banner and the breaking-changes mention when they do not apply.
+- The generic GitHub / Keep-a-Changelog headers (`What's Changed`,
+  `What's new`, a bare `### Added` / `### Changed` / `### Removed` /
+  `### Fixed` / `### Features` / `### Fixes` / `### Chores`) are not used,
+  also in a repo whose earlier releases had them. Bring such a repo up to this
+  template.
+- No PR or commit numbers (`(#26)`, `(#5389625)`) unless the repo's own emoji
+  releases carry them. Rewrite each commit subject as a complete sentence
+  instead of copying it (`feat(form): add ...`).
+- No em dashes or en dashes, also not between a name and its description. Use
+  "now" for behavioral and fix entries; commas, parentheses or separate
+  sentences elsewhere.
+- Build the compare link from the slug and refs, with the branch name (`main`)
+  as head, because GitHub does not resolve `origin/main`. When preparing notes
+  for a tag that already exists, use that tag instead. Drop the pre-release
+  banner and the breaking-changes mention when they do not apply.
 
 ## 6. After the block
 
@@ -229,4 +231,6 @@ release.
 - **`release`** - cutting the actual GitHub release from a bump keyword. It
   reuses step 0 and steps 2 to 5 of this skill for the changelog, so keep the
   two in sync when either changes.
-- **`unslop`** - a final pass over the prose in the notes before they ship.
+- **`unslop`** - a final pass over the prose in the notes before they ship. The
+  house emoji are the format, not decoration, so that pass leaves them in the
+  headers.

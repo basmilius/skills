@@ -94,10 +94,11 @@ prove a separate failure mode.
 
 ## Retention bar
 
-Keep tests that independently enforce public API, SDK, protocol, configuration,
-migration, storage, security, platform, default, prompt-byte, cross-language,
-package, release, or architecture contracts. A category name alone does not
-justify a test; identify the actual contract and failure it catches. Also keep:
+Keep tests that independently enforce a contract other code or people rely on:
+a public API or SDK, a protocol, storage or migrations, security, configuration
+defaults, prompt bytes, cross-language or platform behavior, a package or
+release boundary, an architecture rule. The category alone does not justify a
+test; name the contract and the failure it catches. Also keep:
 
 - Call ordering when order affects observable behavior, including externally
   required interactions with no useful return value.

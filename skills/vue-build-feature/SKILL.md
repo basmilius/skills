@@ -115,9 +115,9 @@ component/
 
 - If a composable or store keeps its list in **module-level (singleton) state**
   shared with child/overlay routes, give it a `reset()` and call it in the list
-  view's `onUnmounted` (or `watch` a context key and reset on change).
-- Otherwise revisiting the page re-renders stale, possibly heavy state
-  synchronously before it reloads, which can freeze the UI with no spinner.
+  view's `onUnmounted` (or `watch` a context key and reset on change). Without
+  it, revisiting the page re-renders stale, possibly heavy state synchronously
+  before it reloads, which can freeze the UI with no spinner.
 - **Component-scoped composable state needs no `reset()`.** State created inside
   a composable the view instantiates is torn down with the view; only
   module-level (singleton) or store state that outlives the view does.

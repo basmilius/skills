@@ -1,6 +1,6 @@
 # Component index
 
-The complete public surface of `@flux-ui/components`, grouped as in the official
+Every public component of `@flux-ui/components`, grouped as in the official
 docs. Doc URLs follow `https://flux-ui.dev/components/<path>`.
 
 > **Two global rules for this whole skill** (stated here, not repeated per

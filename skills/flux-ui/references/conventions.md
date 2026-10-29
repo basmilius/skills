@@ -20,7 +20,7 @@ bun add @flux-ui/components@latest sass-embedded @basmilius/vite-preset@latest
 
 - **`vue`** → Flux 3.x requires a **Vue 3.6 pre-release**. The exact range moves as
   3.6 approaches stable, so take it from `npm view @flux-ui/components
-  peerDependencies` rather than a build pinned here; **`vue@latest` (3.5.x) does NOT
+  peerDependencies` rather than a build pinned here; **`vue@latest` (3.5.x) does not
   satisfy the peer** and mis-resolves.
 - `@flux-ui/components` → **`luxon`** (dates; TS: add `@types/luxon`).
 - `@flux-ui/application` → **`luxon`** and **`vue-router`** (the shell is route-driven).
@@ -226,7 +226,7 @@ from:
   on `@flux-ui/components`, import it from `@flux-ui/types`.
 
 `@flux-ui/types` pulls in Luxon types, so a TS project may need `@types/luxon`. The
-`guide/api/types` page documents the full surface.
+`guide/api/types` page documents every type.
 
 ## Every component must be imported (silent failure)
 

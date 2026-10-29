@@ -626,7 +626,7 @@ to `FluxCommandPalette` (the key would fire twice).
 
 The `FluxApplicationContent` `layout` values and when to use each are in
 `references/ecosystem.md` (`dashboard` here). `FluxStatisticsGrid` takes responsive
-column counts (`:xs`/`:sm`/`:md`/`:lg`/`:xl`). Full application + statistics surface:
+column counts (`:xs`/`:sm`/`:md`/`:lg`/`:xl`). Every application + statistics export:
 `references/ecosystem.md`.
 
 ### Context menus (sub-navigation for a section)
