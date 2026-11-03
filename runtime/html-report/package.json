@@ -6,9 +6,9 @@
         "build": "bun build.ts"
     },
     "dependencies": {
-        "@adecore/agents-react": "0.40.2",
-        "@adecore/charts": "0.40.2",
-        "@adecore/ui": "0.40.2",
+        "@adecore/agents-react": "0.51.0",
+        "@adecore/charts": "0.51.0",
+        "@adecore/ui": "0.51.0",
         "i18next": "26.4.2",
         "lucide-react": "1.61.0",
         "react": "19.3.1",
