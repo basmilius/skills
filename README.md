@@ -37,6 +37,7 @@ Add `--global` to make the skills available across projects. To browse the avail
 | [flux-ui](skills/flux-ui/SKILL.md) | Vue 3 interfaces with the `@flux-ui` component, application and statistics libraries. |
 | [basmilius](skills/basmilius/SKILL.md) | Helpers, DTOs, services and Vue app conventions for `@basmilius/utils`, `http-client` and `common`. |
 | [test-audit](skills/test-audit/SKILL.md) | Gate new tests and audit duplicate coverage, implementation coupling and unnecessary test-only production code. |
+| [council](skills/council/SKILL.md) | Review by models of different providers (Opus and Sol by default) as delegated Ruimte tasks, in rounds until all are satisfied. |
 
 The Vue skills work with any component library. Add `flux-ui` when the project uses Flux and `basmilius` when it uses the corresponding packages.
 
@@ -47,6 +48,7 @@ The Vue skills work with any component library. Add `flux-ui` when the project u
 | [release](skills/release/SKILL.md) | Prepare and create a GitHub release, then let the project's CI publish it. |
 | [release-notes](skills/release-notes/SKILL.md) | Release notes from changes between a base ref and `origin/main`. |
 | [review-threads](skills/review-threads/SKILL.md) | Assess and answer PR review comments, optionally applying the requested fixes. |
+| [pr-report](skills/pr-report/SKILL.md) | Overview report of open PRs per issue, with size, a mergeability score and review findings. Builds on `html-report`. |
 
 `release` and `review-threads` prepare the work locally and ask for confirmation before their remote actions. `release-notes` only produces text. The release skills read project-specific overrides from a `## Releasing` section in `CLAUDE.md` or `AGENTS.md`.
 
