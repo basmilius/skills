@@ -47,10 +47,9 @@ The Vue skills work with any component library. Add `flux-ui` when the project u
 | --- | --- |
 | [release](skills/release/SKILL.md) | Prepare and create a GitHub release, then let the project's CI publish it. |
 | [release-notes](skills/release-notes/SKILL.md) | Release notes from changes between a base ref and `origin/main`. |
-| [review-threads](skills/review-threads/SKILL.md) | Assess and answer PR review comments, optionally applying the requested fixes. |
 | [pr-report](skills/pr-report/SKILL.md) | Overview report of open PRs per issue, with size, a mergeability score and review findings. Builds on `html-report`. |
 
-`release` and `review-threads` prepare the work locally and ask for confirmation before their remote actions. `release-notes` only produces text. The release skills read project-specific overrides from a `## Releasing` section in `CLAUDE.md` or `AGENTS.md`.
+`release` prepares the work locally and asks for confirmation before its remote actions. `release-notes` only produces text. The release skills read project-specific overrides from a `## Releasing` section in `CLAUDE.md` or `AGENTS.md`.
 
 ### Writing
 
