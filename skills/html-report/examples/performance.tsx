@@ -103,7 +103,7 @@ export default (
             <Steps>
                 <Step title="Cellen per rij memoizen in Heatmap." done="een hover onder 16 ms blijft." />
                 <Step title="Layout van Timeline cachen per fold-state." done="inklappen één pass kost." />
-                <Step title={<>Perf-gate voor Heatmap in <code>test:perf</code>.</>} done="Faalt boven 20 ms." />
+                <Step title={<>Perf-gate voor Heatmap in <code>test:perf</code>.</>} done="de gate faalt op een hover boven 20 ms." />
             </Steps>
         </Section>
     </Report>

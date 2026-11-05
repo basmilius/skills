@@ -338,10 +338,10 @@ function Overview() {
 
 const openPrs = bundles.filter((bundle) => !bundle.merged).reduce((total, bundle) => total + bundle.prs.length, 0);
 const reviewedCount = bundles.filter((bundle) => bundle.review && !bundle.merged).length;
-const mergeableCount = bundles.filter((bundle) => bundle.review && !bundle.merged && scoreCap(bundle) === 5).length;
+const mergeableCount = bundles.filter((bundle) => bundle.review && !bundle.merged && !bundle.feedbackOpen && bundleScore(bundle) >= 4).length;
 const mergedCount = bundles.filter((bundle) => bundle.merged).length;
 
-// The prose below (lead, actions, decision) is written per report, in the report's language.
+// Write the prose below (lead, actions, decision) per report, in the report's language.
 
 export default (
     <Report title={title} kind={kind} model={model} lang={lang} meta={`${updated} · ${scope}`} brand={brand}>

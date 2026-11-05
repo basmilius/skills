@@ -1,7 +1,7 @@
 # Components
 
-Everything below is imported from `html-report`, the adecore components and charts
-included. The only other modules a report can import are `react` and `lucide-react`.
+A report imports everything below from `html-report`, the adecore components and
+charts included. The only other modules a report can import are `react` and `lucide-react`.
 Props in `code`; `children` is the content between the tags unless the row says
 otherwise.
 
@@ -14,8 +14,8 @@ otherwise.
 | `Lead` | `aside` | The opening conclusion in a larger size. Put `<p>` elements in it. In a wide report, `aside` holds the scope and conditions beside it. |
 | `Intro` | | A muted line under a section title. |
 
-`brand` is `{ name, color, icon }`. `color` is a hex color; the accent is derived from it
-per theme with enough contrast. `icon` is a Lucide name (`'gift'`, drawn in the
+`brand` is `{ name, color, icon }`. `color` is a hex color; the report derives the accent
+from it per theme with enough contrast. `icon` is a Lucide name (`'gift'`, drawn in the
 accent), or a logo, drawn in its own colors: the path of an `.svg`, `.png` or `.jpg`
 file (absolute or relative to the report; the build embeds it), inline SVG markup or
 a `data:` URL. Without an icon the mark shows the first letter of
@@ -27,7 +27,7 @@ warns when it is missing. Only `nl` and `en` exist; other languages fall back to
 English for the interface.
 
 `model` is the name of the model that wrote the report (`Claude Sonnet 5.5`). It shows
-with the logo of its provider, which is read from the name: Anthropic, OpenAI,
+with the logo of its provider, which the report reads from the name: Anthropic, OpenAI,
 Google, Mistral AI, DeepSeek, Alibaba, Moonshot AI, Meta, xAI or GitHub. Set
 `provider` to one of those names when the model name does not give it away. Opened,
 the block lists the model, the provider and when the report was built.
@@ -55,7 +55,7 @@ the block lists the model, the provider and when the report was built.
 dropped, so the code can start on the line after the backtick. Escape a backtick as
 `` \` `` and `${` as `\${` inside it.
 
-Plain HTML is styled too: `<p>`, `<ul>`, `<ol>`, `<table>` (add `data-numeric` to
+The report styles plain HTML too: `<p>`, `<ul>`, `<ol>`, `<table>` (add `data-numeric` to
 `<th>` and `<td>` for right-aligned numbers), `<code>`, `<a>`, `<h3>`. Utility classes:
 `report-muted`, `report-good`, `report-bad`.
 
@@ -109,12 +109,12 @@ after slider for two images), `MiddleTruncate`. Docs: https://adecore.dev/ui/.
 Icons: import Lucide icons by name from `lucide-react` (`import { Rocket } from
 'lucide-react'`); the build puts only those in the file and stops at an unknown name.
 They take `size`, `strokeWidth`, `color`, `className`, `style` and `aria-label`.
-React hooks come from `react`, so a
-report can hold state, such as a `Segmented` that switches between two charts; put
-that in a component of its own inside the report, since the built HTML shows its
-first state until the page is hydrated.
 
-The CSS is compiled ahead, so only a fixed set of Tailwind utilities exists for
+React hooks come from `react`, so a report can hold state, such as a `Segmented`
+that switches between two charts. Put that in a component of its own inside the
+report, since the built HTML shows its first state until the page hydrates.
+
+The build compiles the CSS ahead of time, so only a fixed set of Tailwind utilities exists for
 layout around the components: `flex`, `grid`, `grid-cols-1` to `-4` (also `sm:` and
 `md:`), `gap-`, `mt-`, `mb-`, `p-`, `px-`, `py-` with 1, 2, 3, 4, 6 or 8, alignment,
 `w-full`, `min-w-0`, `grow`, `truncate`, the text sizes `xs` to `lg`, `font-medium`,

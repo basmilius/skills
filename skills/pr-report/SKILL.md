@@ -26,7 +26,7 @@ Install the `html-report` skill next to this one. Its build and publish scripts 
 at `<this skill>/../html-report/scripts/`; when the sibling is missing, look in
 `~/.claude/skills/html-report` and `~/.agents/skills/html-report`, and otherwise tell
 the user to install it. Follow `html-report` for the brand, the build, the checks
-and publishing. This skill never publishes on its own: only when the user asks.
+and publishing. This skill never publishes on its own, only when the user asks.
 
 ## Workflow
 
@@ -42,8 +42,8 @@ and publishing. This skill never publishes on its own: only when the user asks.
    - Expand brace notation (`acme/{backend,frontend}`) into separate repositories.
    - A bare repository name (`backend`) takes the owner of the other repositories in
      the request or of the current repository's `origin`; ask when neither settles it.
-   - An author given as a name rather than a login is resolved to a GitHub login:
-     match the name against the logins and display names of the owner's members
+   - Resolve an author given as a name rather than a login to a GitHub login.
+     Match the name against the logins and display names of the owner's members
      (`gh api orgs/<owner>/members --paginate -q '.[].login'`, then
      `gh api users/<login> -q .name`) and of the authors of the open PRs in scope.
      Many accounts have no display name, so also match the name case-insensitively
@@ -64,7 +64,7 @@ and publishing. This skill never publishes on its own: only when the user asks.
      --json repository,number,title,url,author,isDraft,createdAt,updatedAt
    # every repository of an owner
    gh search prs --owner acme --author <login> --state open --limit 200 --json ...
-   gh pr view <n> -R <owner/repo> --json number,title,author,body,baseRefName,headRefName,additions,deletions,changedFiles,mergeable,mergeStateStatus,reviewDecision,reviews,statusCheckRollup,comments,commits
+   gh pr view <n> -R <owner/repo> --json number,title,author,body,baseRefName,headRefName,headRefOid,additions,deletions,changedFiles,mergeable,mergeStateStatus,reviewDecision,reviews,statusCheckRollup,comments,commits
    ```
 
    Search skips archived repositories. When a search returns its limit, raise it or
@@ -99,7 +99,8 @@ and publishing. This skill never publishes on its own: only when the user asks.
 - A bundle takes the lowest score of its PRs.
 - After a review, an open **blocking** finding caps the score at 2 and an open
   **important** finding at 3. Either makes the bundle **not mergeable**; only minor
-  findings may stay open on a mergeable bundle. The template applies the caps.
+  findings may stay open on a mergeable bundle. The template applies the caps and
+  counts a reviewed bundle as mergeable at score 4 or 5 without open feedback.
 - Size counts added plus removed lines of the whole bundle: XS < 100, S < 400,
   M < 1,500, L < 5,000, XL above. Take the numbers from the API, not from a guess.
 - State follows from the data: *merged* (`merged` set), *reviewed* (`review` set),
@@ -126,7 +127,10 @@ before you record it, then set `merged` on the bundle with the merge commit and 
 
 ## Updating the report
 
-- Edit the `.tsx`, keep the section ids, rebuild and publish again to the same URL.
+- Edit the `.tsx`, keep the section ids and rebuild. When the report was published
+  and the user asks, publish again to the same URL.
+- Remove a finding from `review.findings` once it is resolved; the caps count every
+  finding in the list.
 - Every update sets the `updated` line from `date`, never from memory.
 - Write in the third person with names when more than one person reads the report,
   and tie each next step to a person and a condition for done.

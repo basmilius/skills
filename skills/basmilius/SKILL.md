@@ -24,16 +24,16 @@ license: MIT (skill content); @basmilius/utils, @basmilius/http-client and @basm
 The `@basmilius` npm scope is one stack in three layers, each covered by a
 guide in `references/`:
 
-1. **`@basmilius/utils`** - ~45 framework-agnostic helpers (dates via Luxon,
-   colors, numbers, downloads, DOM, timing, geo/astro, seeded PRNG). Usable in
+1. `@basmilius/utils`: about 45 framework-agnostic helpers (dates via Luxon,
+   colors, numbers, downloads, DOM, timing, geo/astro, seeded PRNG). Works in
    any TypeScript project.
-2. **`@basmilius/http-client`** - the typed data layer: every body a `@dto`
-   class, every endpoint group a `BaseService`, raw snake_case JSON mapped by a
-   static `@adapter`. Builds on `utils`.
-3. **`@basmilius/common`** - Vue 3 app primitives: a ref-returning
-   `defineStore`, `useService` + `guarded`, `useDataTable` / `useDataReport`,
-   `useDtoForm`, a large composable catalog and thin `vue-router` wrappers.
-   Assumes Pinia and Vue Router, builds on both packages above.
+2. `@basmilius/http-client`: the typed data layer. Every body is a `@dto`
+   class, every endpoint group a `BaseService`, and a static `@adapter` maps
+   the raw snake_case JSON. Builds on `utils`.
+3. `@basmilius/common`: Vue 3 app primitives. A ref-returning `defineStore`,
+   `useService` + `guarded`, `useDataTable` / `useDataReport`, `useDtoForm`, a
+   large composable catalog and thin `vue-router` wrappers. Assumes Pinia and
+   Vue Router, and builds on both packages above.
 
 Shared assumptions: a Vue 3.6 pre-release where Vue is involved (exact range per
 the package's `peerDependencies`), `luxon` as a peer for dates. `@flux-ui/*` is a
@@ -57,7 +57,7 @@ each involved guide; they are short and cross-link where the layers meet.
 
 ## Related skills
 
-- **`vue-build-feature`** / **`code-style`** - the library-neutral
-  Vue architecture and SFC patterns these packages slot into; `common` is the
-  concrete data/state layer `vue-build-feature` defers to.
-- **`flux-ui`** - the Flux UI component library (separate `@flux-ui` scope).
+- `vue-build-feature` / `code-style`: the library-neutral Vue architecture and
+  SFC patterns these packages slot into. `common` is the concrete data/state
+  layer that `vue-build-feature` defers to.
+- `flux-ui`: the Flux UI component library (separate `@flux-ui` scope).

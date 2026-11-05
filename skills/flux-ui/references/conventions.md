@@ -1,44 +1,45 @@
 # Conventions, setup & API
 
-Durable conventions that apply across all Flux components, plus install and the
+Conventions that apply across all Flux components, plus install and the
 composables / global API. For exact, current detail the Introduction and API guide
-pages at flux-ui.dev are authoritative; work against the **latest** published version
+pages at flux-ui.dev are authoritative. Work against the latest published version
 (the 3.x line, installed via `@latest`).
 
 ## Installation
 
 Flux is SCSS-based and ships a companion Vite preset. Install the Flux package and
-the preset with the **`@latest`** dist-tag, not a guessed caret range: the published
-versions are on a **3.x** line and a caret won't match a `-next` prerelease, so
-guessed ranges fail to resolve.
+the preset with the **`@latest`** dist-tag, not a guessed caret range. The published
+versions are on a 3.x line and a caret won't match a `-next` prerelease, so guessed
+ranges fail to resolve.
 
 ```sh
 bun add @flux-ui/components@latest sass-embedded @basmilius/vite-preset@latest
 ```
 
-**Peer dependencies** (not bundled; missing ones fail the build or make charts throw):
+Peer dependencies are not bundled. A missing one fails the build or makes charts
+throw:
 
-- **`vue`** → Flux 3.x requires a **Vue 3.6 pre-release**. The exact range moves as
+- `vue` → Flux 3.x requires a **Vue 3.6 pre-release**. The exact range moves as
   3.6 approaches stable, so take it from `npm view @flux-ui/components
-  peerDependencies` rather than a build pinned here; **`vue@latest` (3.5.x) does not
+  peerDependencies` rather than a build pinned here. **`vue@latest` (3.5.x) does not
   satisfy the peer** and mis-resolves.
-- `@flux-ui/components` → **`luxon`** (dates; TS: add `@types/luxon`).
-- `@flux-ui/application` → **`luxon`** and **`vue-router`** (the shell is route-driven).
-- `@flux-ui/statistics` → **`echarts`**, **`lodash-es`**, and **`vue-i18n`** (must be
+- `@flux-ui/components` → `luxon` (dates; TS: add `@types/luxon`).
+- `@flux-ui/application` → `luxon` and `vue-router` (the shell is route-driven).
+- `@flux-ui/statistics` → `echarts`, `lodash-es`, and `vue-i18n` (must be
   registered on the app or the charts throw; TS: add `@types/lodash-es`).
 
-Icons come from Font Awesome, added **separately** (see Icons below).
+Icons come from Font Awesome, added separately (see Icons below).
 
 Add `preset()` **plus one plugin per Flux package you use** to the Vite config:
 `flux()` for `@flux-ui/components`, `fluxApplication()` for `@flux-ui/application`,
 `fluxStatistics()` for `@flux-ui/statistics`. Each aliases its package to source
 (`~flux/<pkg>`) and wires the tsconfig path.
 
-> **This matters:** if you use `@flux-ui/application` or `@flux-ui/statistics` but only
-> add `flux()`, those packages resolve to their **dist** build, whose CSS is a
-> separate `style.css` that nothing imports, so the **app shell / charts render
-> completely unstyled** (sidebar collapses to a flat list, etc.). Add the matching
-> plugin for every Flux package you import.
+> **Warning.** If you use `@flux-ui/application` or `@flux-ui/statistics` but only
+> add `flux()`, those packages resolve to their dist build. Its CSS is a separate
+> `style.css` that nothing imports, so the **app shell and charts render completely
+> unstyled** (the sidebar collapses to a flat list, etc.). Add the matching plugin
+> for every Flux package you import.
 
 ```ts [vite.config.ts]
 import { defineConfig } from 'vite';
@@ -52,7 +53,7 @@ export default defineConfig({
 });
 ```
 
-**Import the global stylesheet** once (e.g. in `main.ts`). Under the preset (which
+Import the global stylesheet once (e.g. in `main.ts`). Under the preset (which
 aliases each `@flux-ui/*` package to its `src/`), import the SCSS source entry:
 
 ```ts
@@ -62,14 +63,14 @@ import '@flux-ui/components/css/index.scss';
 (Without the preset, the prebuilt `@flux-ui/components/style.css` is the equivalent.)
 `@flux-ui/application` and `@flux-ui/statistics` ship co-located CSS-module styles
 that auto-import once their preset plugin is added. Install guides exist for plain
-Vue, **Vue Router**, and **Nuxt**; routing and SSR each need extra setup.
+Vue, Vue Router and Nuxt; routing and SSR each need extra setup.
 
 ## Internationalization (vue-i18n): avoid raw `flux.*` keys
 
 Flux components have their own built-in English strings, used **only when no global
 vue-i18n `$t` is injected**. If a vue-i18n instance injects a global `$t`, Flux
 delegates to it, and if your messages lack the `flux.*` keys the UI shows raw keys
-like `(flux.optional)`. Because **`@flux-ui/statistics` requires vue-i18n**, configure
+like `(flux.optional)`. Because `@flux-ui/statistics` requires vue-i18n, configure
 i18n so Flux keeps its own strings: set **`globalInjection: false`** (and
 `legacy: false`).
 
@@ -103,9 +104,9 @@ the `show*` functions **throw if none is present**.
 
 ## Icons = registered Font Awesome names
 
-Flux does not take icon components. You **register** Font Awesome definitions once,
-then reference them by **kebab-case name string** (typed `FluxIconName`). An
-**unregistered** icon simply renders nothing.
+Flux does not take icon components. You register Font Awesome definitions once,
+then reference them by kebab-case name string (typed `FluxIconName`). An
+**unregistered icon renders nothing.**
 
 ```ts [icons.ts]
 // Free (no token). Swap to '@fortawesome/pro-regular-svg-icons' if the project has Pro.
@@ -121,7 +122,7 @@ fluxRegisterIcons(icons);
 ```
 
 **Free or Pro: ask first.** `fluxRegisterIcons` accepts any Font Awesome
-`IconDefinition`, so Flux works with **Free or Pro**; Pro is not required. Pro packages
+`IconDefinition`, so Flux works with Free or Pro; Pro is not required. Pro packages
 (`@fortawesome/pro-regular-svg-icons`, ...) need a paid token, so installing one
 without it fails. **Ask which tier the user has before adding a Font Awesome
 dependency; default to Free.** If a required icon name only exists in Pro, register the
@@ -129,8 +130,8 @@ closest Free style (often the solid variant).
 
 **Register each component's "Required icons", not just the ones you pass.** Many
 components use icons internally (sort arrows, pagination chevrons, checkmarks, close
-✕, ...) that you never reference. Every doc page lists them under **"Required
-icons"** (e.g. `data-table` needs `arrow-down-a-z`, `arrow-up-a-z`,
+✕, ...) that you never reference. Every doc page lists them under "Required
+icons" (e.g. `data-table` needs `arrow-down-a-z`, `arrow-up-a-z`,
 `arrow-up-arrow-down`, `check`, `circle-xmark`, `minus`). Read them off the page
 rather than guessing, or the component's sort/pagination controls render blank.
 
@@ -147,23 +148,23 @@ declaring a screen done. Three traps:
   `FluxBoxedIcon` (see below); on `FluxFilterOption` and form controls `name` is a
   state/field key.
 
-**Prop-name trap:** `FluxIcon` and `FluxBoxedIcon` take the icon through a **`name`**
+**Prop-name trap.** `FluxIcon` and `FluxBoxedIcon` take the icon through a `name`
 prop (`<FluxIcon name="circle-check" />`), *not* `icon`. Everywhere else (buttons,
 badges, notices, headers, ...) it comes via `icon` / `icon-leading` / `icon-trailing`.
 
 ## Design tokens & colors
 
-- **Design tokens are CSS custom properties** on `:root` (`--background`, `--gray-25`,
-  `--primary-500`, ...). They flip automatically in dark mode. Use them in your own
+- Design tokens are CSS custom properties on `:root` (`--background`, `--gray-25`,
+  `--primary-500`, ...). They flip in dark mode on their own. Use them in your own
   styles; they are *not* values you pass to props.
-- **Spacing / `gap`** props take a **plain number in pixels** (`<FluxFlex :gap="9">`
+- Spacing / `gap` props take a **plain number in pixels** (`<FluxFlex :gap="9">`
   renders `gap: 9px`). There is no numeric token scale for these.
-- **Colors** on components use **token names** via the `FluxColor` type:
+- Colors on components use token names via the `FluxColor` type:
   `gray | primary | danger | info | success | warning` (`color="success"`, ...). The
   palette tokens are `--gray-*`, `--primary-*`, `--danger-*`, `--info-*`, `--success-*`,
   `--warning-*`.
-- **Typography** and **dark mode** are handled by the library via these variables.
-  Dark mode is built in; don't author separate dark styles per component.
+- The library handles typography and dark mode through these variables. Dark mode
+  is built in; don't author separate dark styles per component.
 
 ## Overriding Flux internals (last resort)
 
@@ -190,10 +191,10 @@ tokens did not suffice.
 Flux is **not** consistent about how text content goes in, so don't assume a
 `message` / `title` / `label` prop exists:
 
-- **`label` prop:** `FluxBadge`, `FluxTag`, `FluxChip` (`<FluxBadge label="New" />`).
-- **`content` prop:** `FluxTooltip` (`<FluxTooltip content="Delete">`).
-- **`message` / `title` prop *or* default slot:** `FluxNotice`, `FluxPlaceholder`.
-- **Default slot only, no content prop:** `FluxInfo`, `FluxItemContent`. Write
+- `label` prop: `FluxBadge`, `FluxTag`, `FluxChip` (`<FluxBadge label="New" />`).
+- `content` prop: `FluxTooltip` (`<FluxTooltip content="Delete">`).
+- `message` / `title` prop *or* default slot: `FluxNotice`, `FluxPlaceholder`.
+- Default slot only, no content prop: `FluxInfo`, `FluxItemContent`. Write
   `<FluxInfo>Saved.</FluxInfo>`, **not** `<FluxInfo message="Saved." />`.
 
 When unsure, check the doc page; guessing a `:message` / `:title` prop that doesn't
@@ -212,14 +213,14 @@ Components that navigate accept Vue Router targets via `type="route"` + `:to` (t
 
 ## TypeScript & types
 
-Public types live in **`@flux-ui/types`**, and the compiler enforces where they come
+Public types live in `@flux-ui/types`, and the compiler enforces where they come
 from:
 
 - **Type-only aliases come from `@flux-ui/types`**: `FluxIconName`, `FluxColor`,
   `FluxTo`, `FluxButtonSize`, and most component-config types. These are **not**
-  re-exported by `@flux-ui/components` (importing `FluxColor` from there is a type
-  error): write `import type { FluxColor, FluxIconName } from '@flux-ui/types';`.
-- **`@flux-ui/components`** re-exports the runtime API (components, functions,
+  re-exported by `@flux-ui/components`, and importing `FluxColor` from there is a type
+  error. Write `import type { FluxColor, FluxIconName } from '@flux-ui/types';`.
+- `@flux-ui/components` re-exports the runtime API (components, functions,
   composables) and a *subset* of types: the injection types
   (`FluxFormFieldInjection`, ...), `FluxState` / `FluxStore`,
   `FluxFilterDefinitionFactory`, and the select option types. When a type isn't found
@@ -245,7 +246,7 @@ the `guide/composables/*` and `guide/api/*` pages are authoritative.
 
 ### Utility composables (call directly)
 
-**`useBreakpoints`** (verified) - reactive viewport tracking:
+`useBreakpoints` (verified) tracks the viewport reactively:
 
 ```ts
 import { useBreakpoints } from '@flux-ui/components';
@@ -254,9 +255,9 @@ const { currentBreakpoint, xs, sm, md, lg, xl } = useBreakpoints();
 ```
 
 Floors: `xs` 0px, `sm` 640px, `md` 768px, `lg` 1024px, `xl` 1280px. Prefer this over
-CSS media queries for **structural** changes (e.g. flipping `FluxFlex` direction).
+CSS media queries for structural changes (e.g. flipping `FluxFlex` direction).
 
-**`useDisabled`** - reads/propagates disabled state so a control respects an ancestor's
+`useDisabled` reads and propagates disabled state so a control respects an ancestor's
 disabled context (pair with `useDisabledInjection` when authoring a custom control).
 
 ### Injection composables (for custom components)
@@ -275,15 +276,15 @@ a `FluxFormField`), `useFormRadioGroupInjection`, `useKanbanInjection`,
 
 ## Global API & helpers
 
-- **`useFluxStore`** - Flux's reactive global store (`FluxStore`). Underpins app-wide
-  state and the dialog/snackbar machinery; also exposes `addSnackbar(spec) → id`,
+- `useFluxStore`: Flux's reactive global store (`FluxStore`). It underpins app-wide
+  state and the dialog/snackbar machinery, and also exposes `addSnackbar(spec) → id`,
   `updateSnackbar(id, partial)` and `removeSnackbar(id)` for live-updating snackbars
   (see `references/dialogs-and-feedback.md`). For dialogs prefer the `show*` functions.
-- **Filter helpers** - author reusable filters with `defineFilter` (the
+- Filter helpers: author reusable filters with `defineFilter` (the
   `defineFilterMacro` compile macro is at the `@flux-ui/components/vite` subpath);
   custom controls read context via `useFilterInjection`. Also `pickFilterCommon` and
   the type guards `isFluxFilterOptionHeader` / `isFluxFilterOptionItem`.
-- **Select type guards** - `isFluxFormSelectOption` / `isFluxFormSelectGroup`.
+- Select type guards: `isFluxFormSelectOption` / `isFluxFormSelectGroup`.
 - ⚠ **Not on the package root.** Several source utilities are **not** re-exported from
   `@flux-ui/components`: `generateMultiOptionsLabel`, `isResettable`, `sanitizeUrl`,
   `createLabelForDateRange`, `createDialogRenderer`, the `inputMask` namespace, and the
@@ -293,8 +294,8 @@ a `FluxFormField`), `useFormRadioGroupInjection`, `useKanbanInjection`,
 
 The guide's Patterns section shows idiomatic end-to-end wiring:
 
-- CRUD form - `https://flux-ui.dev/guide/patterns/crud-form`
-- Filterable data table - `https://flux-ui.dev/guide/patterns/filterable-data-table`
-- Stepper wizard - `https://flux-ui.dev/guide/patterns/stepper-wizard`
-- Programmatic dialogs - `https://flux-ui.dev/guide/patterns/programmatic-dialogs`
+- CRUD form: `https://flux-ui.dev/guide/patterns/crud-form`
+- Filterable data table: `https://flux-ui.dev/guide/patterns/filterable-data-table`
+- Stepper wizard: `https://flux-ui.dev/guide/patterns/stepper-wizard`
+- Programmatic dialogs: `https://flux-ui.dev/guide/patterns/programmatic-dialogs`
   (also summarized in `references/dialogs-and-feedback.md`)

@@ -59,7 +59,7 @@ export default (
         </Section>
 
         <Section title="Oorzaak">
-            <p>De index werd binnen een transactie gemaakt. Schrijvers wachtten op de lock en hielden hun verbinding vast tot de pool van 40 vol zat.</p>
+            <p>Migratie 0147 maakte de index binnen een transactie. Schrijvers wachtten op de lock en hielden hun verbinding vast tot de pool van 40 vol zat.</p>
             <Columns>
                 <Column title="Ging goed">
                     <ul>

@@ -125,12 +125,12 @@ Pure array conversions. RGB channels `0-255`; HEX `#rrggbb`; HSL `h 0-360`,
 
 ## Browser vs pure (SSR)
 
-- **Needs DOM/globals (fails in plain Node/SSR):** `downloadBlob`,
+- Needs DOM/globals (fails in plain Node/SSR): `downloadBlob`,
   `downloadString`, `downloadUrl`, `openUrl`, `printHtml`, `viewTransition`,
   `formatPercentage`.
-- **DOM-aware but SSR-safe (degrade gracefully):** `isHtmlElement`,
+- DOM-aware but SSR-safe (degrades gracefully): `isHtmlElement`,
   `formatNumber`.
-- **Pure (framework and DOM agnostic):** all color conversions, all math
+- Pure (framework and DOM agnostic): all color conversions, all math
   (`countDecimals`, `roundStep`, `clampWithStepPrecision`, `generateStepTicks`,
   `mulberry32`), geo (`isPointInPolygon`, `isNorthernHemisphere`), object helpers,
   timing (`debounce`, `waitFor`), and the date helpers (pure given a `DateTime`).

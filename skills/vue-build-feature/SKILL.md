@@ -25,13 +25,14 @@ components (if the project uses Flux) use `flux-ui`; project-specific rules
 
 ## 1. Core principle: views orchestrate, components present
 
-- **The view (page) is the single orchestrator:** it owns the data, state and
+- **The view (page) is the single orchestrator.** It owns the data, state and
   handlers by instantiating the feature composable (section 5). The state lives
   in the composable; the view is the only place that wires it to children via
-  props / `v-model`. Children never own canonical state - they emit or write a
-  model to ask for change.
-- **Presentational components are props-in / events-out:** `defineProps`,
-  `defineEmits`, `defineModel` only, and no data fetching of their own.
+  props / `v-model`. Children never own canonical state. They emit or write a
+  model to ask for a change.
+- **Presentational components are props-in / events-out.** They use
+  `defineProps`, `defineEmits` and `defineModel` only, and fetch no data of
+  their own.
 - **Decompose, do not dump.** Split each markup-heavy block (toolbar, filter,
   card, list, totals, empty state) into its own component once it stands alone.
 
@@ -49,19 +50,19 @@ A non-trivial feature usually touches these layers. Keep them separate:
 | Cross-cutting | Shared utils/formatters, icons, user-facing text (i18n) |
 
 *Where* each layer lives differs per project; the *separation* is the constant.
-Never fetch inside a component - go through the data layer and a composable.
+Never fetch inside a component; go through the data layer and a composable.
 
 ## 3. Build sequence (bottom-up)
 
 Build from the layer with the fewest dependencies upward, so each layer compiles
 against the one below:
 
-1. **Data access** - types/models + the service method(s).
-2. **Composable** - wrap loading and state for the view.
-3. **Presentational components** - one per block, with a feature barrel.
-4. **View** - wire the composable to the components.
-5. **Route** - register the view.
-6. **Cross-cutting** - utils/formatters, icons, i18n keys.
+1. Data access: types/models + the service method(s).
+2. Composable: wrap loading and state for the view.
+3. Presentational components: one per block, with a feature barrel.
+4. View: wire the composable to the components.
+5. Route: register the view.
+6. Cross-cutting: utils/formatters, icons, i18n keys.
 
 ## 4. Structure and barrels
 
@@ -103,8 +104,8 @@ component/
   in order: skeleton while loading, then error, then empty, then data.
 - Do not hand-roll a `watch` + `fetch` + manual debounce in a view. Reach first
   for the project's existing data helper (a list/table or report composable, or a
-  data-fetching library) and model a new one on the closest match. **If none
-  exists** (greenfield), write one small race-guarded primitive (fetch + loading +
+  data-fetching library) and model a new one on the closest match. If none
+  exists (greenfield), write one small race-guarded primitive (fetch + loading +
   error + a request token that drops stale responses) and model each feature
   composable on it.
 - **If the project uses `@basmilius/common`,** its `useDataTable` /
@@ -132,13 +133,14 @@ component/
 - Put cross-cutting concerns in route `meta` (guards, permissions, title) and
   read them in a navigation guard, rather than checking inside each view.
 - Model modal/overlay screens as routes for deep-linking or a back action. Make
-  the overlay a **child route** of the list so the list stays mounted underneath
-  (also why its `reset()` fires only on leaving the feature, section 6), rendered
-  through a nested `<RouterView>`. Pass route params as **props** (`props: true`),
-  not `useRoute()`, and **close by navigating to the parent route**, not
-  `router.back()`, so a cold deep link still has an exit.
+  the overlay a **child route** of the list, rendered through a nested
+  `<RouterView>`, so the list stays mounted underneath. That is also why its
+  `reset()` fires only on leaving the feature (section 6). Pass route params as
+  props (`props: true`), not `useRoute()`, and **close by navigating to the
+  parent route**, not `router.back()`, so a cold deep link still has an exit.
 - **Permission/guard specifics are project-specific** (follow the repo's
-  `CLAUDE.md`); the pattern is: declare in `meta`, enforce in a guard.
+  `CLAUDE.md`). The pattern itself holds everywhere: declare in `meta`, enforce
+  in a guard.
 
 ## 8. Cross-cutting
 
@@ -150,10 +152,10 @@ component/
 
 ## Related skills
 
-- **`code-style`** - how to build each `.vue` file this feature adds.
-- **`flux-ui`** - selecting and composing components when the project uses Flux.
-- **`basmilius`** - if the project uses the `@basmilius/*` packages (by Bas
+- `code-style`: how to build each `.vue` file this feature adds.
+- `flux-ui`: selecting and composing components when the project uses Flux.
+- `basmilius`: if the project uses the `@basmilius/*` packages (by Bas
   Milius), the concrete data layer (DTO services) and the state/composable
-  layer (`useDataTable`, stores) this skill leaves project-specific.
-- The repo's **`CLAUDE.md` / `AGENTS.md`** - the state/data library, permission
+  layer (`useDataTable`, stores) that this skill leaves project-specific.
+- The repo's `CLAUDE.md` / `AGENTS.md`: the state/data library, permission
   model, i18n location and other project-specific rules.

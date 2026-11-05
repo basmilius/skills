@@ -59,7 +59,7 @@ should be a function call.
 
 **A comment that drifted.** When you move or reorder code, the comment above it
 often stays put and ends up explaining its new neighbor. Check what the comment
-claims against what is actually under it. If it belongs elsewhere, move it; if
+claims against the code under it. If it belongs elsewhere, move it; if
 its subject is gone, delete it.
 
 **The same block in five files.** Copied boilerplate stops being read. Cut it to
@@ -91,7 +91,7 @@ Two sentences, both load-bearing: why the rounding, and why the rounded value is
 also what gets measured.
 
 Aim for one line. Take two when the second says something the first does not.
-Take a second paragraph only when it covers a genuinely separate concern, such
+Take a second paragraph only when it covers a separate concern, such
 as a historical column the current code has to keep matching.
 
 ## 5. Doc blocks
@@ -160,8 +160,8 @@ already tight may lose nothing.
 
 ## Related skills
 
-- **`unslop`** - the same instinct applied to prose: cut the padding, keep the
+- **`unslop`** applies the same instinct to prose. Cut the padding, keep the
   point.
-- The repo's **`CLAUDE.md` / `AGENTS.md`** - project rules on comment language,
-  doc block requirements and header conventions, which override the defaults
-  here.
+- The repo's **`CLAUDE.md` / `AGENTS.md`** holds project rules on comment
+  language, doc block requirements and header conventions, which override the
+  defaults here.

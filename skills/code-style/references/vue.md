@@ -2,7 +2,7 @@
 
 How one Vue 3 Single File Component is built on the inside. This is about the
 shape of a single `.vue` file: the order of its blocks, its macros, its script,
-and its styles. It is deliberately library-neutral. For how a feature is split
+and its styles. It assumes no component library. For how a feature is split
 across several components use `vue-build-feature`; for choosing UI components (if
 the project uses Flux) use `flux-ui`; project-specific rules live in the repo's
 `CLAUDE.md` / `AGENTS.md`.
@@ -21,8 +21,8 @@ Assume `<script setup lang="ts">` and Vue 3.5+ unless the repo says otherwise.
 - **Prefer a single root element** in the template: it gives predictable
   attribute fallthrough (`class`, `@click`, `v-bind="$attrs"` land on one node)
   and is required by many `<Transition>` setups. Vue 3 allows fragments
-  (multiple roots), but reach for them deliberately, not by accident: with more
-  than one root, `$attrs` is not auto-inherited and you must bind it explicitly.
+  (multiple roots), but use them on purpose. With more than one root, `$attrs`
+  is not auto-inherited and you must bind it explicitly.
 - Render teleported/overlay children (dialogs, tooltips) inside the root, not as
   a sibling of it, so transitions and fallthrough stay intact.
 
@@ -36,8 +36,8 @@ readable at a glance:
 
 `defineExpose` is the exception: it goes at the very bottom of the script (after
 the function declarations, see section 3), and only if a parent needs a ref
-handle. It describes the outward surface, so it reads last once everything it
-exposes is defined.
+handle. It lists what a parent can reach, so it comes last, after everything
+it exposes is defined.
 
 - Type each one; do not pass runtime option objects when a type argument says it
   better.
@@ -47,9 +47,9 @@ exposes is defined.
 Order the body top to bottom so state is declared before it is used:
 
 1. **imports**
-2. **macros** (emits / models / props / slots) - see section 2
+2. **macros** (emits / models / props / slots), see section 2
 3. **module constants** (`ALL_CAPS`: config values, option lists, lookup maps)
-4. **stores** (`use*Store()` - shared state)
+4. **stores** (`use*Store()`, shared state)
 5. **reactive state** (`ref`, `reactive`, `shallowRef`, and template refs)
 6. **composables** (`useRouter`, `useI18n`, other `use*` behavior helpers)
 7. **computed**
@@ -84,12 +84,12 @@ Order the body top to bottom so state is declared before it is used:
 - **Lifecycle bodies stay inline:** `onMounted(async () => { ... })` keeps the
   side effect where it runs. Only lift it into a named function when a second
   caller needs it (a watcher, a retry button, the template) or when the body
-  grows past a handful of statements - not just to give it a name.
+  grows past a handful of statements. Wanting a name for it is no reason.
 
 ## 5. Props and their types
 
 - Type props with the generic form: `defineProps<{ readonly id: number }>()`.
-  Mark fields `readonly` - props are immutable.
+  Mark fields `readonly`, because props are immutable.
 - **Defaults:** use reactive props destructuring with defaults:
   `const { size = 'md' } = defineProps<{ size?: Size }>()`. The destructured
   bindings stay reactive; only destructure the props that need a default.
@@ -136,9 +136,9 @@ Order the body top to bottom so state is declared before it is used:
 - **Custom / global / deep-selector CSS is a last resort.** Keep it minimal and
   leave a one-line comment explaining why the module route did not work.
 - **Overriding a component library's internals** (when props, slots and design
-  tokens truly cannot reach it) is done with `:local(.pane)` nested under your
-  own base class. Functionally it is just a local class reference; writing
-  `:local()` explicitly marks the class as foreign, deliberately reached into.
+  tokens cannot reach it) is done with `:local(.pane)` nested under your own
+  base class. It works as a plain local class reference; the explicit
+  `:local()` marks the class as foreign, reached into on purpose.
   This only resolves to the library's class when app and library share the same
   name-based CSS-modules mangling (for example both built with
   `@basmilius/vite-preset`); the one-line-comment rule above applies.
@@ -151,8 +151,7 @@ Order the body top to bottom so state is declared before it is used:
 
 - **One blank line between the top-level groups** in `<script setup>` (imports,
   each macro block, constants, stores, state, composables, computed, watch,
-  lifecycle)
-  and between every `function` declaration.
+  lifecycle) and between every `function` declaration.
 - **No blank line between adjacent single-line declarations** in the same group
   (a run of refs or composables stays together).
 - **Inside a function, one blank line separates logical steps:** after a
@@ -163,8 +162,8 @@ Order the body top to bottom so state is declared before it is used:
 
 ## Related skills
 
-- **`vue-build-feature`** - splitting a feature across a view plus multiple
+- **`vue-build-feature`** splits a feature across a view plus multiple
   components, composables, data access and a route.
-- **`flux-ui`** - picking and composing components when the project uses Flux.
-- The repo's **`CLAUDE.md` / `AGENTS.md`** - project-specific style, i18n and
-  tooling rules that override the neutral defaults here.
+- **`flux-ui`** picks and composes components when the project uses Flux.
+- The repo's **`CLAUDE.md` / `AGENTS.md`** holds project-specific style, i18n
+  and tooling rules that override the neutral defaults here.

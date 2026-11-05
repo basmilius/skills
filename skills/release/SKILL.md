@@ -19,9 +19,9 @@ license: MIT
 # Release
 
 Cut a GitHub release from a bump keyword (`major` / `minor` / `patch`, optionally
-`beta`, or `stable`), with an explicit version number as escape hatch. Nothing is
-hardcoded: repo, build command and CI behavior are detected, with optional
-overrides in a `## Releasing` section of the project's `CLAUDE.md` / `AGENTS.md`
+`beta`, or `stable`), with an explicit version number as escape hatch. The skill
+hardcodes nothing. It detects the repo, build command and CI behavior, with
+optional overrides in a `## Releasing` section of the project's `CLAUDE.md` / `AGENTS.md`
 (see the end of this file). Ask the user only when detection is ambiguous.
 
 **The contract.** Publishing is CI-driven: a release workflow triggers on the
@@ -38,8 +38,11 @@ Resolve `<dir>` (the target repo's directory) and `<slug>` (its `owner/name` on
 GitHub) exactly as the **release-notes** skill's step 0 does: single repo vs
 sibling-repo workspace, dynamic candidate discovery, slug derived from the
 `origin` remote. If that skill is not in context, read `../release-notes/SKILL.md`
-(relative to this file) first. Run every git command with `git -C <dir> ...` and
-every GitHub command with `--repo <slug>`.
+(relative to this file) first; when the sibling is missing, look in
+`~/.claude/skills/release-notes` and `~/.agents/skills/release-notes`, and
+otherwise stop and tell the user to install `release-notes` next to this skill.
+Run every git command with `git -C <dir> ...` and every GitHub command with
+`--repo <slug>`.
 
 Argument parsing: if the first argument matches a candidate folder name, that is
 the `<project>` and the remaining tokens are the version **spec** (step 1);
@@ -55,6 +58,11 @@ first:
 git -C <dir> fetch origin --tags --prune
 ```
 
+The patterns below assume tags without a prefix. When the existing tags carry
+one (`v1.4.0`), put it in front of every pattern and of `<version>`, and name it
+in the resolution log. An explicit version may carry a `v`; strip it before
+matching the regex below, then apply the repo's own prefix (if any).
+
 Resolve the spec to a concrete `<version>`:
 
 1. **Explicit semver**, matching
@@ -67,7 +75,8 @@ Resolve the spec to a concrete `<version>`:
    git -C <dir> tag -l | grep -E '^[0-9]+\.[0-9]+\.[0-9]+$' | sort -V | tail -1
    ```
    Bump `X.Y.Z`: `major` -> `(X+1).0.0`, `minor` -> `X.(Y+1).0`, `patch` ->
-   `X.Y.(Z+1)`. That target stable is `<version>`, unless a second token `beta`
+   `X.Y.(Z+1)`. Without any pure stable tag the base is `0.0.0` (so `minor`
+   gives `0.1.0`); name that in the resolution log. That target stable is `<version>`, unless a second token `beta`
    asks for a pre-release; then bump the target's beta counter:
    ```bash
    git -C <dir> tag -l "<target>-beta.*" | sed -E 's/.*-beta\.//' | sort -n | tail -1
@@ -87,8 +96,8 @@ Resolve the spec to a concrete `<version>`:
 4. **Anything else** -> invalid spec; stop and show the valid forms
    (`major|minor|patch [beta]`, `stable`, or an explicit semver).
 
-`<version>` is a **pre-release** iff it contains a `-` (`-beta.0`, `-rc.1`);
-steps 4 and 6 use this. Log the resolution before the heavy work, e.g.
+`<version>` is a **pre-release** exactly when it contains a `-` before any `+`
+(`-beta.0`, `-rc.1`, but not `1.2.3+build-42`); steps 4 and 6 use this. Log the resolution before the heavy work, e.g.
 `patch beta -> 1.4.1-beta.0 (base: 1.4.0)` or `stable -> 1.4.0 (from 1.4.0-beta.6)`.
 
 ## 2. Run safeguards
@@ -112,17 +121,26 @@ from `## Releasing`).
 
 ## 3. Local build / test sanity check
 
-Run the same check CI runs (against the local working tree, assumed in sync with
-`origin/main`; may take minutes). Resolution order:
+Run the same check CI runs against the captured target commit; it may take
+minutes. `<check-dir>` is where it runs. When `git -C <dir> rev-parse HEAD`
+equals that commit and the tree is clean, `<check-dir>` is `<dir>`. Otherwise
+create a temporary checkout
+(`git -C <dir> worktree add --detach <tmp> <sha>`), install its dependencies
+from the lockfiles there (`bun install --frozen-lockfile`, `composer install`,
+and so on) and use `<tmp>` as `<check-dir>`; never check the working tree in
+that case. Remove the checkout with `git -C <dir> worktree remove --force <tmp>`
+afterwards, also when the check fails. Resolution order:
 
 1. A `## Releasing` check command from the project's `CLAUDE.md` / `AGENTS.md`:
-   run exactly that.
-2. Auto-detect from manifests in `<dir>`:
-   - `composer.json` -> `<dir>/vendor/bin/pest` (or `composer test` if defined);
-     the test suite is the safety net, there is no build.
+   run exactly that, in `<check-dir>`.
+2. Auto-detect from manifests in `<check-dir>`:
+   - `composer.json` -> `(cd <check-dir> && vendor/bin/pest)` (or
+     `composer --working-dir=<check-dir> test` if defined); the test suite is the
+     safety net, there is no build.
    - `package.json` with a `build` script -> run it with the package manager from
      the lockfile (`bun.lock*` -> `bun`, `pnpm-lock.yaml` -> `pnpm`, `yarn.lock`
-     -> `yarn`, else `npm`), e.g. `bun --cwd <dir> run build`. A monorepo: build
+     -> `yarn`, else `npm`) from inside `<check-dir>`, e.g.
+     `(cd <check-dir> && bun run build)`. A monorepo: build
      each package CI builds, in dependency order, plus any post-build step.
 3. Ambiguous or nothing found -> **ask** what CI runs; never skip silently.
 
@@ -146,6 +164,9 @@ settings:
     ```bash
     gh release list --repo <slug> --exclude-drafts --limit 1 --json tagName -q '.[0].tagName'
     ```
+  - **No earlier release** -> handle it as release-notes step 1.2 does (the whole
+    history), say that this is the first release and link
+    `https://github.com/<slug>/commits/<version>` instead of the compare link.
 - **Head** = `origin/main` (the target SHA from step 2).
 - **Version in the body**: write `<version>` wherever the notes reference the
   release; the compare link is

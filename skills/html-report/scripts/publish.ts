@@ -1,7 +1,7 @@
 /*
  * Publishes a built report to an R2 bucket behind a custom domain under a random id, or takes it down again. The id
- * is kept in `<report>.publish.json` next to the HTML, so publishing again updates the same URL. Configured through
- * the environment; see the Publish section of SKILL.md.
+ * lives in `<report>.publish.json` next to the HTML, so publishing again updates the same URL. The environment holds
+ * the configuration; see the Publish section of SKILL.md.
  *
  *   bun publish.ts <report.html> [--unpublish]
  */
@@ -76,7 +76,7 @@ console.log(publication.expiresAt === null ? publication.url : `${publication.ur
 function randomId(): string {
     let id = '';
 
-    /* Bytes from 248 up are skipped, so every character of the 62 is equally likely. */
+    /* Skips bytes from 248 up, so every character of the 62 is equally likely. */
     while (id.length < ID_LENGTH) {
         for (const byte of crypto.getRandomValues(new Uint8Array(ID_LENGTH * 2))) {
             if (byte < 248 && id.length < ID_LENGTH) {
@@ -88,7 +88,7 @@ function randomId(): string {
     return id;
 }
 
-/* Its own variable, since a CLOUDFLARE_ACCOUNT_ID in the shell would redirect wrangler in every other project. */
+/* Takes the account from its own variable, since a CLOUDFLARE_ACCOUNT_ID set in the shell would redirect wrangler in every other project. */
 async function wrangler(args: string[], stdin?: Blob): Promise<void> {
     const child = Bun.spawn(['bunx', 'wrangler', ...args], {
         env: { ...Bun.env, CLOUDFLARE_ACCOUNT_ID: accountId },

@@ -55,7 +55,7 @@ Bun.plugin({
 });
 
 /* Read from the source, since the report's module formats its numbers before the `<Report>` that names the language exists. */
-server.setLanguage(/\blang=["'](nl|en)["']/.exec(source)?.[1] ?? 'nl');
+server.setLanguage(/\blang\b[^=\n]*=\s*["'](nl|en)["']/.exec(source)?.[1] ?? 'nl');
 
 const exported = (await import(input)).default;
 const React = server.modules.react as { createElement(type: unknown): { props: Record<string, unknown> } };
@@ -95,10 +95,10 @@ async function logoFrom(path: string): Promise<string> {
         return Bun.file(path).text();
     }
 
+    const scaled = join(tmpdir(), `html-report-logo-${process.pid}.png`);
     let file = Bun.file(path);
 
     if (process.platform === 'darwin') {
-        const scaled = join(tmpdir(), `html-report-logo-${process.pid}.png`);
         const sips = Bun.spawnSync(['sips', '-Z', '64', '-s', 'format', 'png', path, '--out', scaled], { stdout: 'ignore', stderr: 'ignore' });
 
         if (sips.exitCode === 0) {
@@ -107,8 +107,11 @@ async function logoFrom(path: string): Promise<string> {
     }
 
     const type = file.name?.endsWith('.png') ? 'image/png' : file.type;
+    const bytes = Buffer.from(await file.arrayBuffer());
 
-    return `data:${type};base64,${Buffer.from(await file.arrayBuffer()).toString('base64')}`;
+    await rm(scaled, { force: true });
+
+    return `data:${type};base64,${bytes.toString('base64')}`;
 }
 
 const logos: Record<string, string> = {};

@@ -15,14 +15,14 @@ license: MIT (skill content); Flux itself is MIT, by Bas Milius
 
 # Flux UI (Vue 3)
 
-Flux is an opinionated **Vue 3** component library by Bas Milius: **named exports**
-from `@flux-ui/components` (SFCs, `<script lang="ts" setup>`), documented at
-**flux-ui.dev**, which is the source of truth for exact props/emits/slots. Real apps
-also use the siblings **`@flux-ui/application`** (app shell) and
-**`@flux-ui/statistics`** (KPIs/charts).
+Flux is an opinionated Vue 3 component library by Bas Milius. It ships named exports
+from `@flux-ui/components` (SFCs, `<script lang="ts" setup>`) and is documented at
+flux-ui.dev, the source of truth for exact props/emits/slots. Real apps also use the
+siblings `@flux-ui/application` (app shell) and `@flux-ui/statistics` (KPIs/charts).
 
-**This skill is a router.** It encodes the durable judgment (which component, how to
-compose, the naming traps) and defers prop tables to the docs. Pick the right
+**This skill is a router.** It holds the judgment calls that don't change between
+versions (which component, how to compose, the naming traps) and leaves prop tables
+to the docs. Pick the right
 reference file below; do not work from memory for exact props.
 
 ## 1. Disambiguation (read first)
@@ -49,7 +49,7 @@ The traps worth knowing up front:
   dist-tag, not a guessed caret range.
 - **One Vite plugin per Flux package** (`flux()`, `fluxApplication()`,
   `fluxStatistics()`). A missing plugin resolves that package to dist with unimported
-  CSS, giving an **unstyled shell / charts**.
+  CSS, so the shell or charts render unstyled.
 - **FluxRoot is required.** Mount one as the app wrapper, or `showAlert` /
   `showConfirm` / `showPrompt` / `showSnackbar`, `FluxOverlay` and `FluxTooltip`
   throw.
@@ -90,8 +90,8 @@ Match the need to a component; confirm exact names in `references/component-inde
   `FluxPane` (the card surface), `FluxSplitView`; `FluxDataTable` / `FluxTable`,
   `FluxKanban`, `FluxTreeView`, `FluxCalendar`; `FluxMenu`, `FluxTabs`, `FluxStepper`,
   `FluxCommandPalette`, `FluxSegmentedControl`. `references/components.md`.
-- **Dashboard / multi-page app** → the **`@flux-ui/application`** shell +
-  **`@flux-ui/statistics`** for KPIs/charts, not hand-rolled layout.
+- **Dashboard / multi-page app** → the `@flux-ui/application` shell +
+  `@flux-ui/statistics` for KPIs/charts, not hand-rolled layout.
   `references/patterns.md` §6, `references/ecosystem.md`.
 - **Typography / text** → `FluxText` (Flux type scale: size/weight/color, tabular
   figures, truncate), not raw HTML + custom CSS.
@@ -120,7 +120,7 @@ a file:
 - **`gap` / spacing** = a number in pixels; **colors** = `FluxColor` tokens
   (`gray | primary | danger | info | success | warning`); dark mode is built in.
 - **Types** (`FluxIconName`, `FluxColor`, `FluxTo`, ...) import from
-  **`@flux-ui/types`**, not `@flux-ui/components` (type error otherwise).
+  `@flux-ui/types`, not `@flux-ui/components` (type error otherwise).
 - **Every component must be imported** or Vue renders the unknown tag literally and
   lowercased (silent, not a build error).
 
@@ -133,28 +133,28 @@ Never assume a prop exists: open the component's doc page (every URL is in
 
 ## Reference files
 
-- `references/component-index.md` - the complete, build-verified list of every
+- `references/component-index.md`: the complete, build-verified list of every
   component and transition, with doc URLs and the naming traps. **Start here.**
-- `references/conventions.md` - install, Vite preset, FluxRoot, Font Awesome
+- `references/conventions.md`: install, Vite preset, FluxRoot, Font Awesome
   registration, routing/Nuxt, design tokens, colors, dark mode, types, prop-vs-slot,
   and the composables / global API.
-- `references/patterns.md` - idiomatic end-to-end skeletons from a production app: app
+- `references/patterns.md`: idiomatic end-to-end skeletons from a production app (app
   shell, CRUD form, data table + filters, the confirm→act→snackbar loop, pane
-  composition, and the dashboard.
-- `references/components.md` - choosing and composing the layout, table, and
+  composition, and the dashboard).
+- `references/components.md`: choosing and composing the layout, table, and
   navigation components (which one, and how the pieces fit).
-- `references/forms.md` - the form group, the Field composition, controls, and the
+- `references/forms.md`: the form group, the Field composition, controls, and the
   CRUD-form pattern.
-- `references/dialogs-and-feedback.md` - overlay vs programmatic, the show* functions
+- `references/dialogs-and-feedback.md`: overlay vs programmatic, the show* functions
   and their real return types, notices and inline feedback.
-- `references/ecosystem.md` - the sibling packages `@flux-ui/application` (app shell)
+- `references/ecosystem.md`: the sibling packages `@flux-ui/application` (app shell)
   and `@flux-ui/statistics` (KPIs/charts), with their exports.
 
 ## Related skills
 
-- **`code-style`** - how each `.vue` file around these components is
-  built: block order, macro order, prop and emit typing.
-- **`vue-build-feature`** - splitting a feature across a view, components,
-  composables and a route; Flux supplies the components it composes.
-- **`basmilius`** - the `@basmilius/*` packages (same author, separate scope)
-  that usually sit behind a Flux UI: DTO services, stores, `useDataTable`.
+- `code-style`: how each `.vue` file around these components is built (block order,
+  macro order, prop and emit typing).
+- `vue-build-feature`: splitting a feature across a view, components, composables
+  and a route; Flux supplies the components it composes.
+- `basmilius`: the `@basmilius/*` packages (same author, separate scope) that
+  usually sit behind a Flux UI, such as DTO services, stores and `useDataTable`.

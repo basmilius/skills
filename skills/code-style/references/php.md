@@ -124,7 +124,7 @@ unless the project explicitly requires them.
 - A property description and its `@var` tag are separated by a blank line;
   `*/` has its own line in a multiline block.
 - Preserve every existing `@since` value when editing existing code. Use the
-  project's planned version only for genuinely new code, not for a small fix,
+  project's planned version only for new code, not for a small fix,
   reformat or extra parameter.
 - In Bas-owned library code, use `@author Bas Milius <bas@mili.us>`; type
   PHPDocs also use their namespace as `@package`. Follow the project's policy

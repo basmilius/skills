@@ -16,7 +16,7 @@ Claimed behavior: <two to five sentences from the PR description>.
 How to work:
 - Read the PR body, diff and threads with `gh pr view`, `gh pr diff`, `gh api`.
   Read changed files at the PR head with
-  `gh api repos/<owner>/<repo>/contents/<path>?ref=<headRefName>`; a local checkout
+  `gh api repos/<owner>/<repo>/contents/<path>?ref=<headRefOid>` (a branch name fails for a PR from a fork); a local checkout
   at <path> may be on another branch, read it only for unchanged code.
 - Do NOT check out branches, run state-changing git commands, push, comment, approve
   or write to the issue tracker. Other agents run in parallel.

@@ -5,7 +5,7 @@ description: >-
   a Ruimte task, to review or give feedback on the work. By default the council
   is the newest Claude Opus and the newest GPT Sol; the prompt can name other
   members. Collects their findings and scores, fixes what holds up and runs
-  fresh rounds until every delegate is satisfied. Use when the user says
+  fresh rounds (at most three) until every delegate is satisfied. Use when the user says
   "council" or asks for a council review, a second opinion from several models,
   or a review by models of different providers together.
 argument-hint: "[member models] [request]"
@@ -92,15 +92,18 @@ is no evidence.
 ## 5. Fix and run another round
 
 Make the changes you agree with, run the relevant checks and start a fresh
-round with new tasks for the same members. Its prompts name what changed since the
-previous round and which earlier findings you rejected and why, so delegates
+round with new tasks for the same members. Its prompts name what changed since
+the previous round and which earlier findings you rejected and why, so delegates
 do not raise them again without new arguments.
 
 Each full review pass counts as one round. Continue until all delegates are
-satisfied with the outcome.
+satisfied with the outcome. Stop after three rounds, or earlier when a round
+brings no new findings that hold up; report what is still open and ask the user
+whether another round should follow.
 
-Repeated reviews tend to grow the scope. Fight that: a finding outside the
-original request goes into the summary as a follow-up, not into the change.
+Repeated reviews tend to grow the scope. Hold it to the original request. A
+finding outside that request goes into the summary as a follow-up, not into the
+change.
 
 ## 6. Report
 

@@ -86,7 +86,7 @@ prove a separate failure mode.
   effect that production should produce; persistence assertions against a store
   the exercised path never writes.
 - Capability tests that restate flags without exercising the promised delivery
-  or acknowledgement.
+  or acknowledgment.
 - Negative controls that pass for an unrelated reason, such as another guard's
   denial or a rejection the production path never reaches.
 - Names or fixtures that promise more than the input exercises, such as a
@@ -117,7 +117,7 @@ rather than delete it.
 Static or slow is not a deletion reason. Resembling implementation is not proof
 of low value. Multiple layers can be worth keeping when they detect distinct
 failures or the repository deliberately requires defense in depth. Do not
-replace fast, diagnostic unit tests with broad, flaky checks merely to reduce
+replace fast, diagnostic unit tests with broad, flaky checks only to reduce
 overlap.
 
 ## Focused validation

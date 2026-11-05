@@ -1,9 +1,10 @@
 # @basmilius/utils guide
 
-`@basmilius/utils` is a set of ~45 small, tree-shakeable, framework-agnostic
-TypeScript helpers: dates (Luxon), colors, numbers and math, downloads, DOM,
-timing, geo/astro and a seeded PRNG. This guide exists so you **reach for what is
-already there instead of reinventing it**, and dodge the per-function traps. The
+`@basmilius/utils` is a set of about 45 small, tree-shakeable,
+framework-agnostic TypeScript helpers: dates (Luxon), colors, numbers and math,
+downloads, DOM, timing, geo/astro and a seeded PRNG. Use this guide to reach
+for what is already there instead of reinventing it, and to dodge the
+per-function traps. The
 full, categorized catalog with signatures is `utils-function-index.md`.
 
 ## 1. The rule: look before you write one
@@ -15,7 +16,7 @@ copy just drifts from them.
 
 ## 2. Import and shape
 
-- **Named imports from the package root:** `import { formatDate, hexToRGB } from
+- **Use named imports from the package root.** `import { formatDate, hexToRGB } from
   '@basmilius/utils'`. Each helper is one file re-exported by name, so unused
   ones tree-shake away.
 - **Dates take a Luxon `DateTime`,** not a JS `Date`:
@@ -30,7 +31,7 @@ object reflection; geo. Every function with its exact signature is in
 `utils-function-index.md`; scan the matching category there before writing
 a helper.
 
-## 4. Traps that bite (durable judgment)
+## 4. Traps that bite
 
 - **Date helpers are pure and take a `DateTime`.** They do not read the clock, so
   you pass the moment in: `isToday(value, DateTime.now())` needs `today`
@@ -55,23 +56,22 @@ a helper.
 
 ## 5. Constants and types
 
-- **Glyph and no-op constants:** `CHECK`, `CROSS`, `MDASH`, `NDASH` (the em and
+- Glyph and no-op constants: `CHECK`, `CROSS`, `MDASH`, `NDASH` (the em and
   en dash characters) and `NOOP` (an empty `Function` default).
-- **Domain unions** ship with the date helpers that return them: `DayPeriod`,
+- Domain unions ship with the date helpers that return them: `DayPeriod`,
   `WorkdayPeriod`, `CircadianPhase`, `Season`, `SeasonMood`, `MoonPhase`,
   `ZodiacSign`, plus general `Constructor` / `Descriptors` and `Mulberry32`.
 
 ## Reference files
 
-- `utils-function-index.md` - every exported function grouped by category,
-  with exact signatures, return types and the browser-vs-pure split. **Start
-  here for signatures.**
+- `utils-function-index.md`: every exported function grouped by category,
+  with exact signatures, return types and the browser-vs-pure split. Start
+  here for signatures.
 
 ## Related
 
-- **`http-client.md`** - the DTO/service data layer (uses these utils under the
-  hood).
-- **`common.md`** - Vue app and state primitives (composables, store, data
-  tables) built on top of these utils.
-- The **`code-style`** / **`vue-build-feature`** skills - the
-  library-neutral Vue patterns these helpers slot into.
+- `http-client.md`: the DTO/service data layer (uses these utils internally).
+- `common.md`: Vue app and state primitives (composables, store, data tables)
+  built on these utils.
+- The `code-style` / `vue-build-feature` skills: the library-neutral Vue
+  patterns these helpers slot into.

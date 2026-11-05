@@ -1,7 +1,7 @@
 # Dialogs & feedback
 
-Flux offers **two distinct ways** to show a dialog; choosing the right one is the main
-decision and the APIs don't mix. All four `show*` functions are named exports from
+Flux has two ways to show a dialog, and the APIs don't mix. Picking the right one is
+the main decision. All four `show*` functions are named exports from
 `@flux-ui/components` and require a mounted `FluxRoot` (they **throw** otherwise, see
 `references/conventions.md`).
 
@@ -13,25 +13,25 @@ decision and the APIs don't mix. All four `show*` functions are named exports fr
 | Confirm a destructive action ("Are you sure?") | `showConfirm` |
 | One-off message after an action | `showSnackbar` |
 | Ask for a single value (rename, enter URL, ...) | `showPrompt` |
-| Fatal error / forced acknowledgement | `showAlert` |
+| Fatal error / forced acknowledgment | `showAlert` |
 
 Rule of thumb: **more than one input, or must survive a reload (deep-link) →
 `FluxOverlay` via the router.** Anything short and ephemeral → a programmatic `show*`.
 Do **not** mount a `FluxOverlay` from inside a programmatic handler; route to the
-overlay and `router.push` instead. All `show*` specs share `title` (**required**),
-`message` (**required**) and optional `icon`.
+overlay and `router.push` instead. All `show*` specs share `title` (required),
+`message` (required) and optional `icon`.
 
 ## The show* functions and their return types
 
-**`showConfirm` → `Promise<boolean>`.** The dominant real-app loop is
-**confirm → act → snackbar**: await `showConfirm`, bail on `false`, act, then show a
+**`showConfirm` → `Promise<boolean>`.** The most common loop in real apps is
+confirm → act → snackbar. Await `showConfirm`, bail on `false`, act, then show a
 success `showSnackbar`. Worked code: `references/patterns.md` §4.
 
 **`showPrompt` → `Promise<string | false>`** (resolves to the string, or **`false`**
 when canceled, not `null`). Adds `fieldLabel` (required), optional `fieldPlaceholder`
 / `fieldType`. Guard with `if (name !== false)`.
 
-**`showAlert` → `Promise<void>`** for fatal errors / forced acknowledgement. Spec:
+**`showAlert` → `Promise<void>`** for fatal errors / forced acknowledgment. Spec:
 `icon?`, `title`, `message`.
 
 **`showSnackbar` → `Promise<void>`** (resolves when the snackbar closes). **It does not
@@ -76,8 +76,8 @@ store.updateSnackbar(id, { icon: 'circle-check', color: 'success', title: 'Uploa
 > </FluxSlideOver>
 > ```
 > Both run through `createDialogRenderer`, which sets *visible = there is a non-Comment
-> child*. A `v-if="false"` renders a Comment node, so the surface **stays mounted and
-> plays its leave transition** (keeping its focus-trap and Esc handling). A `v-if` on
+> child*. A `v-if="false"` renders a Comment node, so the surface stays mounted and
+> plays its leave transition (keeping its focus-trap and Esc handling). A `v-if` on
 > the surface element unmounts it immediately, skipping the exit animation.
 > (Route-driven overlays, a named `overlay`/`over` `<RouterView>` in
 > `references/patterns.md` §1, use no `v-if`; they mount/unmount with the route.)
@@ -89,9 +89,9 @@ store.updateSnackbar(id, { icon: 'circle-check', color: 'success', title: 'Uploa
 or set `:max`), optional `status`, and a `color` (`FluxColor`, default `primary`);
 reach for it instead of a hand-rolled track/fill `<div>`.
 
-> **Two conventions:** (1) put **more than one** notice/badge/tag/info in its **stack**
+> **Two conventions.** (1) Put more than one notice/badge/tag/info in its **stack**
 > (`FluxNoticeStack`, `FluxBadgeStack`, `FluxTagStack`, `FluxInfoStack`) rather than
 > loose siblings; the stack owns the spacing. (2) `FluxNotice`'s **`is-fluid` is only
-> for a genuinely full-width context** (e.g. an app-level banner directly in
+> for a full-width context** (e.g. an app-level banner directly in
 > `FluxApplication`). Inside a constrained `FluxApplicationContent` section it overruns,
 > so leave it off there.

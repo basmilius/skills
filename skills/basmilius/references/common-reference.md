@@ -104,8 +104,8 @@ plus `filters?`, `search?`, `searchDebounceMs?`, `dependencies?`, `preload?`, an
 
 ## store
 
-- `defineStore(id, setup)` - the setup-style Pinia wrapper; its ref-returning
-  behavior is covered in SKILL.md section 1.
+- `defineStore(id, setup)`: the setup-style Pinia wrapper. `common.md` section 1
+  covers its ref-returning behavior.
 - Re-exports from Pinia: `createPinia`, `getActivePinia`, `setActivePinia`.
 
 ## router (vue-router 5 wrappers)
@@ -126,12 +126,13 @@ Overlay / modal routing lives in `@basmilius/routing`, not here.
 
 Empty `Error` subclasses, thrown by the helpers and caught centrally:
 
-- `ForbiddenException` - `guarded` on `403`.
-- `UnauthorizedException` - `guarded` on an unsanctioned request.
-- `HandledException` - `guarded` after your `onError` ran (already shown; stop
-  propagating).
-- `UnresolvedDependencyException` - `unrefAll` when a dep is falsy; swallowed by
-  `useDataTable` / `useDataReport` to skip a fetch until deps are ready.
+- `ForbiddenException`: thrown by `guarded` on `403`.
+- `UnauthorizedException`: thrown by `guarded` on an unsanctioned request.
+- `HandledException`: thrown by `guarded` after your `onError` ran (already
+  shown; stop propagating).
+- `UnresolvedDependencyException`: thrown by `unrefAll` when a dep is falsy.
+  `useDataTable` / `useDataReport` swallow it to skip a fetch until deps are
+  ready.
 
 ## util
 
@@ -150,11 +151,11 @@ Empty `Error` subclasses, thrown by the helpers and caught centrally:
 
 ## Interrelation
 
-- **`@basmilius/http-client` (optional peer):** `guarded` uses `isRequestError` /
+- `@basmilius/http-client` (optional peer): `guarded` uses `isRequestError` /
   `isUnsanctionedRequest`; `useService` types the class as `BaseService`;
   `useDataTable` / `useDataReport` fetchers return `BaseResponse<Paginated<T>>` /
   `BaseResponse<T>`; `useDtoForm` uses `cloneDto` / `markDtoClean`.
-- **`@basmilius/utils` (hard dependency):** `useDebounced` wraps utils' `debounce`;
+- `@basmilius/utils` (hard dependency): `useDebounced` wraps utils' `debounce`;
   `unwrapElement` / `unwrapTarget` use `isHtmlElement`.
 - Also depends on `culori` and `lodash-es` (used by `generateColorPalette` and
   `useRouteMeta`).

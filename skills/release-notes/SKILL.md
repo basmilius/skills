@@ -34,12 +34,18 @@ Decide which repository these notes cover; `<dir>` is that repo's directory and
    the first argument names a sibling folder (then treat it as a workspace).
 2. **Sibling-repo workspace**: if the current directory is not itself a repo (or
    the first argument names a sibling), discover the **candidate repos**
-   dynamically, never hardcoded: every direct subdirectory with an `origin`
+   dynamically, never hardcoded: every direct subdirectory of the workspace (the
+   current directory, or the parent of the repo toplevel when step 1 sent you
+   here) whose own toplevel is that subdirectory and that has an `origin`
    remote (optionally narrowed by an org filter or folder list from `## Releasing`).
    ```bash
-   for sub in */; do
-       slug=$(git -C "$sub" remote get-url origin 2>/dev/null | sed -E 's#(git@github.com:|https://github.com/)##; s/\.git$//')
-       [ -n "$slug" ] && echo "${sub%/}  ->  $slug"
+   setopt null_glob 2>/dev/null   # zsh: no error when the workspace has no subdirectories
+   ws=$(git rev-parse --show-toplevel 2>/dev/null) && ws=$(dirname "$ws") || ws=$(pwd -P)
+   for sub in "$ws"/*/; do
+       sub=$(cd "$sub" && pwd -P)
+       [ "$(git -C "$sub" rev-parse --show-toplevel 2>/dev/null)" = "$sub" ] || continue
+       slug=$(git -C "$sub" remote get-url origin 2>/dev/null | sed -E 's#^(ssh://git@github.com/|git@github.com:|https://github.com/)##; s/\.git$//')
+       [ -n "$slug" ] && echo "$(basename "$sub")  ->  $slug"
    done
    ```
    If the first argument matches a candidate folder name, that is the
@@ -48,7 +54,7 @@ Decide which repository these notes cover; `<dir>` is that repo's directory and
    to target. Never generate notes for more than one project in a run.
 3. **Derive the slug** from the target's remote:
    ```bash
-   git -C <dir> remote get-url origin | sed -E 's#(git@github.com:|https://github.com/)##; s/\.git$//'
+   git -C <dir> remote get-url origin | sed -E 's#^(ssh://git@github.com/|git@github.com:|https://github.com/)##; s/\.git$//'
    ```
 
 ## 1. Resolve the comparison range
@@ -60,11 +66,17 @@ git -C <dir> fetch origin --tags --prune
 gh release view --repo <slug> --json tagName -q .tagName 2>/dev/null || echo '(none published yet)'
 ```
 
-1. **Head** is always `origin/main`.
+1. **Head** is always `origin/main`. When the default branch is not `main` (see
+   `## Releasing`, or `gh repo view <slug> --json defaultBranchRef -q .defaultBranchRef.name`), read that
+   branch for `main` everywhere in this skill.
 2. **Base**: a given base tag (verify with `git -C <dir> rev-parse "<base>"`;
    stop if it does not resolve). Otherwise the **latest published release**
-   (GitHub's "Latest", pre-releases excluded). If none exists, use the first
-   commit (`git -C <dir> rev-list --max-parents=0 HEAD | tail -1`) and say so.
+   (GitHub's "Latest", pre-releases excluded). If none exists, this is the first
+   release: the notes cover the whole history, so use `origin/main` instead of
+   `<base>..origin/main` for every `log` in this skill and the empty tree
+   (`git -C <dir> hash-object -t tree /dev/null`) as `<base>` for every `diff`,
+   and say so. The compare link becomes
+   `https://github.com/<slug>/commits/main`.
 3. If base and `origin/main` point at the same commit, say there are no changes
    and stop.
 
@@ -228,9 +240,9 @@ release.
 
 ## Related skills
 
-- **`release`** - cutting the actual GitHub release from a bump keyword. It
-  reuses step 0 and steps 2 to 5 of this skill for the changelog, so keep the
-  two in sync when either changes.
-- **`unslop`** - a final pass over the prose in the notes before they ship. The
-  house emoji are the format, not decoration, so that pass leaves them in the
-  headers.
+- **`release`** cuts the actual GitHub release from a bump keyword. It reuses
+  step 0 and steps 2 to 5 of this skill for the changelog, so keep the two in
+  sync when either changes.
+- **`unslop`** makes a final pass over the prose in the notes before they ship.
+  The house emoji are the format, not decoration, so that pass leaves them in
+  the headers.

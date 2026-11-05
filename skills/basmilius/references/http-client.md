@@ -1,13 +1,13 @@
 # @basmilius/http-client guide
 
-`@basmilius/http-client` is a typed HTTP client for Vue 3. You model **every
-payload and response body as a `@dto` class**, **every endpoint group as a
-`BaseService` subclass**, and translate raw JSON to DTOs through a static
+`@basmilius/http-client` is a typed HTTP client for Vue 3. You model every
+payload and response body as a `@dto` class and every endpoint group as a
+`BaseService` subclass, and translate raw JSON to DTOs through a static
 `@adapter`. This guide encodes the model and the traps; exhaustive signatures live
 in `http-client-reference.md` and worked code in `http-client-patterns.md`.
 
-The data flow is one line: **service method -> `RequestBuilder` -> `fetch` ->
-JSON -> adapter -> DTO -> `BaseResponse`**.
+The data flow is one line: service method -> `RequestBuilder` -> `fetch` ->
+JSON -> adapter -> DTO -> `BaseResponse`.
 
 ## 1. Setup (the parts that silently break)
 
@@ -21,13 +21,13 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
   are TypeScript legacy decorators, not the TC39 stage-3 ones.
 - **Never put `@dto` / `@adapter` classes in `<script setup>`.** Most SFC
   pipelines (esbuild) do not support legacy decorators in `.vue` blocks. Define
-  decorated classes in **standalone `.ts` files** and import them.
-- **Minification trap:** if you `serialize` / `deserialize` / `cloneDto` in a
+  decorated classes in standalone `.ts` files and import them.
+- **Minification trap.** If you `serialize` / `deserialize` / `cloneDto` in a
   production build, add the `dtoNames()` plugin from `@basmilius/http-client/vite`
   to `vite.config.ts`. DTO rehydration is keyed by class name, which minifiers
   rename. See `http-client-patterns.md`.
-- **Peers:** a Vue 3.6 pre-release (range per the package), `luxon`. (`vite` is an
-  optional peer, only for the plugin.)
+- Peers are a Vue 3.6 pre-release (range per the package) and `luxon`. (`vite`
+  is an optional peer, only for the plugin.)
 
 ## 2. DTOs (`@dto`)
 
@@ -38,17 +38,17 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
   constructor with the original args, so every field must be constructor-fed.
 - **A `@dto` class may not extend another `@dto` class** (the decorator throws).
   Compose by reference, not inheritance.
-- DTO instances are **reactive** (Vue `customRef` backed): use them directly in
+- DTO instances are reactive (backed by Vue `customRef`), so use them directly in
   templates, `computed` and `watch` with no `.value`.
 
 ## 3. Adapters (`@adapter`)
 
-- **A static-only class**, one static `parseXxx(data: ForeignData): XxxDto` per
-  shape. `@adapter` makes the constructor throw, so it is a namespace, not an
+- An adapter is a static-only class, with one static
+  `parseXxx(data: ForeignData): XxxDto` per shape. `@adapter` makes the constructor throw, so it is a namespace, not an
   instance.
 - **`ForeignData` is the raw snake_case JSON** (`Record<string, any>`); DTOs are
   camelCase. The adapter is the one place case translation happens.
-- Pass the parse method **by reference** into a runner:
+- Pass the parse method by reference into a runner:
   `.runAdapter(UserAdapter.parseUser)`.
 
 ## 4. Services (`BaseService`)
@@ -60,11 +60,11 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
   (`.queryString(...)`, `.bearerToken()`, `.body(...)`; `.body()` JSON-stringifies
   an object or array for you, so do not pre-stringify), and **always end with a
   runner**.
-- **Runners** (full list in the reference): `run` / `runAdapter` /
+- Runners (full list in the reference): `run` / `runAdapter` /
   `runArrayAdapter` / `runPaginatedAdapter` / `runEmpty` / `runData` /
   `runDataKey` / `runStatusCode`, plus raw `fetch` / `fetchBlob`. The `run*`
   family normalizes errors; bare **`fetch<T>()` does not**, so prefer `run*`.
-- **Backend contract** the normalizer expects: errors as
+- The normalizer expects this backend contract: errors as
   `{ code, error, error_description }` (validation adds a nested `errors` map);
   paginated endpoints as `{ items, page, page_size, pages, total }`.
 
@@ -93,18 +93,18 @@ JSON -> adapter -> DTO -> `BaseResponse`**.
 
 ## Reference files
 
-- `http-client-reference.md` - every export: decorators, DTO helpers,
+- `http-client-reference.md`: every export. Decorators, DTO helpers,
   `RequestBuilder` runners and config, `BaseResponse`, `QueryString`, the value
   classes (`Paginated`, `BlobResponse`, `RequestError`, `ValidationError`),
   guards, `HttpAdapter`, types and the Vite plugin options.
-- `http-client-patterns.md` - the end-to-end recipe (DTO -> adapter -> service ->
+- `http-client-patterns.md`: the end-to-end recipe (DTO -> adapter -> service ->
   call), error handling, the dirty-save pattern, serialize/deserialize and the
   `dtoNames` setup.
 
 ## Related
 
-- **`common.md`** - `useService` (auto-`guarded`), `useDataTable` /
+- `common.md`: `useService` (auto-`guarded`), `useDataTable` /
   `useDataReport` and `useDtoForm` build directly on this client.
-- **`utils.md`** - standalone helpers this package uses internally.
-- The **`vue-build-feature`** skill - the neutral feature architecture; this
-  client is the concrete "data access" layer it leaves project-specific.
+- `utils.md`: standalone helpers this package uses internally.
+- The `vue-build-feature` skill: the neutral feature architecture. This client
+  is the concrete "data access" layer it leaves project-specific.

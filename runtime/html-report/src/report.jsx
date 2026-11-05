@@ -173,8 +173,11 @@ function BrandMark({ name, icon: given }) {
     /* A logo file the build read, by the path the report names it with. */
     const icon = globalThis.__HTML_REPORT_ASSETS__?.[given] ?? given;
 
-    if (typeof icon === 'string' && icon.trimStart().startsWith('<svg')) {
-        return <span className="report-mark" aria-hidden="true" dangerouslySetInnerHTML={{ __html: scalableSvg(icon) }} />;
+    /* A file saved by an editor often opens with an XML declaration or a comment before the `<svg>`. */
+    const svg = typeof icon === 'string' ? icon.replace(/^\s*(<\?xml[\s\S]*?\?>|<!--[\s\S]*?-->|<!DOCTYPE[^>]*>|\s)*/i, '') : '';
+
+    if (svg.startsWith('<svg')) {
+        return <span className="report-mark" aria-hidden="true" dangerouslySetInnerHTML={{ __html: scalableSvg(svg) }} />;
     }
 
     if (typeof icon === 'string' && /^(data:|https?:|\.{0,2}\/)/.test(icon)) {

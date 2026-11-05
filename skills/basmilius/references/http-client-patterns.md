@@ -1,6 +1,6 @@
 # @basmilius/http-client patterns
 
-End-to-end, grounded recipes. Keep every decorated class in a standalone `.ts`
+End-to-end recipes. Keep every decorated class in a standalone `.ts`
 file (never in `<script setup>`), and group a resource's DTO, adapter and service
 under `service/<domain>/` with an `index.ts` barrel.
 

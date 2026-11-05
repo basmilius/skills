@@ -59,7 +59,7 @@ reference here follows its formatter and the code around it.
 
 ## Related skills
 
-- **`test-audit`** - when the change adds, changes or removes tests.
-- **`vue-build-feature`** - a Vue feature that spans views, components,
+- **`test-audit`** when the change adds, changes or removes tests.
+- **`vue-build-feature`** for a Vue feature that spans views, components,
   composables and a route.
-- **`unslop`** - the same instinct applied to prose.
+- **`unslop`** applies the same instinct to prose.

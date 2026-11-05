@@ -3,16 +3,15 @@
 Every public component of `@flux-ui/components`, grouped as in the official
 docs. Doc URLs follow `https://flux-ui.dev/components/<path>`.
 
-> **Two global rules for this whole skill** (stated here, not repeated per
-> section): (1) **Every export name is build-verified** against the package's
-> build entry (`src/component/index.ts`) - exact named exports, not guesses.
-> (2) Names are stable, but the library evolves - assume the **latest** 3.x
-> (installed via `@latest`) and for exact **props/emits/slots/`v-model`** always
-> read the component's doc page (each has the same `Props` / `Emits` / `Slots` /
-> `Examples` layout).
+> **Two rules for this whole skill** (stated here, not repeated per section).
+> (1) Every export name is build-verified against the package's build entry
+> (`src/component/index.ts`): exact named exports, not guesses. (2) Names are
+> stable, but the library changes. Assume the latest 3.x (installed via `@latest`)
+> and for exact **props/emits/slots/`v-model`** always read the component's doc
+> page (each has the same `Props` / `Emits` / `Slots` / `Examples` layout).
 
-Names look mechanical but several groups deviate from their doc path - those are
-called out in SKILL.md §3 and marked **⚠** below.
+Names look mechanical, but several groups deviate from their doc path. SKILL.md §3
+calls those out, and they are marked ⚠ below.
 
 ## Actions
 
@@ -57,7 +56,7 @@ internal to `FluxRoot`. See `references/dialogs-and-feedback.md`.
 
 | Doc path             | Export / function           | Purpose |
 | -------------------- | --------------------------- | ------- |
-| `attention/alert`    | `showAlert`                 | Fatal error / forced acknowledgement |
+| `attention/alert`    | `showAlert`                 | Fatal error / forced acknowledgment |
 | `attention/confirm`  | `showConfirm`               | Confirm a destructive action |
 | `attention/prompt`   | `showPrompt`                | Ask for a single value |
 | `attention/snackbar` | `showSnackbar` / `FluxSnackbar` | Transient toast/snackbar |
@@ -95,7 +94,7 @@ internal to `FluxRoot`. See `references/dialogs-and-feedback.md`.
 | `form/date`               | `FluxFormDateInput` ⚠ | Date picker field |
 | `form/date-range`         | `FluxFormDateRangeInput` ⚠ | Date range field |
 | `form/date-time`          | `FluxFormDateTimeInput` ⚠ | Date + time field |
-| `form/time`               | - (coming soon) | Time-only field not yet shipped |
+| `form/time`               | none (coming soon) | Time-only field not yet shipped |
 | `form/time-zone-picker`   | `FluxFormTimeZonePicker` | Time-zone picker |
 | `form/tree-view-select`   | `FluxFormTreeViewSelect` | Tree-structured select |
 | `color/picker`            | `FluxColorPicker` | Color picker |
@@ -107,7 +106,7 @@ internal to `FluxRoot`. See `references/dialogs-and-feedback.md`.
 
 ## Layout
 
-The `Layout` path segment is **dropped** from the export name (⚠).
+The export name drops the `Layout` path segment (⚠).
 
 | Doc path                 | Export | Purpose |
 | ------------------------ | ------ | ------- |
@@ -228,7 +227,7 @@ see `references/conventions.md`.
 | `slide-over` | `FluxSlideOver` | |
 | `flyout`     | `FluxFlyout` | Anchored popover/flyout |
 | `tooltip`    | `FluxTooltip` | |
-| `window`     | `FluxWindow` | Multi-level popover/menu container - `#default="{ navigate }"` root + named sub-view slots (`#x="{ back }"`); used inside a `FluxFlyout` for drill-in menus (e.g. a profile menu) |
+| `window`     | `FluxWindow` | Multi-level popover/menu container: `#default="{ navigate }"` root + named sub-view slots (`#x="{ back }"`); used inside a `FluxFlyout` for drill-in menus (e.g. a profile menu) |
 | `tour`       | `FluxTour` / `FluxTourItem` | Guided product tour; each step is a `FluxTourItem` (targets an element via `target`, optional `title`, step content in the default slot) |
 
 ## Small UI bits
@@ -240,7 +239,7 @@ see `references/conventions.md`.
 | `chip`         | `FluxChip` | |
 | `tag`          | `FluxTag` / `FluxTagStack` ⚠ | Tag (+ stack) |
 | `info`         | `FluxInfo` / `FluxInfoStack` ⚠ | Info text (+ stack) |
-| `text`         | `FluxText` | Typography primitive - Flux type scale (size/weight/color/tabular/truncate) |
+| `text`         | `FluxText` | Typography primitive on the Flux type scale (size/weight/color/tabular/truncate) |
 | `icon`         | `FluxIcon` | Icon (Font Awesome name) |
 | `boxed-icon`   | `FluxBoxedIcon` | Icon in a box |
 | `disabled`     | `FluxDisabled` | Disabled-state wrapper |
@@ -253,7 +252,7 @@ see `references/conventions.md`.
 | `focal-point/editor` | `FluxFocalPointEditor` | Focal-point editor |
 | `focal-point/image`  | `FluxFocalPointImage` | Focal-point image |
 
-`FluxText` extends two scales beyond the norm: `color` takes a `FluxColor` **plus**
+`FluxText` extends two scales beyond the usual ones. `color` takes a `FluxColor` plus
 `muted`/`prominent`, and `size` is `small|medium|large|display` (its own scale,
 **not** `FluxSize`). Exact props on its doc page.
 
@@ -275,9 +274,9 @@ Authoring custom filters (`useFilterInjection`, `defineFilter`,
 `defineFilterMacro`): `references/conventions.md`. Root-exported helpers:
 `pickFilterCommon`, `isFluxFilterOptionHeader`, `isFluxFilterOptionItem`.
 
-## Visual (decorative - never load-bearing UI)
+## Visual (decorative, never load-bearing UI)
 
-These live in the separate **`@flux-ui/visuals`** package, not `@flux-ui/components`. Import them from `@flux-ui/visuals`; they reuse the `@flux-ui/components` theme tokens, so load its stylesheet alongside `@flux-ui/visuals/style.css`.
+These live in the separate `@flux-ui/visuals` package, not `@flux-ui/components`. Import them from `@flux-ui/visuals`; they reuse the `@flux-ui/components` theme tokens, so load its stylesheet alongside `@flux-ui/visuals/style.css`.
 
 | Doc path                              | Export |
 | ------------------------------------- | ------ |
@@ -300,8 +299,8 @@ Base URL `https://flux-ui.dev/components/transitions/<name>`.
 
 | Export | Notes |
 | ------ | ----- |
-| `FluxAutoHeightTransition` | Animate height changes (no doc page - internal helper) |
-| `FluxAutoWidthTransition`  | Animate width changes (no doc page - internal helper) |
+| `FluxAutoHeightTransition` | Animate height changes (internal helper, no doc page) |
+| `FluxAutoWidthTransition`  | Animate width changes (internal helper, no doc page) |
 | `FluxBreakthroughTransition` | `transitions/breakthrough` |
 | `FluxFadeTransition`         | `transitions/fade` |
 | `FluxOverlayTransition`      | `transitions/overlay` |

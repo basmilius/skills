@@ -9,15 +9,15 @@ colors, design tokens) live in `references/conventions.md`.
 Compose structure with components, not raw CSS. (Naming traps for this group:
 SKILL.md §3 and the component index.)
 
-- **Flex** - `FluxFlex` (`direction="horizontal|vertical"`, `:gap` a number in px,
+- Flex: `FluxFlex` (`direction="horizontal|vertical"`, `:gap` a number in px,
   plus `align`, `justify`, `wrap`, `is-inline`, `tag`); `FluxFlexItem` for item-level
-  props. Drive **structural** responsive changes (e.g. flipping direction) from
+  props. Drive structural responsive changes (e.g. flipping direction) from
   `useBreakpoints()`, not CSS media queries.
-- **Grid** - `FluxGrid` + `FluxGridColumn`.
-- **Container & spacing** - `FluxContainer` (max width), `FluxSpacer` (flexible
+- Grid: `FluxGrid` + `FluxGridColumn`.
+- Container and spacing: `FluxContainer` (max width), `FluxSpacer` (flexible
   space), `FluxSpacing`, `FluxAspectRatio` (media), `FluxDivider` / `FluxSeparator`.
-- **Split view** - `FluxSplitView` + `FluxSplitViewPane` (resizable list/detail).
-- **Adaptive / overflow** - `FluxAdaptiveGroup` + `FluxAdaptiveSlot`,
+- Split view: `FluxSplitView` + `FluxSplitViewPane` (resizable list/detail).
+- Adaptive / overflow: `FluxAdaptiveGroup` + `FluxAdaptiveSlot`,
   `FluxOverflowBar` (moves overflowing items into a menu).
 
 Stack helpers under `layout/flex/*` export as `Flux*Stack`; the six names are in
@@ -32,21 +32,20 @@ empty/loading states use `FluxPlaceholder` / `FluxSkeleton`. For a decorative
 top-of-pane illustration use `FluxVisualPaneIllustration` from `@flux-ui/visuals`.
 
 List rows use the item family (`FluxItem` + `FluxItemMedia` / `FluxItemContent` /
-`FluxItemActions`, stacked in a `FluxItemStack`): **static** rows in a `FluxPane`,
-**navigating** rows as `FluxClickablePane` (one per row, not in a shared stack).
+`FluxItemActions`, stacked in a `FluxItemStack`). Put static rows in a `FluxPane`;
+make each navigating row a `FluxClickablePane` (one per row, not in a shared stack).
 Copy-ready skeletons and the `FluxLayerPane` grouping / padding caveats:
 `references/patterns.md` §5.
 
 ## Tables
 
-Two levels of abstraction, pick deliberately:
+Flux has two levels of table. Pick one on purpose:
 
-- **`FluxDataTable`** - the higher-level, batteries-included table (sorting,
-  selection, pagination). First choice for typical list views. Data-driven shape
-  (`:items` + per-column scoped slots, sticky headers, row actions):
-  `references/patterns.md` §3.
-- **`FluxTable` primitives** - `FluxTableHeader`, `FluxTableRow`, `FluxTableCell`,
-  `FluxTableActions`, `FluxTableBar`. Compose these for a **small, static** table (no
+- `FluxDataTable`: the higher-level table, with sorting, selection and pagination
+  built in. First choice for typical list views. Data-driven shape (`:items` +
+  per-column scoped slots, sticky headers, row actions): `references/patterns.md` §3.
+- `FluxTable` primitives: `FluxTableHeader`, `FluxTableRow`, `FluxTableCell`,
+  `FluxTableActions`, `FluxTableBar`. Compose these for a small, static table (no
   pagination). Explicit `#header` (a `FluxTableRow` of `FluxTableHeader`s) and one
   `FluxTableRow` › `FluxTableCell` per row; custom cells read `useTableInjection`.
   **Place a `FluxTable` inside a `FluxPane`** (its cell edge-padding only applies
@@ -57,15 +56,15 @@ Two levels of abstraction, pick deliberately:
 
 ## Other data structures
 
-- **Kanban** - `FluxKanban` › `FluxKanbanColumn` › `FluxKanbanItem`
+- Kanban: `FluxKanban` › `FluxKanbanColumn` › `FluxKanbanItem`
   (`useKanbanInjection`).
-- **Tree view** - `FluxTreeView` (and the form control `FluxFormTreeViewSelect`).
-- **Timeline** - `FluxTimeline` › `FluxTimelineItem`.
-- **Calendar** - `FluxCalendar` › `FluxCalendarItem` (`useCalendarInjection`);
+- Tree view: `FluxTreeView` (and the form control `FluxFormTreeViewSelect`).
+- Timeline: `FluxTimeline` › `FluxTimelineItem`.
+- Calendar: `FluxCalendar` › `FluxCalendarItem` (`useCalendarInjection`);
   standalone `FluxDatePicker`.
-- **List items / people** - `FluxItem` family; `FluxComment`, `FluxPersona`,
+- List items / people: `FluxItem` family; `FluxComment`, `FluxPersona`,
   `FluxAvatar` for people/content rows.
-- **Gallery** - `FluxGallery` › `FluxGalleryItem`.
+- Gallery: `FluxGallery` › `FluxGalleryItem`.
 
 ## Filtering
 
@@ -87,25 +86,25 @@ when applying). Worked skeleton: `references/patterns.md` §3.
 
 ## Navigation
 
-- **Breadcrumb** - `FluxBreadcrumb` › `FluxBreadcrumbItem`.
-- **Menus** - `FluxMenu` with `FluxMenuItem`, `FluxMenuGroup`, `FluxMenuOptions`,
+- Breadcrumb: `FluxBreadcrumb` › `FluxBreadcrumbItem`.
+- Menus: `FluxMenu` with `FluxMenuItem`, `FluxMenuGroup`, `FluxMenuOptions`,
   `FluxMenuCollapsible`, `FluxMenuTitle`, `FluxMenuSubHeader`. **Always wrap
   `FluxMenuItem`s in a `FluxMenuGroup`** (the group provides the right spacing; bare
   items, including after `FluxApplicationMenuContext`, sit too far apart).
-- **Tabs** - `FluxTabs` › `FluxTab` (in-page tabbed content); `FluxTabBar` ›
+- Tabs: `FluxTabs` › `FluxTab` (in-page tabbed content); `FluxTabBar` ›
   `FluxTabBarItem` (top-level/bar-style nav, `useTabBarInjection`).
-- **Stepper / wizard** - `FluxStepper` › `FluxStepperSteps` › `FluxStepperStep`.
+- Stepper / wizard: `FluxStepper` › `FluxStepperSteps` › `FluxStepperStep`.
   Pattern: `https://flux-ui.dev/guide/patterns/stepper-wizard`.
-- **Command palette** - `FluxCommandPalette` for ⌘K-style global search/actions. It
-  is **`:sources`-driven and has no default slot**: feed a `FluxCommandSource[]` (each
+- Command palette: `FluxCommandPalette` for ⌘K-style global search/actions. It
+  is **`:sources`-driven and has no default slot**. Feed a `FluxCommandSource[]` (each
   source: `key`, `label`, optional `tab`, and `items` with
   `{ id, label, subLabel?, icon?, onActivate }`). `FluxCommandPaletteGroup` /
   `FluxCommandPaletteItem` are the internal building blocks it renders from that data,
   **not** components you place yourself.
-- **Toolbar** - `FluxToolbar` › `FluxToolbarGroup`.
-- **Segmented control** - `FluxSegmentedControl` › `FluxSegmentedControlItem` for a
+- Toolbar: `FluxToolbar` › `FluxToolbarGroup`.
+- Segmented control: `FluxSegmentedControl` › `FluxSegmentedControlItem` for a
   small set of mutually exclusive options (`useSegmentedControlInjection`).
-- **Links** - `FluxLink` for inline navigation; button `type="route"` / `"link"` for
+- Links: `FluxLink` for inline navigation; button `type="route"` / `"link"` for
   button-styled navigation (see `references/conventions.md`).
 
 ## Expand / collapse

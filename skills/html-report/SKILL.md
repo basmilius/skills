@@ -20,8 +20,8 @@ bun <this skill>/scripts/build.ts report.tsx --out reports/review.html
 
 The build renders the report to plain HTML and appends the runtime (React,
 `@adecore/ui`, `@adecore/charts`, the components, the Lucide icons the report uses)
-that brings it to life in the browser. It needs Bun and nothing else: no install, no
-project. The HTML file needs no network, so it opens offline and in sandboxed
+that hydrates it in the browser. It needs only Bun, with no install and no project.
+The HTML file needs no network, so it opens offline and in sandboxed
 previews, at about 400 kB. Only the font, Geist, loads from `font.bmcdn.nl`; without
 network the report falls back to the system font.
 
@@ -30,8 +30,8 @@ agent, `grep` or a browser without JavaScript reads it directly; every chart car
 its values as a table. After the line `<!-- html-report runtime ... -->` follow only
 the gzipped scripts; there is no need to read past it.
 
-A report is frozen once it is built: it carries the runtime of that day and never
-changes with a later version of this skill. Keep the `.tsx` next to the HTML as the
+A built report is frozen. It carries the runtime of that day and never changes with
+a later version of this skill. Keep the `.tsx` next to the HTML as the
 source for updates.
 
 ```tsx
@@ -55,8 +55,9 @@ export default (
 
 The default export is the `<Report>` element. Always set `lang` (`nl` or `en`) to the
 language of the report, and `model` to the name of the model writing it, such as
-`Claude Sonnet 5.5`; the report shows it with the logo of its provider. A report imports from `html-report`,
-`react` and `lucide-react` only; data can be computed in the file itself. Bun strips
+`Claude Sonnet 5.5`; the report shows it with the logo of its provider. A report
+imports from `html-report`, `react` and `lucide-react` only; it can compute its data in
+the file itself. Bun strips
 types without checking them. Read [references/components.md](references/components.md)
 for every component and the chart API. The [examples](examples) are complete reports
 to start from, each as source and built file:
@@ -88,9 +89,10 @@ the theme switch. Pass the brand as `brand` on `Report`; take each part
 
 A logo goes in as it is, drawn at 22px in its own colors, so do not recolor it. Give
 a logo file by its path (absolute or relative to the report): the build embeds an SVG
-as markup and an image as a `data:` URL, scaled down to 64px on macOS. A Lucide icon takes the accent color. Without any mark
-the first letter of the name stands on the accent. The accent per theme is derived
-from `color` with enough contrast, so a bright brand color can go in as it is.
+as markup and an image as a `data:` URL, scaled down to 64px on macOS. A Lucide icon
+takes the accent color. Without any mark the first letter of the name stands on the
+accent. The report derives the accent per theme from `color` with enough contrast, so
+a bright brand color can go in as it is.
 Status colors stay independent of the brand.
 
 ## Layout

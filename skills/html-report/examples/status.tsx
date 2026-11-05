@@ -78,9 +78,9 @@ export default (
 
         <Section title="Volgende stappen">
             <Steps>
-                <Step title="Cloud-API als terugvaloptie inbouwen." done="Alleen bij akkoord op de beslissing." />
+                <Step title="Cloud-API als terugvaloptie inbouwen, alleen bij akkoord op de beslissing." done="de warmtepomp via de cloud-API reageert." />
                 <Step title="Historie per uur aggregeren." done="het geheugen onder 60% blijft." />
-                <Step title="Dashboard-ontwerp testen bij drie gebruikers." done="Week 45." />
+                <Step title="Dashboard-ontwerp testen bij drie gebruikers in week 45." done="alle drie de sessies verwerkt zijn." />
             </Steps>
         </Section>
     </Report>

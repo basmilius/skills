@@ -17,8 +17,8 @@ ESM-only.
 
 Type `DtoInstance<T>`. Every `@dto` instance gains:
 
-- `clone(): DtoInstance<T>` - deep clone via the constructor + settable props.
-- `fill(data: Record<string, unknown>): void` - in-memory update; ignores unknown
+- `clone(): DtoInstance<T>`: deep clone via the constructor + settable props.
+- `fill(data: Record<string, unknown>): void`: in-memory update; ignores unknown
   keys and setter-less props. For form edits, not for raw JSON (use an adapter).
 - `toJSON(): Record<string, unknown>`.
 
@@ -68,8 +68,8 @@ Config (chainable): `autoCancel(identifier: symbol)`, `bearerToken(token?)`
 `signal(signal? = null)`. Accessors: `client` (ro), `options` (ro), `path`,
 `query`.
 
-`body(...)` **JSON-stringifies a plain object or array and sets
-`Content-Type: application/json` for you**; a `FormData` passes through with no
+`body(...)` JSON-stringifies a plain object or array and sets
+`Content-Type: application/json` for you; a `FormData` passes through with no
 content type (the browser sets the boundary); a string or `Blob` is sent as-is
 with the given content type. Do not pre-stringify a DTO: pass it directly, since
 `JSON.stringify` uses its `toJSON()`.
@@ -119,7 +119,7 @@ Each is itself a `@dto`. These are the shapes the client builds and throws.
 - `isRequestError(obj): obj is RequestError`.
 - `isValidationError(obj): obj is ValidationError` (check this before
   `isRequestError`; they are structural siblings).
-- `isUnsanctionedRequest(statusCode: unknown): boolean` - true for 401/403;
+- `isUnsanctionedRequest(statusCode: unknown): boolean`: true for 401/403;
   accepts a `RequestError` or a raw code.
 
 ## HttpAdapter (built-in `@adapter`)
@@ -132,8 +132,8 @@ Each is itself a `@dto`. These are the shapes the client builds and throws.
 ## Types
 
 - `HttpMethod = 'connect' | 'delete' | 'get' | 'head' | 'options' | 'patch' | 'post' | 'put' | 'trace'`.
-- `HttpStatusCode` - literal union of standard codes (100-511).
-- `ForeignData = Record<string, any>` - raw snake_case JSON input for adapters.
+- `HttpStatusCode`: literal union of standard codes (100-511).
+- `ForeignData = Record<string, any>`: raw snake_case JSON input for adapters.
 
 ## Vite plugin (`@basmilius/http-client/vite`)
 

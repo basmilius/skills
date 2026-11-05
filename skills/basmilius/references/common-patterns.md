@@ -1,6 +1,6 @@
 # @basmilius/common patterns
 
-Grounded, end-to-end recipes for the primitives that carry the most judgment.
+End-to-end recipes for the primitives that take the most judgment to use well.
 
 ## 1. A store that returns refs
 
@@ -64,8 +64,8 @@ const ordersHandled = useService(OrderService, handle);
 
 ## 3. Paginated table view
 
-The flagship. `useDataTable` wires loading, pagination, debounce and
-race-guarding; the `fetcher` takes one `DataTableQuery` and returns a
+`useDataTable` wires loading, pagination, debounce and race-guarding. The
+`fetcher` takes one `DataTableQuery` and returns a
 `BaseResponse<Paginated<T>>` (or `false` to skip).
 
 ```vue
@@ -103,12 +103,15 @@ refetches. `useDataReport` is the same shape without pagination or sorting.
 
 Call `unrefAll` at the top of the fetcher; the thrown
 `UnresolvedDependencyException` is swallowed, so nothing fetches until every dep
-is truthy.
+is truthy. List the same refs in `dependencies`, so the table fetches again once
+they change.
 
 ```ts
 import { unrefAll } from '@basmilius/common';
 
 const { items } = useDataTable<Order, OrderFilters>({
+    filters: { status: '' },
+    dependencies: [selectedCustomerId],
     fetcher: (query) => {
         const [customerId] = unrefAll(selectedCustomerId); // skips while null
         return orders.listForCustomer(customerId, {
