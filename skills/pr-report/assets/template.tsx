@@ -135,6 +135,8 @@ const overviewCss = `
 .bundle > summary:hover { background: color-mix(in srgb, currentColor 4%, transparent); }
 .bundle .chevron { transition: transform 120ms ease; }
 .bundle[open] .chevron { transform: rotate(90deg); }
+.bundle-body > p { margin: 12px 0 0; }
+.bundle-body > p:first-child { margin-top: 0; }
 `;
 
 function capitalize(value: string): string {
@@ -326,7 +328,7 @@ function Overview() {
                             <span>{bundle.merged ? <span className="report-muted text-xs">{text.notApplicable}</span> : <ScoreBars score={bundleScore(bundle)} />}</span>
                             <span><Status tone={state.tone}>{state.label}</Status></span>
                         </summary>
-                        <div style={{ padding: '4px 4px 16px 34px' }}>
+                        <div className="bundle-body" style={{ padding: '4px 4px 16px 34px' }}>
                             <BundleBody bundle={bundle} />
                         </div>
                     </details>
